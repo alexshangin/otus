@@ -2,9 +2,8 @@
 sudo yum install -y mc wget gcc bison flex bc elfutils-libelf-devel openssl-devel ncurces-devel
 sudo wget https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.19.61.tar.xz
 sudo tar -xvf linux-4.19.61.tar.xz -C /usr/src
-cd /usr/src/linux-4.19.61
-sudo cp /boot/config* .config
-cd..
+sudo cp /boot/config* /usr/src/linux-4.19.61/.config
+cd /usr/src
 sudo ln -s linux-4.19.61 linux
 cd linux
 sudo yes "" | sudo make oldconfig
