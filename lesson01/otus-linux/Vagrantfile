@@ -1,34 +1,6 @@
 # -*- mode: ruby -*-
 # vim: set ft=ruby :
 
-#$script = <<END
-#echo "Install base packets"
-#sudo yum install -y mc wget gcc bison flex bc elfutils-libelf-devel openssl-devel ncurces-devel
-#echo "Download kernel archive"
-#sudo wget https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.19.61.tar.xz
-#echo "Unpacking"
-#sudo tar -xvf linux-4.19.61.tar.xz -C /usr/src
-#echo "change directory"
-#cd /usr/src/linux-4.19.61
-#echo "copy machine kernel config"
-#sudo cp /boot/config* .config
-#cd ..
-#echo "make symlink kernel"
-#sudo ln -s linux-4.19.61 linux
-#cd linux
-#echo "tell default values"
-#sudo yes "" | sudo make oldconfig
-#sudo make
-#sudo make modules_install
-#sudo make install
-#sudo make headers_install
-#echo "see installed kernel in grub"
-#sudo cat /boot/grub2/grub.cfg | sudo grep 4.1
-#echo "set new kernel default"
-#sudo grub2-set-default 0
-#END
-
-
 MACHINES = {
   :otuslinux => {
         :box_name => "centos/7",
