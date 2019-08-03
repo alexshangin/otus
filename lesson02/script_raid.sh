@@ -38,7 +38,7 @@ create_part_raid() {
     #изменяем права
     chmod -R 660 /raid10
     #монтируем 
-    for i in $(seq 1 5); do mount /dev/md0p$i /raid/part$i; done
+    for i in $(seq 1 5); do mount /dev/md0p$i /raid10/part$i; done
     #добавляем в fstab
     echo "/dev/md0p1 /raid10/part1 ext4 defaults 0 0" >> /etc/fstab
     echo "/dev/md0p2 /raid10/part2 ext4 defaults 0 0" >> /etc/fstab
@@ -74,6 +74,5 @@ main() {
     view_raid
 }
 
-#reload-bootstrap() {
-#    . $BASH_SOURCE
-#}
+
+[[ "$0" == "$BASH_SOURCE" ]] && main "$@"
