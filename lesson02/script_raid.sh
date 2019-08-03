@@ -36,7 +36,7 @@ create_part_raid() {
     #создаем каталоги для монтирования
     mkdir -p /raid10/part{1,2,3,4,5}
     #изменяем права
-    chmod -R 660 /raid10
+    chmod -R 777 /raid10
     #монтируем 
     for i in $(seq 1 5); do mount /dev/md0p$i /raid10/part$i; done
     #добавляем в fstab
