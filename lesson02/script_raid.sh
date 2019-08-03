@@ -35,16 +35,17 @@ create_part_raid() {
     for i in $(seq 1 5); do mkfs.ext4 /dev/md0p$i; done
     #создаем каталоги для монтирования
     mkdir -p /raid10/part{1,2,3,4,5}
-    #изменяем права
-    chmod -R 777 /raid10
-    #монтируем 
-    for i in $(seq 1 5); do mount /dev/md0p$i /raid10/part$i; done
+    bash -c "echo chmod 777 /raid10 >> /etc/rc.local"
     #добавляем в fstab
     echo "/dev/md0p1 /raid10/part1 ext4 defaults 0 0" >> /etc/fstab
     echo "/dev/md0p2 /raid10/part2 ext4 defaults 0 0" >> /etc/fstab
     echo "/dev/md0p3 /raid10/part3 ext4 defaults 0 0" >> /etc/fstab
     echo "/dev/md0p4 /raid10/part4 ext4 defaults 0 0" >> /etc/fstab
     echo "/dev/md0p5 /raid10/part5 ext4 defaults 0 0" >> /etc/fstab
+    #монтируем 
+    for i in $(seq 1 5); do mount /dev/md0p$i /raid10/part$i; done
+    #изменяем права
+    chmod -R 777 /raid10
 }
 
 view_raid() {
