@@ -1,0 +1,522 @@
+Работа с LVM
+на имеющемся образе
+/dev/mapper/VolGroup00-LogVol00 38G 738M 37G 2% /
+
+уменьшить том под / до 8G
+выделить том под /home
+выделить том под /var
+/var - сделать в mirror
+/home - сделать том для снэпшотов
+прописать монтирование в fstab
+попробовать с разными опциями и разными файловыми системами ( на выбор)
+- сгенерить файлы в /home/
+- снять снэпшот
+- удалить часть файлов
+- восстановится со снэпшота
+- залоггировать работу можно с помощью утилиты script
+
+* на нашей куче дисков попробовать поставить btrfs/zfs - с кешем, снэпшотами - разметить здесь каталог /opt
+
+===================
+
+Для файловой системы XFS нет штатного решения по уменьшению размера тома.
+Для изменения размера в меньшую сторону нужно сдампить во временный раздел
+содержимое текущего и поменять точку монтирования. Затем уменьшить исходный
+раздел, сдампить уже временный раздел в новый исходный, вернуть точку
+монтирования. Для решения нашей задачи нам понадобятся две утилиты: lvm2 и 
+xfsdump.
+
+Устанавливаем утилиты:
+yum install lvm2 xfsdump
+
+Проверим наши диски:
+lsblk
+
+NAME                    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sda                       8:0    0   40G  0 disk 
+├─sda1                    8:1    0    1M  0 part 
+├─sda2                    8:2    0    1G  0 part /boot
+└─sda3                    8:3    0   39G  0 part 
+  ├─VolGroup00-LogVol00 253:0    0 37.5G  0 lvm  /
+  └─VolGroup00-LogVol01 253:1    0  1.5G  0 lvm  [SWAP]
+sdb                       8:16   0   10G  0 disk 
+sdc                       8:32   0    2G  0 disk 
+sdd                       8:48   0    1G  0 disk 
+sde                       8:64   0    1G  0 disk 
+
+Создадим временный раздел для корневого тома.
+Добавим диск:
+[root@otuslvm vagrant]# pvcreate /dev/sdb
+  Physical volume "/dev/sdb" successfully created.
+
+Создадим группу:
+[root@otuslvm vagrant]# vgcreate vg_tmp_root /dev/sdb
+  Volume group "vg_tmp_root" successfully created
+
+Создадим том:
+[root@otuslvm vagrant]# lvcreate -l+100%FREE -n lv_tmp_root /dev/vg_tmp_root
+  Logical volume "lv_tmp_root" created.
+
+Форматируем том:
+[root@otuslvm vagrant]# mkfs.xfs /dev/vg_tmp_root/lv_tmp_root
+meta-data=/dev/vg_tmp_root/lv_tmp_root isize=512    agcount=4, agsize=655104 blks
+         =                       sectsz=512   attr=2, projid32bit=1
+         =                       crc=1        finobt=0, sparse=0
+data     =                       bsize=4096   blocks=2620416, imaxpct=25
+         =                       sunit=0      swidth=0 blks
+naming   =version 2              bsize=4096   ascii-ci=0 ftype=1
+log      =internal log           bsize=4096   blocks=2560, version=2
+         =                       sectsz=512   sunit=0 blks, lazy-count=1
+realtime =none                   extsz=4096   blocks=0, rtextents=0
+
+Монтируем:
+[root@otuslvm vagrant]# mount /dev/vg_tmp_root/lv_tmp_root /mnt
+
+Делаем дамп текущего корневого раздела во временный раздел:
+[root@otuslvm vagrant]# xfsdump -J - /dev/VolGroup00/LogVol00 | xfsrestore -J - /mnt
+xfsrestore: using file dump (drive_simple) strategy
+xfsrestore: version 3.1.7 (dump format 3.0)
+xfsdump: using file dump (drive_simple) strategy
+xfsdump: version 3.1.7 (dump format 3.0)
+xfsdump: level 0 dump of otuslvm:/
+xfsdump: dump date: Wed Aug 14 21:25:05 2019
+xfsdump: session id: b00d7a50-3169-40e0-837a-25452eafedbb
+xfsdump: session label: ""
+xfsrestore: searching media for dump
+xfsdump: ino map phase 1: constructing initial dump list
+xfsdump: ino map phase 2: skipping (no pruning necessary)
+xfsdump: ino map phase 3: skipping (only one dump stream)
+xfsdump: ino map construction complete
+xfsdump: estimated dump size: 773048960 bytes
+xfsdump: creating dump session media file 0 (media 0, file 0)
+xfsdump: dumping ino map
+xfsdump: dumping directories
+xfsrestore: examining media file 0
+xfsrestore: dump description: 
+xfsrestore: hostname: otuslvm
+xfsrestore: mount point: /
+xfsrestore: volume: /dev/mapper/VolGroup00-LogVol00
+xfsrestore: session time: Wed Aug 14 21:25:05 2019
+xfsrestore: level: 0
+xfsrestore: session label: ""
+xfsrestore: media label: ""
+xfsrestore: file system id: b60e9498-0baa-4d9f-90aa-069048217fee
+xfsrestore: session id: b00d7a50-3169-40e0-837a-25452eafedbb
+xfsrestore: media id: adc4fc27-3f6b-474c-9a9b-7c625ae68eb3
+xfsrestore: searching media for directory dump
+xfsrestore: reading directories
+xfsdump: dumping non-directory files
+xfsrestore: 2718 directories and 23732 entries processed
+xfsrestore: directory post-processing
+xfsrestore: restoring non-directory files
+xfsdump: ending media file
+xfsdump: media file size 749965632 bytes
+xfsdump: dump size (non-dir files) : 736733592 bytes
+xfsdump: dump complete: 19 seconds elapsed
+xfsdump: Dump Status: SUCCESS
+xfsrestore: restore complete: 19 seconds elapsed
+xfsrestore: Restore Status: SUCCESS
+
+Проверяем:
+[root@otuslvm vagrant]# ls /mnt
+bin  boot  dev  etc  home  lib  lib64  media  mnt  opt  proc  root  run  sbin  srv  sys  tmp  usr  vagrant  var
+
+Монтируем системные разделы:
+[root@otuslvm vagrant]# for i in /proc/ /sys/ /dev/ /run/ /boot/; do mount --bind $i /mnt/$i; done
+
+Заходим в chroot окружение:
+[root@otuslvm vagrant]# chroot /mnt/
+
+Создадим конфиг загрузчика:
+[root@otuslvm /]# grub2-mkconfig -o /boot/grub2/grub.cfg 
+Generating grub configuration file ...
+Found linux image: /boot/vmlinuz-3.10.0-862.2.3.el7.x86_64
+Found initrd image: /boot/initramfs-3.10.0-862.2.3.el7.x86_64.img
+done
+
+Обновим образы загрузки:
+[root@otuslvm /]# cd /boot ; for i in `ls initramfs-*img`; do dracut -v $i `echo $i|sed "s/initramfs-//g; s/.img//g"` --force; done
+Executing: /sbin/dracut -v initramfs-3.10.0-862.2.3.el7.x86_64.img 3.10.0-862.2.3.el7.x86_64 --force
+dracut module 'busybox' will not be installed, because command 'busybox' could not be found!
+dracut module 'crypt' will not be installed, because command 'cryptsetup' could not be found!
+dracut module 'dmraid' will not be installed, because command 'dmraid' could not be found!
+dracut module 'dmsquash-live-ntfs' will not be installed, because command 'ntfs-3g' could not be found!
+dracut module 'multipath' will not be installed, because command 'multipath' could not be found!
+dracut module 'busybox' will not be installed, because command 'busybox' could not be found!
+dracut module 'crypt' will not be installed, because command 'cryptsetup' could not be found!
+dracut module 'dmraid' will not be installed, because command 'dmraid' could not be found!
+dracut module 'dmsquash-live-ntfs' will not be installed, because command 'ntfs-3g' could not be found!
+dracut module 'multipath' will not be installed, because command 'multipath' could not be found!
+*** Including module: bash ***
+*** Including module: nss-softokn ***
+*** Including module: i18n ***
+*** Including module: drm ***
+*** Including module: plymouth ***
+*** Including module: dm ***
+Skipping udev rule: 64-device-mapper.rules
+Skipping udev rule: 60-persistent-storage-dm.rules
+Skipping udev rule: 55-dm.rules
+*** Including module: kernel-modules ***
+Omitting driver floppy
+*** Including module: lvm ***
+Skipping udev rule: 64-device-mapper.rules
+Skipping udev rule: 56-lvm.rules
+Skipping udev rule: 60-persistent-storage-lvm.rules
+*** Including module: qemu ***
+*** Including module: resume ***
+*** Including module: rootfs-block ***
+*** Including module: terminfo ***
+*** Including module: udev-rules ***
+Skipping udev rule: 40-redhat-cpu-hotplug.rules
+Skipping udev rule: 91-permissions.rules
+*** Including module: biosdevname ***
+*** Including module: systemd ***
+*** Including module: usrmount ***
+*** Including module: base ***
+*** Including module: fs-lib ***
+*** Including module: shutdown ***
+*** Including modules done ***
+*** Installing kernel module dependencies and firmware ***
+*** Installing kernel module dependencies and firmware done ***
+*** Resolving executable dependencies ***
+*** Resolving executable dependencies done***
+*** Hardlinking files ***
+*** Hardlinking files done ***
+*** Stripping files ***
+*** Stripping files done ***
+*** Generating early-microcode cpio image contents ***
+*** No early-microcode cpio image needed ***
+*** Store current command line parameters ***
+*** Creating image file ***
+*** Creating image file done ***
+*** Creating initramfs image file '/boot/initramfs-3.10.0-862.2.3.el7.x86_64.img' done ***
+
+Редактируем конфиг загрузчика, изменяя d.lvm.lv=VolGroup00/LogVol00 на rd.lvm.lv=vg_tmp_root/lv_tmp_root
+[root@otuslvm boot]# vi /boot/grub2/grub.cfg
+
+Выходим из окружения:
+[root@otuslvm boot]# exit
+exit
+
+Перезагружаемся:
+[root@otuslvm vagrant]# shutdown -r now
+
+Проверяем, где находиться текущий раздел /:
+[root@otuslvm vagrant]# lsblk
+NAME                      MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sda                         8:0    0   40G  0 disk 
+├─sda1                      8:1    0    1M  0 part 
+├─sda2                      8:2    0    1G  0 part /boot
+└─sda3                      8:3    0   39G  0 part 
+  ├─VolGroup00-LogVol01   253:1    0  1.5G  0 lvm  [SWAP]
+  └─VolGroup00-LogVol00   253:2    0 37.5G  0 lvm  
+sdb                         8:16   0   10G  0 disk 
+└─vg_tmp_root-lv_tmp_root 253:0    0   10G  0 lvm  /
+sdc                         8:32   0    2G  0 disk 
+sdd                         8:48   0    1G  0 disk 
+sde                         8:64   0    1G  0 disk 
+
+Удаляем логический том старого корня:
+[root@otuslvm vagrant]# lvremove /dev/VolGroup00/LogVol00
+Do you really want to remove active logical volume VolGroup00/LogVol00? [y/n]: y
+  Logical volume "LogVol00" successfully removed
+
+Создаём новый том:
+[root@otuslvm vagrant]# lvcreate -n VolGroup00/LogVol00 -L 8G /dev/VolGroup00
+WARNING: xfs signature detected on /dev/VolGroup00/LogVol00 at offset 0. Wipe it? [y/n]: y
+  Wiping xfs signature on /dev/VolGroup00/LogVol00.
+  Logical volume "LogVol00" created.
+
+Создаём файловую систему:
+[root@otuslvm vagrant]# mkfs.xfs /dev/VolGroup00/LogVol00
+meta-data=/dev/VolGroup00/LogVol00 isize=512    agcount=4, agsize=524288 blks
+         =                       sectsz=512   attr=2, projid32bit=1
+         =                       crc=1        finobt=0, sparse=0
+data     =                       bsize=4096   blocks=2097152, imaxpct=25
+         =                       sunit=0      swidth=0 blks
+naming   =version 2              bsize=4096   ascii-ci=0 ftype=1
+log      =internal log           bsize=4096   blocks=2560, version=2
+         =                       sectsz=512   sunit=0 blks, lazy-count=1
+realtime =none                   extsz=4096   blocks=0, rtextents=0
+
+Монтируем во временную папку:
+[root@otuslvm vagrant]# mount /dev/VolGroup00/LogVol00 /mnt
+
+Делаем дамп текущего корневого раздела во временный раздел:
+[root@otuslvm vagrant]# xfsdump -J - /dev/vg_tmp_root/lv_tmp_root | xfsrestore -J - /mnt
+xfsrestore: using file dump (drive_simple) strategy
+xfsrestore: version 3.1.7 (dump format 3.0)
+xfsdump: using file dump (drive_simple) strategy
+xfsdump: version 3.1.7 (dump format 3.0)
+xfsdump: level 0 dump of otuslvm:/
+xfsdump: dump date: Wed Aug 14 21:47:17 2019
+xfsdump: session id: 776ff038-485e-447c-8bee-3705f44335ec
+xfsdump: session label: ""
+xfsrestore: searching media for dump
+xfsdump: ino map phase 1: constructing initial dump list
+xfsdump: ino map phase 2: skipping (no pruning necessary)
+xfsdump: ino map phase 3: skipping (only one dump stream)
+xfsdump: ino map construction complete
+xfsdump: estimated dump size: 771670208 bytes
+xfsdump: creating dump session media file 0 (media 0, file 0)
+xfsdump: dumping ino map
+xfsdump: dumping directories
+xfsrestore: examining media file 0
+xfsrestore: dump description: 
+xfsrestore: hostname: otuslvm
+xfsrestore: mount point: /
+xfsrestore: volume: /dev/mapper/vg_tmp_root-lv_tmp_root
+xfsrestore: session time: Wed Aug 14 21:47:17 2019
+xfsrestore: level: 0
+xfsrestore: session label: ""
+xfsrestore: media label: ""
+xfsrestore: file system id: 63c810c3-810d-4d4f-8c0e-dd57e9757555
+xfsrestore: session id: 776ff038-485e-447c-8bee-3705f44335ec
+xfsrestore: media id: 6e4f7390-7367-4eae-ae8c-973fadef00fc
+xfsrestore: searching media for directory dump
+xfsrestore: reading directories
+xfsdump: dumping non-directory files
+xfsrestore: 2722 directories and 23737 entries processed
+xfsrestore: directory post-processing
+xfsrestore: restoring non-directory files
+xfsdump: ending media file
+xfsdump: media file size 748532384 bytes
+xfsdump: dump size (non-dir files) : 735296656 bytes
+xfsdump: dump complete: 30 seconds elapsed
+xfsdump: Dump Status: SUCCESS
+xfsrestore: restore complete: 30 seconds elapsed
+xfsrestore: Restore Status: SUCCESS
+
+Монтируем системные разделы:
+[root@otuslvm vagrant]# for i in /proc/ /sys/ /dev/ /run/ /boot/; do mount --bind $i /mnt/$i; done
+
+Заходим в chroot окружение:
+[root@otuslvm vagrant]# chroot /mnt/
+
+Создадим конфиг загрузчика:
+[root@otuslvm /]# grub2-mkconfig -o /boot/grub2/grub.cfg
+Generating grub configuration file ...
+Found linux image: /boot/vmlinuz-3.10.0-862.2.3.el7.x86_64
+Found initrd image: /boot/initramfs-3.10.0-862.2.3.el7.x86_64.img
+done
+
+Обновим образы загрузки:
+[root@otuslvm /]# cd /boot ; for i in `ls initramfs-*img`; do dracut -v $i `echo $i|sed "s/initramfs-//g; s/.img//g"` --force; done
+Executing: /sbin/dracut -v initramfs-3.10.0-862.2.3.el7.x86_64.img 3.10.0-862.2.3.el7.x86_64 --force
+dracut module 'busybox' will not be installed, because command 'busybox' could not be found!
+dracut module 'crypt' will not be installed, because command 'cryptsetup' could not be found!
+dracut module 'dmraid' will not be installed, because command 'dmraid' could not be found!
+dracut module 'dmsquash-live-ntfs' will not be installed, because command 'ntfs-3g' could not be found!
+dracut module 'multipath' will not be installed, because command 'multipath' could not be found!
+dracut module 'busybox' will not be installed, because command 'busybox' could not be found!
+dracut module 'crypt' will not be installed, because command 'cryptsetup' could not be found!
+dracut module 'dmraid' will not be installed, because command 'dmraid' could not be found!
+dracut module 'dmsquash-live-ntfs' will not be installed, because command 'ntfs-3g' could not be found!
+dracut module 'multipath' will not be installed, because command 'multipath' could not be found!
+*** Including module: bash ***
+*** Including module: nss-softokn ***
+*** Including module: i18n ***
+*** Including module: drm ***
+*** Including module: plymouth ***
+*** Including module: dm ***
+Skipping udev rule: 64-device-mapper.rules
+Skipping udev rule: 60-persistent-storage-dm.rules
+Skipping udev rule: 55-dm.rules
+*** Including module: kernel-modules ***
+Omitting driver floppy
+*** Including module: lvm ***
+Skipping udev rule: 64-device-mapper.rules
+Skipping udev rule: 56-lvm.rules
+Skipping udev rule: 60-persistent-storage-lvm.rules
+*** Including module: qemu ***
+*** Including module: resume ***
+*** Including module: rootfs-block ***
+*** Including module: terminfo ***
+*** Including module: udev-rules ***
+Skipping udev rule: 40-redhat-cpu-hotplug.rules
+Skipping udev rule: 91-permissions.rules
+*** Including module: biosdevname ***
+*** Including module: systemd ***
+*** Including module: usrmount ***
+*** Including module: base ***
+*** Including module: fs-lib ***
+*** Including module: shutdown ***
+*** Including modules done ***
+*** Installing kernel module dependencies and firmware ***
+*** Installing kernel module dependencies and firmware done ***
+*** Resolving executable dependencies ***
+*** Resolving executable dependencies done***
+*** Hardlinking files ***
+*** Hardlinking files done ***
+*** Stripping files ***
+*** Stripping files done ***
+*** Generating early-microcode cpio image contents ***
+*** No early-microcode cpio image needed ***
+*** Store current command line parameters ***
+*** Creating image file ***
+*** Creating image file done ***
+*** Creating initramfs image file '/boot/initramfs-3.10.0-862.2.3.el7.x86_64.img' done ***
+
+Выделяем том под /var в зеркале.
+
+На свободных дисках создаем зеркало.
+Добавляем диски:
+[root@otuslvm boot]# pvcreate /dev/sd{c,d}
+  Physical volume "/dev/sdc" successfully created.
+  Physical volume "/dev/sdd" successfully created.
+
+Создаём группу:
+[root@otuslvm boot]# vgcreate vg_var /dev/sd{c,d}
+  Volume group "vg_var" successfully created
+
+Создаем том:
+[root@otuslvm boot]# lvcreate -L 950M -m 1 -n lv_var vg_var
+  Rounding up size to full physical extent 952.00 MiB
+  Logical volume "lv_var" created.
+
+Создаём файловую систему:
+[root@otuslvm boot]# mkfs.ext4 /dev/vg_var/lv_var
+mke2fs 1.42.9 (28-Dec-2013)
+Filesystem label=
+OS type: Linux
+Block size=4096 (log=2)
+Fragment size=4096 (log=2)
+Stride=0 blocks, Stripe width=0 blocks
+60928 inodes, 243712 blocks
+12185 blocks (5.00%) reserved for the super user
+First data block=0
+Maximum filesystem blocks=249561088
+8 block groups
+32768 blocks per group, 32768 fragments per group
+7616 inodes per group
+Superblock backups stored on blocks: 
+	32768, 98304, 163840, 229376
+
+Allocating group tables: done                            
+Writing inode tables: done                            
+Creating journal (4096 blocks): done
+Writing superblocks and filesystem accounting information: done
+
+Монтируем:
+[root@otuslvm boot]# mount /dev/vg_var/lv_var /mnt
+
+Переносим текущий раздел /var во во временный /mnt:
+[root@otuslvm boot]# cp -aR /var/* /mnt/
+
+Сохраняем содержимое старого /var:
+[root@otuslvm boot]# mkdir /tmp/oldvar && mv /var/* /tmp/oldvar
+
+Размонтируем:
+[root@otuslvm boot]# umount /mnt
+
+Монтируем наше зеркало в /var:
+[root@otuslvm boot]# mount /dev/vg_var/lv_var /var
+
+Добавляем раздел в fstab для автоматического монтирования:
+[root@otuslvm boot]# echo "`blkid | grep var: | awk '{print $2}'` /var ext4 defaults 0 0" >> /etc/fstab
+
+Выходим из окружения:
+[root@otuslvm boot]# exit
+exit
+
+Перезагружаемся:
+[root@otuslvm vagrant]# shutdown -r now
+
+Удаляем временный том:
+[root@otuslvm vagrant]# lvremove /dev/vg_tmp_root/lv_tmp_root
+Do you really want to remove active logical volume vg_tmp_root/lv_tmp_root? [y/n]: y
+  Logical volume "lv_tmp_root" successfully removed
+
+Удаляем временную группу:
+[root@otuslvm vagrant]# vgremove /dev/vg_tmp_root
+  Volume group "vg_tmp_root" successfully removed
+
+Удаляем временный диск из lvm:
+[root@otuslvm vagrant]# pvremove /dev/sdb
+  Labels on physical volume "/dev/sdb" successfully wiped.
+
+Проверяем текущий корневой раздел:
+[root@otuslvm vagrant]# lsblk
+NAME                     MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sda                        8:0    0   40G  0 disk 
+├─sda1                     8:1    0    1M  0 part 
+├─sda2                     8:2    0    1G  0 part /boot
+└─sda3                     8:3    0   39G  0 part 
+  ├─VolGroup00-LogVol00  253:0    0    8G  0 lvm  /
+  └─VolGroup00-LogVol01  253:1    0  1.5G  0 lvm  [SWAP]
+sdb                        8:16   0   10G  0 disk 
+sdc                        8:32   0    2G  0 disk 
+├─vg_var-lv_var_rmeta_0  253:3    0    4M  0 lvm  
+│ └─vg_var-lv_var        253:7    0  952M  0 lvm  /var
+└─vg_var-lv_var_rimage_0 253:4    0  952M  0 lvm  
+  └─vg_var-lv_var        253:7    0  952M  0 lvm  /var
+sdd                        8:48   0    1G  0 disk 
+├─vg_var-lv_var_rmeta_1  253:5    0    4M  0 lvm  
+│ └─vg_var-lv_var        253:7    0  952M  0 lvm  /var
+└─vg_var-lv_var_rimage_1 253:6    0  952M  0 lvm  
+  └─vg_var-lv_var        253:7    0  952M  0 lvm  /var
+sde                        8:64   0    1G  0 disk 
+
+
+Выделим том под /home.
+
+Создадим том:
+[root@otuslvm vagrant]# lvcreate -n lv_home -L 2G /dev/VolGroup00
+  Logical volume "lv_home" created.
+
+Создадим файловую систему:
+[root@otuslvm vagrant]# mkfs.xfs /dev/VolGroup00/lv_home
+meta-data=/dev/VolGroup00/lv_home isize=512    agcount=4, agsize=131072 blks
+         =                       sectsz=512   attr=2, projid32bit=1
+         =                       crc=1        finobt=0, sparse=0
+data     =                       bsize=4096   blocks=524288, imaxpct=25
+         =                       sunit=0      swidth=0 blks
+naming   =version 2              bsize=4096   ascii-ci=0 ftype=1
+log      =internal log           bsize=4096   blocks=2560, version=2
+         =                       sectsz=512   sunit=0 blks, lazy-count=1
+realtime =none                   extsz=4096   blocks=0, rtextents=0
+
+Монтируем новый том во временный раздел:
+[root@otuslvm vagrant]# mount /dev/VolGroup00/lv_home /mnt/
+
+Копируем туда содержимое /home:
+[root@otuslvm vagrant]# cp -aR /home/* /mnt/
+
+Удаляем данные из текущего /home:
+[root@otuslvm vagrant]# rm -rf /home/*
+
+Размонтируем:
+[root@otuslvm vagrant]# umount /mnt
+
+Монтируем в /home:
+[root@otuslvm vagrant]# mount /dev/VolGroup00/lv_home /home/
+
+Добавляем раздел в fstab для автоматического монтирования:
+[root@otuslvm vagrant]# echo "`blkid | grep home | awk '{print $2}'` /home xfs defaults 0 0" >> /etc/fstab
+
+
+/home - сделать том для снапшотов.
+
+Сгенерируем файлы в /home:
+[root@otuslvm vagrant]# touch /home/file{1..20}
+
+Снимем снапшот:
+[root@otuslvm vagrant]# lvcreate -L 100MB -s -n home_snap /dev/VolGroup00/lv_home
+  Rounding up size to full physical extent 128.00 MiB
+  Logical volume "home_snap" created.
+
+Удалим часть фалов:
+[root@otuslvm vagrant]# rm -f /home/file{11..20}
+
+Отмонтируем раздел, чтобы затем восстановиться со снапшота:
+[root@otuslvm vagrant]# umount /home
+
+Восстанавливаем со снапшота:
+[root@otuslvm vagrant]# lvconvert --merge /dev/VolGroup00/home_snap
+  Merging of volume VolGroup00/home_snap started.
+  VolGroup00/lv_home: Merged: 100.00%
+
+Монтируем /home:
+[root@otuslvm vagrant]# mount /home
+
+
