@@ -520,3 +520,60 @@ realtime =none                   extsz=4096   blocks=0, rtextents=0
 [root@otuslvm vagrant]# mount /home
 
 
+Добавим btrfs, перенесем туда каталог /opt и сделаем снимок.
+
+Добавим файловую систему btrfs на наши диски:
+[root@otuslvm vagrant]# mkfs.btrfs /dev/sdb
+btrfs-progs v4.9.1
+See http://btrfs.wiki.kernel.org for more information.
+
+Label:              (null)
+UUID:               c6473a5c-da99-40b3-b85b-23aec959f32a
+Node size:          16384
+Sector size:        4096
+Filesystem size:    10.00GiB
+Block group profiles:
+  Data:             single            8.00MiB
+  Metadata:         DUP               1.00GiB
+  System:           DUP               8.00MiB
+SSD detected:       no
+Incompat features:  extref, skinny-metadata
+Number of devices:  1
+Devices:
+   ID        SIZE  PATH
+    1    10.00GiB  /dev/sdb
+
+Монтируем во временный каталог /mnt:
+[root@otuslvm vagrant]# mount /dev/sdb /mnt
+
+Проверим размер нашего диска:
+[root@otuslvm vagrant]# btrfs filesystem df /mnt
+Data, single: total=8.00MiB, used=256.00KiB
+System, DUP: total=8.00MiB, used=16.00KiB
+Metadata, DUP: total=1.00GiB, used=112.00KiB
+GlobalReserve, single: total=16.00MiB, used=0.00B
+
+Скопируем туда текущий каталог /opt:
+[root@otuslvm vagrant]# cp -aR /opt/* /mnt/
+cp: cannot stat ‘/opt/*’: No such file or directory
+Как видим, наш каталог пуст.
+
+Размонтируем временный каталог:
+[root@otuslvm vagrant]# umount /mnt
+
+Монтируем нашу фс в /opt:
+[root@otuslvm vagrant]# mount /dev/sdb /opt
+
+Добавим опцию автомонтирования в fstab:
+[root@otuslvm vagrant]# echo "`blkid | grep sdb: | awk '{print $2}'` /opt btrfs defaults 0 0" >> /etc/fstab
+
+Сделаем снимок.
+Создадим папку монтирования:
+[root@otuslvm vagrant]# mkdir -p /snapshot/$(date +"%Y-%m-%d")
+
+Сделаем снимок каталога /opt. С учетом особенностей файловой системы
+снимки(субтома) на нижних уровнях вложений не будут добавлены в снимок:
+[root@otuslvm vagrant]# btrfs subvolume snapshot -r /opt /snapshot/$(date +"%Y-%m-%d") 
+Create a readonly snapshot of '/opt' in '/snapshot/2019-08-18/opt'
+
+
