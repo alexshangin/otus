@@ -568,6 +568,15 @@ cp: cannot stat ‘/opt/*’: No such file or directory
 [root@otuslvm vagrant]# echo "`blkid | grep sdb: | awk '{print $2}'` /opt btrfs defaults 0 0" >> /etc/fstab
 
 Сделаем снимок.
+
+Наша фс позволяем монтировать устройство несколько раз. Используя эту
+особенность добавим точку монтирования для снапшотов.
+Создадим каталог:
+[root@otuslvm vagrant]# mkdir /snapshot
+
+Смонтируем фс:
+[root@otuslvm vagrant]# mount /dev/sdb /snapshot
+
 Создадим папку монтирования:
 [root@otuslvm vagrant]# mkdir -p /snapshot/$(date +"%Y-%m-%d")
 
@@ -575,5 +584,4 @@ cp: cannot stat ‘/opt/*’: No such file or directory
 снимки(субтома) на нижних уровнях вложений не будут добавлены в снимок:
 [root@otuslvm vagrant]# btrfs subvolume snapshot -r /opt /snapshot/$(date +"%Y-%m-%d") 
 Create a readonly snapshot of '/opt' in '/snapshot/2019-08-18/opt'
-
 
