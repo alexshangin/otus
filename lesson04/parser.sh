@@ -119,3 +119,6 @@ start_str_file=1
 ### работа основной функции
 main
 fi
+
+## отправим письмо
+cat $ll | mail -s "Last hour log" master@otus.ru
