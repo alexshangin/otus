@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+get_time(){
+sec=$(( $( awk '{ print $14 }' /proc/$i/stat )+$( awk '{ print $15 }' /proc/$i/stat ) / 100 ))
+date -u -d @${sec} +"%M:%S"
+}
+
+
 get_pid(){
 awk '{ print $1 }' /proc/$i/stat
 }
@@ -16,8 +22,7 @@ fi
 get_command(){
 if [[ $( cat /proc/$i/cmdline ) != '' ]]
 then
-cat /proc/$i/cmdline
-#cut -c1-86 /proc/$i/cmdline
+cut -c1-80 /proc/$i/cmdline
 else
 echo "[$( cat /proc/$i/comm )]"
 fi
@@ -33,7 +38,7 @@ for i in $PID
 do
 if [[ -e /proc/$i/stat ]]
 then
-echo "$(get_pid)	$(get_tty)	$(get_stat)	$(get_command)"
+echo "$(get_pid)	$(get_tty)	$(get_stat)	$(get_time)	$(get_command)"
 fi
 done
 }
