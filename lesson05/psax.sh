@@ -44,5 +44,5 @@ done
 }
 
 PID=$( ls /proc | grep [[:digit:]] | sort -n | xargs )
-echo "  PID TTY      STAT   COMMAND"
+echo "PID	TTY	STAT	TIME	COMMAND"
 main $PID
