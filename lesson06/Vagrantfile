@@ -2,7 +2,11 @@
 # vim: set ft=ruby :
 
 MACHINES = {
+<<<<<<< HEAD
   :otusrepo => {
+=======
+  :otuspsax => {
+>>>>>>> 7f726ef4605ab6907ae72db7f79cb1f60bbb4417
         :box_name => "centos/7",
         :ip_addr => '192.168.11.102'
   },
@@ -29,7 +33,10 @@ Vagrant.configure("2") do |config|
              s.inline = 'mkdir -p ~root/.ssh; cp ~vagrant/.ssh/auth* ~root/.ssh'
           end
 
+<<<<<<< HEAD
 	config.vm.provision "shell", path: "kernel_update.sh"
+=======
+>>>>>>> 7f726ef4605ab6907ae72db7f79cb1f60bbb4417
 
       end
   end
