@@ -29,8 +29,6 @@ Vagrant.configure("2") do |config|
              s.inline = 'mkdir -p ~root/.ssh; cp ~vagrant/.ssh/auth* ~root/.ssh'
           end
 
-	  box.vm.provision "shell", path: "create_repo.sh"
-
       end
   end
 end

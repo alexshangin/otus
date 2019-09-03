@@ -170,90 +170,74 @@ pcp-pmda-nginx.x86_64                       4.1.0-5.el7_6              updates
 CT-83df5203 /# cat /proc/version 
 Linux version 3.10.0 (mockbuild@builder5.eng.sw.ru) (gcc version 4.8.5 20150623 (Red Hat 4.8.5-4) (GCC) ) #1 SMP Mon Nov 7 18:22:08 MSK 2016
 
-CT-83df5203 /# curl -fsSL https://get.docker.com/ | sh
-# Executing docker install script, commit: 6bf300318ebaab958c4adc341a8c7bb9f3a54a1a
-+ sh -c 'yum install -y -q yum-utils'
-warning: /var/cache/yum/x86_64/7/base/packages/python-chardet-2.2.1-1.el7_1.noarch.rpm: Header V3 RSA/SHA256 Signature, key ID f4a80eb5: NOKEY
-Public key for python-chardet-2.2.1-1.el7_1.noarch.rpm is not installed
-Importing GPG key 0xF4A80EB5:
- Userid     : "CentOS-7 Key (CentOS 7 Official Signing Key) <security@centos.org>"
- Fingerprint: 6341 ab27 53d7 8a78 a7c2 7bb1 24c6 a8a7 f4a8 0eb5
- Package    : centos-release-7-3.1611.el7.centos.x86_64 (installed)
- From       : /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
-+ sh -c 'yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo'
-Loaded plugins: fastestmirror
-adding repo from: https://download.docker.com/linux/centos/docker-ce.repo
-grabbing file https://download.docker.com/linux/centos/docker-ce.repo to /etc/yum.repos.d/docker-ce.repo
-repo saved to /etc/yum.repos.d/docker-ce.repo
-+ '[' stable '!=' stable ']'
-+ sh -c 'yum makecache'
-Loaded plugins: fastestmirror
-base                                                                                   | 3.6 kB  00:00:00     
-docker-ce-stable                                                                       | 3.5 kB  00:00:00     
-extras                                                                                 | 3.4 kB  00:00:00     
-updates                                                                                | 3.4 kB  00:00:00     
-(1/12): docker-ce-stable/x86_64/updateinfo                                             |   55 B  00:00:00     
-(2/12): docker-ce-stable/x86_64/filelists_db                                           |  16 kB  00:00:00     
-(3/12): docker-ce-stable/x86_64/primary_db                                             |  32 kB  00:00:00     
-(4/12): docker-ce-stable/x86_64/other_db                                               | 112 kB  00:00:00     
-(5/12): base/7/x86_64/other_db                                                         | 2.6 MB  00:00:00     
-(6/12): extras/7/x86_64/prestodelta                                                    |  73 kB  00:00:00     
-(7/12): base/7/x86_64/filelists_db                                                     | 7.1 MB  00:00:00     
-(8/12): extras/7/x86_64/filelists_db                                                   | 249 kB  00:00:00     
-(9/12): extras/7/x86_64/other_db                                                       | 131 kB  00:00:00     
-(10/12): updates/7/x86_64/prestodelta                                                  | 945 kB  00:00:00     
-(11/12): updates/7/x86_64/other_db                                                     | 764 kB  00:00:00     
-(12/12): updates/7/x86_64/filelists_db                                                 | 5.2 MB  00:00:00     
-Loading mirror speeds from cached hostfile
- * base: mirror.wiuwiu.de
- * extras: ftp.antilo.de
- * updates: mirror.checkdomain.de
-Metadata Cache Created
-+ '[' -n '' ']'
-+ sh -c 'yum install -y -q docker-ce'
-Delta RPMs disabled because /usr/bin/applydeltarpm not installed.
-warning: /var/cache/yum/x86_64/7/docker-ce-stable/packages/docker-ce-19.03.1-3.el7.x86_64.rpm: Header V4 RSA/SHA512 Signature, key ID 621e9f35: NOKEY
-Public key for docker-ce-19.03.1-3.el7.x86_64.rpm is not installed
-Importing GPG key 0x621E9F35:
- Userid     : "Docker Release (CE rpm) <docker@docker.com>"
- Fingerprint: 060a 61c5 1b55 8a7f 742b 77aa c52f eb6b 621e 9f35
- From       : https://download.docker.com/linux/centos/gpg
-setsebool:  SELinux is disabled.
-If you would like to use Docker as a non-root user, you should now consider
-adding your user to the "docker" group with something like:
+CT-83df5203 /# yum install docker
+Installed:
+  docker.x86_64 2:1.13.1-102.git7f2769b.el7.centos                                                                                                                                                          
 
-  sudo usermod -aG docker your-user
+Dependency Installed:
+  PyYAML.x86_64 0:3.10-11.el7                                               atomic-registries.x86_64 1:1.22.1-26.gitb507039.el7.centos      container-storage-setup.noarch 0:0.11.0-2.git5eaf76c.el7       
+  containers-common.x86_64 1:0.1.37-1.el7.centos                            device-mapper-event.x86_64 7:1.02.149-10.el7_6.8                device-mapper-event-libs.x86_64 7:1.02.149-10.el7_6.8          
+  device-mapper-persistent-data.x86_64 0:0.7.3-3.el7                        docker-client.x86_64 2:1.13.1-102.git7f2769b.el7.centos         docker-common.x86_64 2:1.13.1-102.git7f2769b.el7.centos        
+  libyaml.x86_64 0:0.1.4-11.el7_0                                           lvm2.x86_64 7:2.02.180-10.el7_6.8                               lvm2-libs.x86_64 7:2.02.180-10.el7_6.8                         
+  oci-register-machine.x86_64 1:0-6.git2b44233.el7                          oci-systemd-hook.x86_64 1:0.2.0-1.git05e6923.el7_6              oci-umount.x86_64 2:2.5-1.el7_6                                
+  parted.x86_64 0:3.1-29.el7                                                python-backports.x86_64 0:1.0-8.el7                             python-backports-ssl_match_hostname.noarch 0:3.5.0.1-1.el7     
+  python-ipaddress.noarch 0:1.0.16-2.el7                                    python-pytoml.noarch 0:0.1.14-1.git7dea353.el7                  python-setuptools.noarch 0:0.9.8-7.el7                         
+  subscription-manager-rhsm-certificates.x86_64 0:1.21.10-3.el7.centos      xfsprogs.x86_64 0:4.5.0-19.el7_6                                yajl.x86_64 0:2.0.4-4.el7                                      
 
-Remember that you will have to log out and back in for this to take effect!
+Dependency Updated:
+  device-mapper.x86_64 7:1.02.149-10.el7_6.8                                                         device-mapper-libs.x86_64 7:1.02.149-10.el7_6.8                                                        
 
-WARNING: Adding a user to the "docker" group will grant the ability to run
-         containers which can be used to obtain root privileges on the
-         docker host.
-         Refer to https://docs.docker.com/engine/security/security/#docker-daemon-attack-surface
-         for more information.
+Complete!
 
-CT-83df5203 /# sudo systemctl start docker
 
-CT-83df5203 /# sudo systemctl status docker
+CT-83df5203 /# systemctl start docker
+
+CT-83df5203 /# systemctl status docker
 ● docker.service - Docker Application Container Engine
    Loaded: loaded (/usr/lib/systemd/system/docker.service; disabled; vendor preset: disabled)
   Drop-In: /etc/systemd/system/docker.service.d
            └─firewalld.conf
-   Active: active (running) since Fri 2019-08-30 17:27:14 MSK; 27s ago
-     Docs: https://docs.docker.com
- Main PID: 641 (dockerd)
-   Memory: 42.2M
+   Active: active (running) since Mon 2019-09-02 10:19:16 MSK; 2s ago
+     Docs: http://docs.docker.com
+ Main PID: 2095 (dockerd-current)
+   Memory: 21.7M
    CGroup: /system.slice/docker.service
-           └─641 /usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock
+           ├─2095 /usr/bin/dockerd-current --add-runtime docker-runc=/usr/libexec/docker/docker-runc-current --default-runtime=docker-runc --exec-opt native.cgroupdriver=systemd --userland-proxy-path=/...
+           └─2105 /usr/bin/docker-containerd-current -l unix:///var/run/docker/libcontainerd/docker-containerd.sock --metrics-interval=0 --start-timeout 2m --state-dir /var/run/docker/libcontainerd/con...
 
-Aug 30 17:27:13 dev.admin dockerd[641]: time="2019-08-30T17:27:13.028250078+03:00" level=warning msg="Running modprobe bridge br_netfilter failed with message: , error: exit status 1"
-Aug 30 17:27:13 dev.admin dockerd[641]: time="2019-08-30T17:27:13.029102788+03:00" level=warning msg="Running modprobe nf_nat failed with message: ``, error: exit status 1"
-Aug 30 17:27:13 dev.admin dockerd[641]: time="2019-08-30T17:27:13.029855576+03:00" level=warning msg="Running modprobe xt_conntrack failed with message: ``, error: exit status 1"
-Aug 30 17:27:13 dev.admin dockerd[641]: time="2019-08-30T17:27:13.833369525+03:00" level=info msg="Default bridge (docker0) is assigned with an IP address 172.17.0.0/16. Daemon option --b...ed IP address"
-Aug 30 17:27:14 dev.admin dockerd[641]: time="2019-08-30T17:27:14.332434003+03:00" level=info msg="Loading containers: done."
-Aug 30 17:27:14 dev.admin dockerd[641]: time="2019-08-30T17:27:14.353655196+03:00" level=warning msg="Not using native diff for overlay2, this may cause degraded performance for building ...river=overlay2
-Aug 30 17:27:14 dev.admin dockerd[641]: time="2019-08-30T17:27:14.354105485+03:00" level=info msg="Docker daemon" commit=74b1e89 graphdriver(s)=overlay2 version=19.03.1
-Aug 30 17:27:14 dev.admin dockerd[641]: time="2019-08-30T17:27:14.354170020+03:00" level=info msg="Daemon has completed initialization"
-Aug 30 17:27:14 dev.admin systemd[1]: Started Docker Application Container Engine.
-Aug 30 17:27:14 dev.admin dockerd[641]: time="2019-08-30T17:27:14.536413528+03:00" level=info msg="API listen on /var/run/docker.sock"
+Sep 02 10:19:15 dev.admin dockerd-current[2095]: time="2019-09-02T10:19:15.014603098+03:00" level=warning msg="Running modprobe nf_nat failed with message: ``, error: exit status 1"
+Sep 02 10:19:15 dev.admin dockerd-current[2095]: time="2019-09-02T10:19:15.015752080+03:00" level=warning msg="Running modprobe xt_conntrack failed with message: ``, error: exit status 1"
+Sep 02 10:19:15 dev.admin dockerd-current[2095]: time="2019-09-02T10:19:15.019254726+03:00" level=info msg="Firewalld running: true"
+Sep 02 10:19:15 dev.admin dockerd-current[2095]: time="2019-09-02T10:19:15.883933654+03:00" level=info msg="Default bridge (docker0) is assigned with an IP address 172.17.0.0/16. Daemon op...d IP address"
+Sep 02 10:19:16 dev.admin dockerd-current[2095]: time="2019-09-02T10:19:16.585666025+03:00" level=info msg="Loading containers: done."
+Sep 02 10:19:16 dev.admin dockerd-current[2095]: time="2019-09-02T10:19:16.587101986+03:00" level=warning msg="Not using native diff for overlay2, this may cause degraded performance for b...later to fix"
+Sep 02 10:19:16 dev.admin dockerd-current[2095]: time="2019-09-02T10:19:16.592534694+03:00" level=info msg="Daemon has completed initialization"
+Sep 02 10:19:16 dev.admin dockerd-current[2095]: time="2019-09-02T10:19:16.592558414+03:00" level=info msg="Docker daemon" commit="7f2769b/1.13.1" graphdriver=overlay2 version=1.13.1
+Sep 02 10:19:16 dev.admin systemd[1]: Started Docker Application Container Engine.
+Sep 02 10:19:16 dev.admin dockerd-current[2095]: time="2019-09-02T10:19:16.596530597+03:00" level=info msg="API listen on /var/run/docker.sock"
 Hint: Some lines were ellipsized, use -l to show in full.
+
+
+CT-83df5203 /# docker run -it hello-world
+
+Hello from Docker!
+This message shows that your installation appears to be working correctly.
+
+To generate this message, Docker took the following steps:
+ 1. The Docker client contacted the Docker daemon.
+ 2. The Docker daemon pulled the "hello-world" image from the Docker Hub.
+    (amd64)
+ 3. The Docker daemon created a new container from that image which runs the
+    executable that produces the output you are currently reading.
+ 4. The Docker daemon streamed that output to the Docker client, which sent it
+    to your terminal.
+
+To try something more ambitious, you can run an Ubuntu container with:
+ $ docker run -it ubuntu bash
+
+Share images, automate workflows, and more with a free Docker ID:
+ https://hub.docker.com/
+
+For more examples and ideas, visit:
+ https://docs.docker.com/get-started/
+
