@@ -19,24 +19,24 @@
 Dockerfile и default.conf
 
   Подключаемся по ssh, меняем пользователя на root и меняем директорию
-    su
-    cd /vagrant/
+    - su
+    - cd /vagrant/
 
   Запускаем сервис docker
-    systemctl start docker
+    - systemctl start docker
 
   Собираем образ
-    docker build -t centos7/nginx .
+    - docker build -t centos7/nginx .
 
   Запускаем собранный образ с редиректом портов
-    docker run -d -p 80:80 -p 443:443 centos7/nginx
+    - docker run -d -p 80:80 -p 443:443 centos7/nginx
 
   Просмотрим запущенные образы
-    docker container ls
+    - docker container ls
 
   Это команда для проверки работы nginx
-    curl -a http://localhost
+    - curl -a http://localhost
 
   Команда для останоовки всех образов
-    docker stop $(docker ps -a -q)
+    - docker stop $(docker ps -a -q)
 
