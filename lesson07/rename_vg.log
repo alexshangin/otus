@@ -1,6 +1,15 @@
+#### Домашняя работа
 
-2=================================rename lvm
+2. Установить систему с LVM, после чего переименовать VG
+3. Добавить модуль в initrd
 
+
+##### 2. Установить систему с LVM, после чего переименовать VG
+
+  Для установки системы в VirtualBox был использован образ CentOS7.
+
+Проверим диски:
+```bash
 [root@centos7 ~]# lsblk
 NAME                    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
 sda                       8:0    0    8G  0 disk 
@@ -9,20 +18,26 @@ sda                       8:0    0    8G  0 disk
   ├─centos_centos7-root 253:0    0  6,2G  0 lvm  /
   └─centos_centos7-swap 253:1    0  820M  0 lvm  [SWAP]
 sr0                      11:0    1 1024M  0 rom  
-
+```
+Проверим группы lvm:
+```bash
 [root@centos7 ~]# vgs
   VG             #PV #LV #SN Attr   VSize  VFree
   centos_centos7   1   2   0 wz--n- <7,00g    0 
-
+```
+Изменим название группы lvm:
+```bash
 [root@centos7 ~]# vgrename centos_centos7 vg_otus
   Volume group "centos_centos7" successfully renamed to "vg_otus"
-
+```
+Изменяем название группы на новое, редактируя слудующие файлы:
+```bash
 [root@centos7 ~]# vi /etc/fstab 
-
 [root@centos7 ~]# vi /etc/default/grub 
-
 [root@centos7 ~]# vi /boot/grub2/grub.cfg 
-
+```
+Пересоздаем initrd:
+```bash
 [root@centos7 ~]# mkinitrd -f -v /boot/initramfs-$(uname -r).img $(uname -r)
 Executing: /usr/sbin/dracut -f -v /boot/initramfs-3.10.0-957.el7.x86_64.img 3.10.0-957.el7.x86_64
 dracut module 'modsign' will not be installed, because command 'keyctl' could not be found!
@@ -108,21 +123,71 @@ intel-06-4f-01: caveat is disabled in configuration
 *** Created microcode section ***
 *** Creating image file done ***
 *** Creating initramfs image file '/boot/initramfs-3.10.0-957.el7.x86_64.img' done ***
-
+```
+Перезагружаемся для проверки:
+```bash
+[root@centos7 ~]# shutdown -r now
+```
+Проверяем группы:
+```bash
 [root@centos7 ~]# vgs
   VG      #PV #LV #SN Attr   VSize  VFree
   vg_otus   1   2   0 wz--n- <7,00g    0 
+```
+Переименование прошло успешно.
 
-3===========================================initrd
+##### 3. Добавить модуль в initrd.
 
+Создаем директорию для модуля и переходим в неё:
+```bash
 [root@centos7 ~]# mkdir /usr/lib/dracut/modules.d/01test
-
 [root@centos7 ~]# cd /usr/lib/dracut/modules.d/01test
-
+```
+Создаем файл:
+```bash
 [root@centos7 01test]# vi module_setup.sh
 
+#------------------------------------------------
+#!/bin/bash
+ 
+check() {
+     return 0 
+} 
+depends() {
+     return 0 
+} 
+install() {
+     inst_hook cleanup 00 "${moddir}/test.sh" 
+} 
+#------------------------------------------------
+```
+Создаем файл:
+```bash
 [root@centos7 01test]# vi test.sh
 
+#------------------------------------------------
+#!/bin/bash 
+exec 0<>/dev/console 1<>/dev/console 2<>/dev/console 
+cat <<'msgend' 
+ ___________________ 
+< I'm dracut module > 
+ ------------------- 
+    \
+     \ 
+	.--. 
+       |o_o | 
+       |:_/ | 
+      //   \ \ 
+     (|     | ) 
+    /'\_   _/`\ 
+    \___)=(___/ 
+msgend 
+sleep 10 
+echo " continuing....
+#------------------------------------------------
+```
+Пересоздаем initrd:
+```bash
 [root@centos7 01test]# mkinitrd -f -v /boot/initramfs-$(uname -r).img $(uname -r)
 Executing: /usr/sbin/dracut -f -v /boot/initramfs-3.10.0-957.el7.x86_64.img 3.10.0-957.el7.x86_64
 dracut module 'modsign' will not be installed, because command 'keyctl' could not be found!
@@ -208,10 +273,17 @@ intel-06-4f-01: caveat is disabled in configuration
 *** Created microcode section ***
 *** Creating image file done ***
 *** Creating initramfs image file '/boot/initramfs-3.10.0-957.el7.x86_64.img' done ***
-
+```
+Проверим, добавился ли наш модуль:
+```bash
 [root@centos7 01test]# lsinitrd -m /boot/initramfs-$(uname -r).img | grep test
 test
-
+```
+Удаляем опции **rghb** и **quiet**:
+```bash
 [root@centos7 01test]# vi /boot/grub2/grub.cfg
-
+```
+Перезагружаемся:
+```bash
 [root@centos7 01test]# shutdown -r now
+```
