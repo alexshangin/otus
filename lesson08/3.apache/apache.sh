@@ -2,7 +2,10 @@
 
 yes | yum install -y httpd
 
-sed -i "s#.*EnvironmentFile=/etc/sysconfig/httpd.*#EnvironmentFile=/etc/sysconfig/httpd-%I#g" /usr/lib/systemd/system/httpd.service
+cp /usr/lib/systemd/system/httpd.service /usr/lib/systemd/system/httpd@.service
+sed -i "s#.*EnvironmentFile=/etc/sysconfig/httpd.*#EnvironmentFile=/etc/sysconfig/httpd-%I#g" /usr/lib/systemd/system/httpd@.service
+
+echo '[UNIT]\nWants=httpd@first.service httpd@second.service' > /etc/sysconfig/httpd.target
 
 echo 'OPTIONS=-f conf/first.conf' > /etc/sysconfig/httpd-first
 echo 'OPTIONS=-f conf/second.conf' > /etc/sysconfig/httpd-second
