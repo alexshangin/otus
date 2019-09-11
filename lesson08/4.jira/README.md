@@ -6,8 +6,8 @@
 
 #### Решение:
 
-    [jira.sh](https://github.com/alexshangin/otus/blob/master/lesson08/4.jira/jira.sh) - скрипт вагрант для загрузки jira.
-    [jira.service](https://github.com/alexshangin/otus/blob/master/lesson08/4.jira/jira.service) - unit-файл.
+[jira.sh](https://github.com/alexshangin/otus/blob/master/lesson08/4.jira/jira.sh) - скрипт вагрант для загрузки jira.
+[jira.service](https://github.com/alexshangin/otus/blob/master/lesson08/4.jira/jira.service) - unit-файл.
 
 1. Unit написан на основании анализа файлов /etc/rc.d/init.d/jira
 2. При установке программы можно использовать установку как демона. При этом будет создан /run/systemd/generator.late/jira.service, который так же будет ссылаться на /etc/rc.d/init.d/jira
