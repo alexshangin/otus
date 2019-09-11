@@ -15,4 +15,4 @@
 1. [1.watchlog/watchlog.sh](https://github.com/alexshangin/otus/blob/master/lesson08/1.watchlog/watchlog.sh) - скрипт создания сервиса для вагрант.
 2. [2.spawn/spawn.sh](https://github.com/alexshangin/otus/blob/master/lesson08/2.spawn/spawn.sh) - скрипт изменения типа сервиса для вагрант.
 3. [3.apache/apache.sh](https://github.com/alexshangin/otus/blob/master/lesson08/3.apache/apache.sh) - скрипт изменения unit-файла apache.
-4. [4.jira/jira.sh](https://github.com/alexshangin/otus/blob/master/lesson08/4.jira/jira.service) - unit-файл jira.
+4. [4.jira/jira.service](https://github.com/alexshangin/otus/blob/master/lesson08/4.jira/jira.service) - unit-файл jira.
