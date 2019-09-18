@@ -16,7 +16,8 @@
 - ansible/  - практическая работа по развертыванию nginx через playbook. после развертывания nginx слушается на [http://192.168.11.150:8080/](http://192.168.11.150:8080/)
 - [ansible/ansible.png](https://github.com/alexshangin/otus/blob/master/lesson09/ansible/ansible.png) - скринт nginx на развернутом стенде
 
-#### Запуск стенда. После **vagrant up** нужно проверить порт ssh, указанный в **ansible/staging/hosts**
+#### Запуск стенда.
+После **vagrant up** нужно проверить порт ssh, указанный в **ansible/staging/hosts**
 ```bash
 vagrant up
 ansible-playbook playbooks/nginx.yml
@@ -39,12 +40,12 @@ ansible
 - ansible_role/ - развертывание nginx с использованием ролей. после развертывания nginx слушается на [http://192.168.11.151:8080/](http://192.168.11.151:8080/)
 - [ansible_role/ansible_role.png](https://github.com/alexshangin/otus/blob/master/lesson09/ansible/ansible_role.png) - скринт nginx на развернутом стенде
 
-#### Запуск стенда. После **vagrant up** нужно проверить порт ssh, указанный в **ansible/staging/hosts**
+#### Запуск стенда.
+После **vagrant up** нужно проверить порт ssh, указанный в **ansible_role/staging/hosts**
 ```bash
 vagrant up
 ansible-playbook playbook.yml
 ```
-#### Краткое описание:
 
 ```bash
 ansible_role/
