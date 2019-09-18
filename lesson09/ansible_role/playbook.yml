@@ -1,0 +1,9 @@
+---
+- hosts: nginxrole
+  become: yes
+  vars_files:
+    - vars/nginxrole.yml
+  roles:
+  - epel
+  - nginx
+
