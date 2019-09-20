@@ -1,0 +1,32 @@
+---
+ - name: Creating users "{{ username }}" without admin access
+   user:
+     name: {{ item.username }}
+     with_items:
+       - {{ userusers }}
+     password: {{ item.upasswd | password_hash('sha512') }}
+     with_items:
+       - {{ userpasswords }}
+     shell: /bin/bash
+     createhome: yes
+     update_password: on_create
+     state: present
+     append: yes
+#   register: {{ uuser }}
+#   when:  assigned_role == "no"
+
+ - name: Creating user "{{ uadmin }}" with admin access
+   user:
+     name: "{{ item.uadmin }}"
+     with_items:
+       - "{{ useradmins }}"
+     password: "{{ item.apasswd | password_hash('sha512') }}"
+     with_items:
+       - "{{ adminpasswords }}"
+     groups: admin append=yes
+     shell: "/bin/bash"
+     createhome: yes
+     update_password: on_create
+     state: present
+#   register: {{ uadmin }}
+#   when:  assigned_role  == "yes"

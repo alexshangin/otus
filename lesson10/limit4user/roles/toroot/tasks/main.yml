@@ -1,0 +1,16 @@
+---
+  - name: root level to {{ uadmin }}
+    shell: sed -i 's/vagrant/vagrant\:{{ uadmin }}/g' /etc/pam.d/su
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    

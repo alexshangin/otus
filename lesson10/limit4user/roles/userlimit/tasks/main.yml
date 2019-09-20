@@ -1,0 +1,6 @@
+---
+  - name: Restrict time access for nonadmin
+    shell: echo '*;*;vagrant|{{ uadmin }};!SaSu0000-2400' >> /etc/security/time.conf
+
+  - name: Restrict ssh, local login and remote login access for nonadmin
+    shell: sed -i 's/pam_nologin.so/pam_nologin.so\naccount\ required\ pam_time.so/g' /etc/pam.d/

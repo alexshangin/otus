@@ -1,0 +1,18 @@
+---
+ - uuser:
+    - sema
+#    - meri
+#    - pipin
+
+ - upasswd:
+    - sema
+#    - meri
+#    - pipin
+
+ - uadmin:
+    - fedor
+
+ - apasswd:
+    - fedor
+
+# - groupadmin: admin
