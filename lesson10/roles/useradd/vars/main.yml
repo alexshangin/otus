@@ -1,0 +1,14 @@
+---
+users:
+  - username: sema
+#   - username: meri
+#   - username: pipin
+
+passwords:
+  - userpassword: sema
+
+admins:
+  - adminname: fedor
+
+adminpasswords:
+  - adminpassword: fedor

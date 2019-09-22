@@ -1,0 +1,22 @@
+---
+users:
+  - username: first
+    shell: /bin/bash
+    group: admin
+    password: first
+    createhome: yes
+    use_sudo: yes
+
+  - username: second
+    shell: /bin/bash
+    group: root
+    password: second
+    createhome: yes
+    use_sudo: yes
+
+  - username: third
+    shell: /bin/bash
+    group: users
+    password: third
+    createhome: yes
+    use_sudo: no

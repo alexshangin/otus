@@ -1,12 +1,12 @@
 ---
  - name: Creating users "{{ username }}" without admin access
    user:
-     name: {{ item.username }}
+     name: "{{ item.username }}"
      with_items:
-       - {{ userusers }}
-     password: {{ item.upasswd | password_hash('sha512') }}
+       - "{{ users }}"
+     password: "{{ item.userpassword | password_hash('sha512') }}"
      with_items:
-       - {{ userpasswords }}
+       - "{{ passwords }}"
      shell: /bin/bash
      createhome: yes
      update_password: on_create
@@ -15,12 +15,14 @@
 #   register: {{ uuser }}
 #   when:  assigned_role == "no"
 
- - name: Creating user "{{ uadmin }}" with admin access
+
+
+ - name: Creating user "{{ adminname }}" with admin access
    user:
-     name: "{{ item.uadmin }}"
+     name: "{{ item.adminname }}"
      with_items:
-       - "{{ useradmins }}"
-     password: "{{ item.apasswd | password_hash('sha512') }}"
+       - "{{ admins }}"
+     password: "{{ item.adminpassword | password_hash('sha512') }}"
      with_items:
        - "{{ adminpasswords }}"
      groups: admin append=yes
@@ -28,5 +30,6 @@
      createhome: yes
      update_password: on_create
      state: present
+     append: yes
 #   register: {{ uadmin }}
 #   when:  assigned_role  == "yes"

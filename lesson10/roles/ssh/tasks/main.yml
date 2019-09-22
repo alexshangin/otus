@@ -1,0 +1,9 @@
+---
+
+- name: Enable password ssh access
+  shell: sed -i 's/PasswordAuthentication\ no/PasswordAuthentication\ yes/g' /etc/ssh/sshd_config
+
+#  change_when: false
+#  notify: restart sshd
+# tags:
+#   - ssh-password-access
