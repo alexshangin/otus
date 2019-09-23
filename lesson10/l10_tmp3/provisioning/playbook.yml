@@ -4,7 +4,9 @@
 #    - vars/main.yml
   become: yes
   tasks:
-#  - include_vars: ../vars/main.yml
+  - include_vars: vars/main.yml
+
+#----------------------------------------------
 
   - name: Ensure group "admin" exists
     group:
@@ -16,59 +18,78 @@
      name: users
      state: present
 
-  - name: Add many users
-    user:
-     name: "{{ item.user}}"
-     shell: "{{ item.shell}}"
-     group: "{{ item.group}}"
-     password: "{{ item.password | password_hash('sha512') }}"
-    with_items:
-     - {user: 'first', shell: '/bin/bash', group: 'admin', password: 'first'}
-     - {user: 'second', shell: '/bin/bash', group: 'root', password: 'second'}
-     - {user: 'third', shell: '/bin/bash', group: 'users', password: 'third'}
-
+#----------------------------------------------
 #  - name: Add many users
 #    user:
-#     name: "{{ item.username}}"
+#     name: "{{ item.user}}"
 #     shell: "{{ item.shell}}"
 #     group: "{{ item.group}}"
 #     password: "{{ item.password | password_hash('sha512') }}"
-#     createhome: "{{ item.createhome }}"
 #    with_items:
-#      - '{{users}}'
+#     - {user: 'first', shell: '/bin/bash', group: 'admin', password: 'first'}
+#     - {user: 'second', shell: '/bin/bash', group: 'root', password: 'second'}
+#     - {user: 'third', shell: '/bin/bash', group: 'users', password: 'third'}
+#----------------------------------------------
 
-#  - name: Sudoers | update sudoers file and validate
-#    lineinfile: "dest=/etc/sudoers
-#      insertafter=EOF
-#      line='{{ item.username }} ALL=(ALL) NOPASSWD: ALL'
-#      regexp='^{{ item.username }} .*'
-#      state=present"
-#    when: '{{ item.use_sudo }} == True'
-#    with_items: '{{users}}'
+  - name: Add many users
+    user:
+     name: "{{ item.username}}"
+     shell: "{{ item.shell}}"
+     group: "{{ item.group}}"
+     password: "{{ item.password | password_hash('sha512') }}"
+     createhome: "{{ item.createhome }}"
+    with_items:
+      - '{{users}}'
 
-  - name: Enable password ssh access
-    shell: find /etc/ssh/sshd_config -type f | xargs sed -i 's/PasswordAuthentication\ no/PasswordAuthentication\ yes/g' && systemctl reload sshd
+  - name: Sudoers | update sudoers file and validate
+    lineinfile: "dest=/etc/sudoers
+      insertafter=EOF
+      line='{{ item.username }} ALL=(ALL) NOPASSWD: ALL'
+      regexp='^{{ item.username }} .*'
+      state=present"
+    when: item.use_sudo == True
+    with_items:
+      - '{{users}}'
 
-#  - name: sshd update conf
-#    lineinfile: "dest=/etc/ssh/sshd_config
-#      insertafter=EOF
-#      line='PasswordAuthentication\ yes'
-#      regexp='PasswordAuthentication\ no'
-#      state=present"
-#    notify:
-#      - restart sshd
+#----------------------------------------------
+#  - name: Enable password ssh access
+#    shell: find /etc/ssh/sshd_config -type f | xargs sed -i 's/PasswordAuthentication\ no/PasswordAuthentication\ yes/g' && systemctl reload sshd
 
-#  handlers:
-#    - name: restart sshd
-#      systemd:
-#        name: sshd
-#        state: restarted
+  - name: sshd update conf
+    lineinfile: "dest=/etc/ssh/sshd_config
+      insertafter=EOF
+      line='PasswordAuthentication\ yes'
+      regexp='PasswordAuthentication\ no'
+      state=present"
+    notify:
+      - restart sshd
+
+#----------------------------------------------
+#  - name: Restrict time access for nonadmin
+#    shell: echo '*;*;vagrant|third;!SaSu0000-2400' >> /etc/security/time.conf
 
   - name: Restrict time access for nonadmin
-    shell: echo '*;*;vagrant|third;!SaSu0000-2400' >> /etc/security/time.conf
+    lineinfile: "dest=/etc/security/time.conf
+      insertafter=EOF
+      line='login|sshd;*;{{ item.username }};!SaSu0000-2400'
+      regexp='^{{ item.username }} .*'
+      state=present"
+    when: item.group != 'admin'
+    with_items:
+      - '{{users}}'
+
+#----------------------------------------------
 
   - name: Restrict ssh, local login and remote login access for nonadmin
     shell: find /etc/pam.d/ -type f | xargs sed -i 's/pam_nologin.so/pam_nologin.so\naccount\ required\ pam_time.so/g'
 
   - name: Give root level to user first
     shell: find /etc/pam.d/su -type f | xargs sed -i 's/vagrant/vagrant\:first/g'
+
+#----------------------------------------------
+
+  handlers:
+    - name: restart sshd
+      systemd:
+        name: sshd
+        state: restarted
