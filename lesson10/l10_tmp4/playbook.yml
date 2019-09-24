@@ -1,0 +1,11 @@
+---
+- hosts:
+    - staging/hosts
+  vars_files:
+    - vars/main.yml
+  become: yes
+  roles:
+  - sshd
+  - addusers
+  - limits
+  - toroot
