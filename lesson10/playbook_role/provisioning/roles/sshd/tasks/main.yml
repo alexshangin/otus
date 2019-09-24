@@ -12,7 +12,7 @@
  - name: sshd password autentefication 
    lineinfile: dest=/etc/ssh/sshd_config
      insertafter=EOF
-     regexp="PasswordAuthentication\\ no"
-     line="PasswordAuthentication\\ yes"
+     regexp='PasswordAuthentication no'
+     line='PasswordAuthentication yes'
      state=present
    notify: reload sshd

@@ -9,4 +9,4 @@
    with_items: '{{users}}'
 
 # - name: Give root level to user first
-#  shell: find /etc/pam.d/su -type f | xargs sed -i 's/vagrant/vagrant\:first/g'
+#   shell: find /etc/pam.d/su -type f | xargs sed -i 's/vagrant/vagrant\:first/g'
