@@ -7,12 +7,17 @@
 #     state: present
 #   notify:
 #   - restart sshd
---- 
-#sshd
+---
  - name: sshd password autentefication 
    lineinfile: dest=/etc/ssh/sshd_config
-     insertafter=EOF
+     regexp='#Port 22'
+     line='Port 22'
+   notify:
+     - restart sshd
+
+ - name: sshd password autentefication 
+   lineinfile: dest=/etc/ssh/sshd_config
      regexp='PasswordAuthentication no'
      line='PasswordAuthentication yes'
-     state=present
-   notify: reload sshd
+   notify:
+     - restart sshd

@@ -60,7 +60,7 @@
       regexp='PasswordAuthentication\ no'
       state=present"
     notify:
-      - restart sshd
+      - reload sshd
 
 #----------------------------------------------
 #  - name: Restrict time access for nonadmin
