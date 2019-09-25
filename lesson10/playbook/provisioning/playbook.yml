@@ -4,8 +4,6 @@
   tasks:
   - include_vars: vars/main.yml
 
-#----------------------------------------------
-
   - name: Ensure group "admin" exists
     group:
      name: admin
@@ -15,19 +13,6 @@
     group:
      name: users
      state: present
-
-#----------------------------------------------
-#  - name: Add many users
-#    user:
-#     name: "{{ item.user}}"
-#     shell: "{{ item.shell}}"
-#     group: "{{ item.group}}"
-#     password: "{{ item.password | password_hash('sha512') }}"
-#    with_items:
-#     - {user: 'first', shell: '/bin/bash', group: 'admin', password: 'first'}
-#     - {user: 'second', shell: '/bin/bash', group: 'root', password: 'second'}
-#     - {user: 'third', shell: '/bin/bash', group: 'users', password: 'third'}
-#----------------------------------------------
 
   - name: Add many users
     user:
@@ -39,7 +24,7 @@
     with_items:
       - '{{users}}'
 
-  - name: Sudoers | update sudoers file and validate
+  - name: Update sudoers file
     lineinfile: "dest=/etc/sudoers
       insertafter=EOF
       line='{{ item.username }} ALL=(ALL) NOPASSWD: ALL'
@@ -48,10 +33,6 @@
     when: item.use_sudo == True
     with_items:
       - '{{users}}'
-
-#----------------------------------------------
-#  - name: Enable password ssh access
-#    shell: find /etc/ssh/sshd_config -type f | xargs sed -i 's/PasswordAuthentication\ no/PasswordAuthentication\ yes/g' && systemctl reload sshd
 
   - name: sshd update conf
     lineinfile: "dest=/etc/ssh/sshd_config
@@ -62,11 +43,7 @@
     notify:
       - reload sshd
 
-#----------------------------------------------
-#  - name: Restrict time access for nonadmin
-#    shell: echo '*;*;vagrant|third;!SaSu0000-2400' >> /etc/security/time.conf
-
-  - name: Restrict time access for nonadmin
+  - name: Time access for nonadmin
     lineinfile: "dest=/etc/security/time.conf
       insertafter=EOF
       line='login|sshd;*;{{ item.username }};!SaSu0000-2400'
@@ -76,15 +53,8 @@
     with_items:
       - '{{users}}'
 
-#----------------------------------------------
-
-  - name: Restrict ssh, local login and remote login access for nonadmin
+  - name: Add pam_time lib
     shell: find /etc/pam.d/ -type f | xargs sed -i 's/pam_nologin.so/pam_nologin.so\naccount\ required\ pam_time.so/g'
-
-#  - name: Give root level to "first"
-#    shell: find /etc/pam.d/su -type f | xargs sed -i 's/vagrant/vagrant\:first/g'
-
-#----------------------------------------------
 
   handlers:
     - name: reload sshd

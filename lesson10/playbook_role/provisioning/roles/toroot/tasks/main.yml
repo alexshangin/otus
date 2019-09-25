@@ -1,5 +1,5 @@
 ---
- - name: Sudoers update sudoers file and validate
+ - name: Update sudoers file
    lineinfile: dest=/etc/sudoers
      insertafter=EOF
      line='{{ item.username }} ALL=(ALL) NOPASSWD{{ ":" }} ALL'
@@ -7,6 +7,3 @@
      state=present
    when: item.use_sudo == True
    with_items: '{{users}}'
-
-# - name: Give root level to user first
-#   shell: find /etc/pam.d/su -type f | xargs sed -i 's/vagrant/vagrant\:first/g'

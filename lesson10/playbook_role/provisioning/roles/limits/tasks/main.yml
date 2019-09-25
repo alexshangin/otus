@@ -1,5 +1,5 @@
 ---
- - name: Restrict time access for nonadmin
+ - name: Time access for nonadmin
    lineinfile: dest=/etc/security/time.conf
      insertafter=EOF
      line='login|sshd;*;{{ item.username }};!SaSu0000-2400'
@@ -8,18 +8,5 @@
    when: item.group != 'admin'
    with_items: '{{users}}'
 
- - name: Restrict ssh, local login and remote login access for nonadmin
+ - name: Add pam_time lib
    shell: find /etc/pam.d/ -type f | xargs sed -i 's/pam_nologin.so/pam_nologin.so\naccount\ required\ pam_time.so/g'
-
-
-# - name: Add rule for login
-#   lineinfile: dest=/etc/pam.d/login
-#     line='pam_nologin.so\naccount\ required\ pam_time.so'
-#     regexp='pam_nologin.so'
-#     state=present
-
-# - name: Add rule for sshd
-#   lineinfile: dest=/etc/pam.d/sshd
-#     line='pam_nologin.so\naccount\ required\ pam_time.so'
-#     regexp='pam_nologin.so'
-#     state=present

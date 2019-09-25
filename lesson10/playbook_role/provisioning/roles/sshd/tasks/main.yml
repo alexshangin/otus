@@ -1,14 +1,5 @@
-# - name: Sshd update conf
-#   lineinfile:
-#     path: /etc/ssh/sshd_config
-#     insertafter: EOF
-#     regexp: 'PasswordAuthentication\ no'
-#     line: 'PasswordAuthentication\ yes'
-#     state: present
-#   notify:
-#   - restart sshd
 ---
- - name: sshd password autentefication 
+ - name: sshd port 22
    lineinfile: dest=/etc/ssh/sshd_config
      regexp='#Port 22'
      line='Port 22'
