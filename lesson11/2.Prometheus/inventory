@@ -1,0 +1,8 @@
+[prometheus]
+prometheus ansible_host=127.0.0.1 ansible_user=vagrant ansible_private_key_file=.vagrant/machines/prometheus/virtualbox/private_key
+[nodeexporter]
+nodeexporter ansible_host=127.0.0.1 ansible_user=vagrant ansible_private_key_file=.vagrant/machines/nodeexporter/virtualbox/private_key
+[alertmanager]
+alertmanager ansible_host=127.0.0.1 ansible_user=vagrant ansible_private_key_file=.vagrant/machines/alertmanager/virtualbox/private_key
+[grafana]
+grafana ansible_host=127.0.0.1 ansible_user=vagrant ansible_private_key_file=.vagrant/machines/grafana/virtualbox/private_key

@@ -1,0 +1,47 @@
+# -*- mode: ruby -*-
+# vim: set ft=ruby :
+
+MACHINES = {
+  :prometheus => {
+        :box_name => "centos/7",
+        :ip_addr => '192.168.11.113'
+  },
+  :nodeexporter => {
+        :box_name => "centos/7",
+        :ip_addr => '192.168.11.114'
+  },
+  :alertmanager => {
+        :box_name => "centos/7",
+        :ip_addr => '192.168.11.115'
+  },
+  :grafana => {
+        :box_name => "centos/7",
+        :ip_addr => '192.168.11.116'
+  },
+}
+
+Vagrant.configure("2") do |config|
+
+  MACHINES.each do |boxname, boxconfig|
+
+      config.vm.define boxname do |box|
+
+          box.vm.box = boxconfig[:box_name]
+          box.vm.host_name = boxname.to_s
+
+          box.vm.network "private_network", ip: boxconfig[:ip_addr]
+
+          box.vm.provider :virtualbox do |vb|
+            vb.customize ["modifyvm", :id, "--memory", "200"]
+          end
+
+          config.vm.provision "ansible" do |ansible|
+	      ansible.verbose = "vvv"
+	      ansible.playbook = "playbook.yml"
+	      ansible.become = "true"
+	  end
+	
+
+      end
+  end
+end
