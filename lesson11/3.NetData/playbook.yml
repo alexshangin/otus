@@ -1,0 +1,46 @@
+- hosts: all
+  vars:
+    install_path: /opt
+    workdir: /root/netdata
+    delete_workdir: False
+  tasks:
+    - block:
+        - name: yum install epel-release
+          yum: state=latest name=epel-release
+        - name: yum install required packages
+          yum: state=latest enablerepo=epel name={{ item }}
+          with_items:
+            - python
+            - MySQL-python
+            - PyYAML
+            - autoconf
+            - autoconf-archive
+            - autogen
+            - automake
+            - curl
+            - gcc
+            - git
+            - iproute
+            - libmnl-devel
+            - libuuid-devel
+            - lm_sensors
+            - make
+            - nmap-ncat
+            - nodejs
+            - pkgconfig
+            - python-psycopg2
+            - python-pymongo
+            - zlib-devel
+        - name: git clone netdata
+          git:
+            repo: https://github.com/firehol/netdata.git
+            dest: "{{ workdir }}"
+            depth: 1
+        - name: install netdata
+          shell: ./netdata-installer.sh --dont-wait --install {{ install_path }}
+          args:
+            chdir: "{{ workdir }}"
+      always:
+        - file: path="{{ workdir }}" state=absent
+          when: delete_workdir
+      when: ansible_distribution in ["RedHat", "CentOS"] and ansible_distribution_major_version == "7"
