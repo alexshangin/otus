@@ -28,6 +28,8 @@ https://github.com/MiteshSharma/PrometheusWithGrafana
 3. prometheus - СУБД
 4. prometheus_node_exporter - сервис, задача которого заключается в экспорте информации о машине в формате, понятном Prometheus’у
 
+В качестве машины для сбора метрик использовался сервер Zabbix, запущенный в первой части домашней работы. Подключение производилось с помощью плагина.
+
 ```bash
 ├── ansible.cfg
 ├── grafana.png
