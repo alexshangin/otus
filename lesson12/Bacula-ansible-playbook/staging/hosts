@@ -1,0 +1,4 @@
+[server]
+baculaserver ansible_host=127.0.0.1 ansible_private_key_file=.vagrant/machines/baculaserver/virtualbox/private_key
+[client]
+baculaclient ansible_host=127.0.0.1 ansible_private_key_file=.vagrant/machines/baculaclient/virtualbox/private_key

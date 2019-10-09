@@ -1,0 +1,12 @@
+---
+- hosts: baculaserver
+  become: yes
+  roles:
+  - bacula
+
+#- hosts: baculaclient
+#  become: yes
+#  roles:
+#  - epel
+#  - nginx
+
