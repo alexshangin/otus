@@ -32,7 +32,7 @@ RUN wget https://nginx.org/packages/$os/$osver/SRPMS/nginx-$nginxver.el$elver.ng
 RUN rpm -i /root/nginx-$nginxver.el$elver.ngx.src.rpm && \
     tar -xvf /root/latest.tar.gz -C /root && \
     yum-builddep -y /root/rpmbuild/SPECS/nginx.spec && \
-    sed -i "s#.*with-debug.*#    --with-openssl=/root/openssl-1.1.1c#g" /root/rpmbuild/SPECS/nginx.spec && \
+    sed -i "s#.*with-debug.*#    --with-openssl=/root/openssl-1.1.1d#g" /root/rpmbuild/SPECS/nginx.spec && \
     rpmbuild -bb /root/rpmbuild/SPECS/nginx.spec && \
     yum localinstall -y /root/rpmbuild/RPMS/x86_64/nginx-$nginxver.el$elver.ngx.x86_64.rpm && \
     mkdir -p /usr/share/nginx/html/repo
