@@ -1,33 +1,26 @@
 FROM alpine:3.10
 LABEL Maintainer="Alex Shangin alex.shangin.13@gmail.com"
 
-# Install packages
-RUN apk --no-cache add nginx
-
-# Configure nginx
-COPY config/default.conf /etc/nginx/default.conf
-
-# Make sure files/folders needed by the processes are accessable when they run under the nobody user
-RUN chown -R nobody.nobody /run && \
-  chown -R nobody.nobody /var/lib/nginx && \
-  chown -R nobody.nobody /var/tmp/nginx && \
-  chown -R nobody.nobody /var/log/nginx
+RUN apk --no-cache add nginx bash
 
 # Setup document root
-RUN mkdir -p /var/www/html
-
+# RUN mkdir -p /var/www/html
 # Make the document root a volume
-VOLUME /var/www/html
-
-# Switch to use a non-root user from here on
-USER nobody
-
+# VOLUME /var/www/html
 # Add application
-WORKDIR /var/www/html
-COPY --chown=nobody src/ /var/www/html/
+# WORKDIR /var/www/html
+# COPY --chown=nobody src/ /var/www/html/
 
-# Expose the port nginx is reachable on
-EXPOSE 8080
+#RUN groupadd nginx && \
+#    useradd --no-create-home nginx -g nginx
 
-# Let start nginx
+#RUN addgroup -S nginx
+#RUN adduser -S nginx -G nginx
+
+RUN rm /etc/nginx/conf.d/default.conf
+
+COPY default.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80 443
+
 CMD ["nginx", "-g", "daemon off;"]
