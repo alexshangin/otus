@@ -1,0 +1,16 @@
+version: '2'
+
+services:
+ fpm:
+  build:
+   context: ./php-fpm
+   dockerfile: Dockerfile
+  ports:
+   - 9000:9000
+ nginx:
+  build:
+   context: ./nginx
+   dockerfile: Dockerfile
+  ports:
+   - 80:80
+   - 443:443
