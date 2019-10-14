@@ -1,0 +1,63 @@
++----------+
+| Filename |
++----------+
+| /etc/    |
+| /etc/group- |
+| /etc/gshadow- |
+| /etc/group |
+| /etc/gshadow |
+| /etc/passwd- |
+| /etc/shadow- |
+| /etc/passwd |
+| /etc/shadow |
+| /etc/ld.so.cache |
+| /etc/favicon.png |
+| /etc/mailcap |
+| /etc/mime.types |
+| /etc/nanorc |
+| /etc/wgetrc |
+| /etc/profile.d/ |
+| /etc/profile.d/mc.csh |
+| /etc/profile.d/mc.sh |
+| /etc/sysconfig/ |
+| /etc/sysconfig/htcacheclean |
+| /etc/sysconfig/httpd |
+| /etc/logrotate.d/ |
+| /etc/logrotate.d/httpd |
+| /etc/mc/ |
+| /etc/mc/edit.indent.rc |
+| /etc/mc/filehighlight.ini |
+| /etc/mc/mc.ext |
+| /etc/mc/mc.keymap |
+| /etc/mc/mc.keymap.default |
+| /etc/mc/mc.keymap.emacs |
+| /etc/mc/mc.menu |
+| /etc/mc/mc.menu.sr |
+| /etc/mc/mcedit.menu |
+| /etc/mc/sfs.ini |
+| /etc/httpd/conf/ |
+| /etc/httpd/conf/magic |
+| /etc/httpd/conf/httpd.conf |
+| /etc/httpd/conf.d/README |
+| /etc/httpd/conf.d/ |
+| /etc/httpd/conf.d/autoindex.conf |
+| /etc/httpd/conf.d/userdir.conf |
+| /etc/httpd/conf.d/welcome.conf |
+| /etc/httpd/conf.modules.d/ |
+| /etc/httpd/conf.modules.d/00-base.conf |
+| /etc/httpd/conf.modules.d/00-dav.conf |
+| /etc/httpd/conf.modules.d/00-lua.conf |
+| /etc/httpd/conf.modules.d/00-mpm.conf |
+| /etc/httpd/conf.modules.d/00-proxy.conf |
+| /etc/httpd/conf.modules.d/00-systemd.conf |
+| /etc/httpd/conf.modules.d/01-cgi.conf |
+| /etc/httpd/ |
+| /etc/httpd/logs |
+| /etc/httpd/modules |
+| /etc/httpd/run |
++----------+
++-------+-----------+---------------------+------+-------+----------+----------+-----------+
+| JobId | Name      | StartTime           | Type | Level | JobFiles | JobBytes | JobStatus |
++-------+-----------+---------------------+------+-------+----------+----------+-----------+
+|    10 | etcClient | 2019-10-13 00:55:02 | B    | I     |       54 |   64,812 | T         |
++-------+-----------+---------------------+------+-------+----------+----------+-----------+
