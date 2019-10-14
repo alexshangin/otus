@@ -18,7 +18,7 @@ Director {                            # define myself
   QueryFile = "/etc/bacula/query.sql"
   WorkingDirectory = "/var/spool/bacula"
   PidDirectory = "/var/run"
-  Maximum Concurrent Jobs = 1
+  Maximum Concurrent Jobs = 20
   Password = "{{ bdirpass }}"         # Console password
   Messages = Daemon
   DirAddress = 127.0.0.1
@@ -145,7 +145,7 @@ FileSet {
   Include {
     Options {
       signature = MD5
-      compression=GZIP
+      compression = {{ compress }}
       noatime=yes
     }
     File = /etc
