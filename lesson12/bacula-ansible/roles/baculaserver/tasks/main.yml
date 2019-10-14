@@ -20,17 +20,17 @@
     - name: Create Bacula MySQL table
       command: /usr/libexec/bacula/make_bacula_tables mysql -u bacula --password={{ dbpassword }}
 
-    - name: bacula dir config
+    - name: Add bacula dir config
       template:
         src: ../templates/bacula-dir.conf.j2
         dest: /etc/bacula/bacula-dir.conf
 
-    - name: bacula storage config
+    - name: Add bacula storage config
       template:
         src: ../templates/bacula-sd.conf.j2
         dest: /etc/bacula/bacula-sd.conf
 
-    - name: bacula console config
+    - name: Add bacula console config
       template:
         src: ../templates/bconsole.conf.j2
         dest: /etc/bacula/bconsole.conf

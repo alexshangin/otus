@@ -13,4 +13,4 @@
   conf_name:
     - bacula-dir
     - bacula-sd
-    - bconsole
+    
