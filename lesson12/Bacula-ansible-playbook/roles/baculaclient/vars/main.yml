@@ -1,7 +1,0 @@
----
-  dbname: bacula
-  dbuser: bacula
-  dbpassword: dbpass
-  ipaddress: 192.168.11.122
-  conf_name:
-    - bacula-fd

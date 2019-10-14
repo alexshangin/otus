@@ -5,7 +5,7 @@
 #   file or directory names in the Include directive of the
 #   FileSet resource.
 #
-#  For Bacula release 5.0.0 (26 January 2010) -- redhat 
+#  For Bacula release 5.2.13 (19 February 2013) -- redhat (Core)
 #
 #  You might also want to change the default email address
 #   from root to your address.  See the "mail" and "operator"
@@ -15,19 +15,20 @@
 Director {                            # define myself
   Name = bacula-dir
   DIRport = 9101                # where we listen for UA connections
-  QueryFile = "/usr/libexec/bacula/query.sql"
+  QueryFile = "/etc/bacula/query.sql"
   WorkingDirectory = "/var/spool/bacula"
   PidDirectory = "/var/run"
   Maximum Concurrent Jobs = 1
-  Password = "bacula"         # Console password
+  Password = "{{ bdirpass }}"         # Console password
   Messages = Daemon
+  DirAddress = 127.0.0.1
 }
 
 JobDefs {
   Name = "DefaultJob"
   Type = Backup
   Level = Incremental
-  Client = bacula-fd
+  Client = bacula-fd 
   FileSet = "Full Set"
   Schedule = "WeeklyCycle"
   Storage = File
@@ -37,6 +38,16 @@ JobDefs {
   Write Bootstrap = "/var/spool/bacula/%c.bsr"
 }
 
+JobDefs {
+  Name = "etcJob"
+  Type = Backup
+  FileSet = "etc"
+  Schedule = "myCycle"
+  Storage = File
+  Messages = Standard
+  Pool = File
+  Priority = 10
+}
 
 #
 # Define the main nightly save backup job
@@ -44,6 +55,13 @@ JobDefs {
 Job {
   Name = "BackupClient1"
   JobDefs = "DefaultJob"
+}
+
+Job {
+  Name = "etcClient"
+  JobDefs = "etcJob"
+  Client = client-fd
+  Write Bootstrap = "/var/spool/bacula/%c1.bsr"
 }
 
 #Job {
@@ -91,6 +109,7 @@ FileSet {
   Include {
     Options {
       signature = MD5
+      Compression = {{ compress }}
     }
 #    
 #  Put your list of files here, preceded by 'File =', one per line
@@ -107,10 +126,8 @@ FileSet {
 #    disk storage during initial testing.
 #
     File = /usr/sbin
+    File = /home
   }
-
-#
-# If you backup the root directory, the following two excluded
 #   files can be useful
 #
   Exclude {
@@ -121,6 +138,34 @@ FileSet {
     File = /.journal
     File = /.fsck
   }
+}
+
+FileSet {
+  Name = "etc"
+  Include {
+    Options {
+      signature = MD5
+      compression=GZIP
+      noatime=yes
+    }
+    File = /etc
+  }
+  Exclude {
+  }
+}
+
+
+Schedule {
+Name = "myCycle"
+Run = Full daily at 20:00
+Run = Differential hourly at 0:01
+Run = Differential hourly at 0:31
+Run = Incremental hourly at 0:05
+Run = Incremental hourly at 0:15
+Run = Incremental hourly at 0:25
+Run = Incremental hourly at 0:35
+Run = Incremental hourly at 0:45
+Run = Incremental hourly at 0:55
 }
 
 #
@@ -154,14 +199,26 @@ FileSet {
 # Client (File Services) to backup
 Client {
   Name = bacula-fd
-  Address = client.example.com
+  Address = {{ ipserver }}
   FDPort = 9102
   Catalog = MyCatalog
-  Password = "bacula"          # password for FileDaemon
+  Password = "{{ fdpass }}"          # password for FileDaemon = bdirpass
   File Retention = 30 days            # 30 days
   Job Retention = 6 months            # six months
   AutoPrune = yes                     # Prune expired Jobs/Files
 }
+
+Client {
+  Name = client-fd
+  Address = {{ ipclient }}
+  FDPort = 9102
+  Catalog = MyCatalog
+  Password = "{{ fdpass }}"          # password for FileDaemon = bdirpass
+  File Retention = 30 days            # 30 days
+  Job Retention = 6 months            # six months
+  AutoPrune = yes                     # Prune expired Jobs/Files
+}
+
 
 #
 # Second Client (File Services) to backup
@@ -169,7 +226,7 @@ Client {
 #
 #Client {
 #  Name = bacula2-fd                
-#  Address = client2.example.com
+#  Address = localhost2
 #  FDPort = 9102
 #  Catalog = MyCatalog
 #  Password = "@@FD_PASSWORD@@2"         # password for FileDaemon 2
@@ -183,9 +240,9 @@ Client {
 Storage {
   Name = File
 # Do not use "localhost" here    
-  Address = storage.example.com                # N.B. Use a fully qualified name here
+  Address = {{ ipserver }}                # N.B. Use a fully qualified name here
   SDPort = 9103
-  Password = "bacula"
+  Password = "{{ storpass }}"
   Device = FileStorage
   Media Type = File
 }
@@ -196,7 +253,7 @@ Storage {
 #Storage {
 #  Name = DDS-4    
 #  Do not use "localhost" here
-#  Address = storage.example.com                # N.B. Use a fully qualified name here
+#  Address = localhost                # N.B. Use a fully qualified name here
 #  SDPort = 9103
 #  Password = "@@SD_PASSWORD@@"          # password for Storage daemon
 #  Device = DDS-4                      # must be same as Device in Storage daemon
@@ -208,7 +265,7 @@ Storage {
 #Storage {
 #  Name = "8mmDrive"
 #  Do not use "localhost" here
-#  Address = storage.example.com                # N.B. Use a fully qualified name here
+#  Address = localhost                # N.B. Use a fully qualified name here
 #  SDPort = 9103
 #  Password = "@@SD_PASSWORD@@"
 #  Device = "Exabyte 8mm"
@@ -219,7 +276,7 @@ Storage {
 #Storage {
 #  Name = "DVD"
 #  Do not use "localhost" here
-#  Address = storage.example.com                # N.B. Use a fully qualified name here
+#  Address = localhost                # N.B. Use a fully qualified name here
 #  SDPort = 9103
 #  Password = "@@SD_PASSWORD@@"
 #  Device = "DVD Writer"
@@ -231,8 +288,8 @@ Storage {
 Catalog {
   Name = MyCatalog
 # Uncomment the following line if you want the dbi driver
-# dbdriver = "dbi:sqlite3"; dbaddress = 127.0.0.1; dbport =  
-  dbname = "bacula"; dbuser = "bacula"; dbpassword = "dbpass"
+# dbdriver = "dbi:postgresql"; dbaddress = 127.0.0.1; dbport =  
+  dbname = "{{ dbname }}"; dbuser = "{{ dbuser }}"; dbpassword = "{{ dbpassword }}"
 }
 
 # Reasonable message delivery -- send most everything to email address
@@ -261,7 +318,7 @@ Messages {
 #          time to time as it will grow indefinitely. However, it will
 #          also keep all your messages if they scroll off the console.
 #
-  append = "/var/spool/bacula/log" = all, !skipped
+  append = "/var/log/bacula/bacula.log" = all, !skipped
   catalog = all
 }
 
@@ -273,7 +330,7 @@ Messages {
   mailcommand = "/usr/sbin/bsmtp -h localhost -f \"\(Bacula\) \<%r\>\" -s \"Bacula daemon message\" %r"
   mail = root@localhost = all, !skipped            
   console = all, !skipped, !saved
-  append = "/var/log/bacula.log" = all, !skipped
+  append = "/var/log/bacula/bacula.log" = all, !skipped
 }
 
 # Default pool definition
@@ -282,7 +339,7 @@ Pool {
   Pool Type = Backup
   Recycle = yes                       # Bacula can automatically recycle Volumes
   AutoPrune = yes                     # Prune expired volumes
-  Volume Retention = 365 days         # one year
+  Volume Retention = {{ volretent }}
 }
 
 # File Pool definition
@@ -291,9 +348,11 @@ Pool {
   Pool Type = Backup
   Recycle = yes                       # Bacula can automatically recycle Volumes
   AutoPrune = yes                     # Prune expired volumes
-  Volume Retention = 365 days         # one year
-  Maximum Volume Bytes = 50G          # Limit Volume size to something reasonable
+  Volume Retention = {{ volretent }}
+  Maximum Volume Bytes = 10G          # Limit Volume size to something reasonable
   Maximum Volumes = 100               # Limit number of Volumes in Pool
+  Maximum Volume Jobs = 1
+  Label Format = {{ labelformat }}
 }
 
 
@@ -306,8 +365,8 @@ Pool {
 #
 # Restricted console used by tray-monitor to get the status of the director
 #
-Console {
-  Name = bacula-mon
-  Password = "bacula"
-  CommandACL = status, .status
-}
+#Console {
+#  Name = bacula-mon
+#  Password = "@@MON_DIR_PASSWORD@@"
+#  CommandACL = status, .status
+#}

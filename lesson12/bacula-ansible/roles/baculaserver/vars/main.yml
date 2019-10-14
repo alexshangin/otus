@@ -1,0 +1,16 @@
+---
+  bdirpass: 12345
+  compress: GZIP
+  fdpass: 12345
+  ipserver: 192.168.11.121
+  ipclient: 192.168.11.122
+  storpass: 12345
+  labelformat: Vol-
+  volretent: 180 days
+  dbname: bacula
+  dbuser: bacula
+  dbpassword: 12345
+  conf_name:
+    - bacula-dir
+    - bacula-sd
+    - bconsole

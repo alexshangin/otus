@@ -1,16 +1,12 @@
 ---
-
-- hosts: client
-  sudo: true
+- hosts: baculaserver
+  become: yes
   roles:
-     - client
-  vars_files:
-    - vars.yml    
+  - baculaserver
 
-- hosts: server
-  sudo: true
+- hosts: baculaclient
+  become: yes
   roles:
-     - server
-  vars_files:
-    - vars.yml    
-
+  - epel
+  - baculaclient
+  - nginx

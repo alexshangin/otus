@@ -1,7 +1,7 @@
 #
 # Default Bacula Storage Daemon Configuration file
 #
-#  For Bacula release 5.0.0 (26 January 2010) -- redhat 
+#  For Bacula release 5.2.13 (19 February 2013) -- redhat (Core)
 #
 # You may need to change the name of your tape drive
 #   on the "Archive Device" directive in the Device
@@ -23,18 +23,18 @@ Storage {                             # definition of myself
 #
 Director {
   Name = bacula-dir
-  Password = "@@SD_PASSWORD@@"
+  Password = "{{ bdirpass }}"
 }
 
 #
 # Restricted Director, used by tray-monitor to get the
 #   status of the storage daemon
 #
-Director {
-  Name = bacula-mon
-  Password = "@@MON_SD_PASSWORD@@"
-  Monitor = yes
-}
+#Director {
+#  Name = bacula-mon
+#  Password = "@@MON_SD_PASSWORD@@"
+#  Monitor = yes
+#}
 
 #
 # Note, for a list of additional Device templates please
