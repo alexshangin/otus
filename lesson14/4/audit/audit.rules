@@ -1,0 +1,8 @@
+# настраиваем правила аудита на сервере SRVLOG
+
+-D
+-b 1024
+-w /etc/audit/auditd.conf -p wa -k auditd
+-w /etc/audit/audit.rules -p wa -k auditd
+-w /etc/libaudit.conf -p wa -k auditd
+-w /etc/audit/rules.d/ -p xwa -k auditd
