@@ -20,7 +20,7 @@
 #
 # Use a descriptive name for the node:
 #
-node.name: log2
+node.name: elk
 #
 # Add custom attributes to the node:
 #
@@ -52,7 +52,7 @@ path.logs: /var/log/elasticsearch
 #
 # Set the bind address to a specific IP (IPv4 or IPv6):
 #
-network.host: 192.168.255.5
+network.host: 192.168.11.145
 #
 # Set a custom port for HTTP:
 #

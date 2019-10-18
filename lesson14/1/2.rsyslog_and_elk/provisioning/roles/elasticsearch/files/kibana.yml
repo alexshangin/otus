@@ -1,6 +1,6 @@
-elasticsearch.url: "http://192.168.255.5:9200"
-server.host: "192.168.0.254"
-server.name: "log2"
+elasticsearch.url: "http://192.168.11.145:9200"
+server.host: "192.168.11.145"
+server.name: "elk"
 # Kibana is served by a back end server. This setting specifies the port to use.
 #server.port: 5601
 
@@ -25,7 +25,7 @@ server.name: "log2"
 #server.maxPayloadBytes: 1048576
 
 # The Kibana server's name.  This is used for display purposes.
-# server.name: "log2"
+# server.name: "elk"
 
 # The URL of the Elasticsearch instance to use for all your queries.
 #elasticsearch.url: "http://localhost:9200"

@@ -1,6 +1,4 @@
 ---
- - name: generate selinux rule for auditd
-   shell: checkmodule -M -m -o /vagrant/provisioning/roles/rsyslog-client/files/rsyslog.mod  /vagrant/provisioning/roles/rsyslog-client/files/rsyslog.te && semodule_package -o /vagrant/provisioning/roles/rsyslog-client/files/rsyslog.pp -m /vagrant/provisioning/roles/rsyslog-client/files/rsyslog.mod && semodule -i /vagrant/provisioning/roles/rsyslog-client/files/rsyslog.pp
  - name: copy otus.conf
    copy: src=otus.conf dest=/etc/rsyslog.d/otus.conf
  - name: copy rsyslog.repo
