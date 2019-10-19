@@ -11,6 +11,7 @@ LABEL Maintainer="Alex Shangin alex.shangin.13@gmail.com"
 RUN apk update && \
     apk add --no-cache \
     # add my modules
+    bash \
     php7 \
     php7-json \
     php7-openssl \
@@ -32,9 +33,10 @@ RUN apk update && \
     sed -i "s|;*cgi.fix_pathinfo=.*|cgi.fix_pathinfo= 0|i" /etc/php7/php.ini
 
 RUN mkdir -p /var/www
-WORKDIR /var/www
-VOLUME /var/www
+#WORKDIR /var/www
+#VOLUME /var/www
 COPY src/index.php /var/www/index.php
+COPY src/index.html /var/www/index.html
 
 EXPOSE 9000
 
