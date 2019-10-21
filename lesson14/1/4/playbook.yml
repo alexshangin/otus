@@ -1,0 +1,18 @@
+---
+- hosts: elk
+  become: yes
+  roles:
+   - elasticsearch
+
+- hosts: log
+  become: yes
+  roles:
+   - rsyslog-server
+
+- hosts: web
+  become: yes
+  roles:
+   - epel
+   - nginx
+   - rsyslog-client
+   - audit-web
