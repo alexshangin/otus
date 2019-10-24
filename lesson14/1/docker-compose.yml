@@ -1,0 +1,36 @@
+version: '3.7'
+services:
+servicename:
+image: image_name
+ports:
+- "123:123"
+networks:
+- net_name
+servicename2:
+image: image_name
+ports:
+- "456:456"
+networks:
+-
+networks:
+net_name
+
+
+nginx:
+ image: my-login/repo:nginx
+ ports:
+  - 80:80
+ volumes:
+  - ./logs:/etc/logs/nginx
+ volumes_from:
+  - fpm:rw
+ environment:
+  - NGINX_HOST=localhost
+  - NGINX_PORT=80
+ command: nginx -g "daemon off;" # Можно было указать в докер-фале, но можно и здесь)
+ links:
+  - fpm
+fpm:
+ image: my-login/repo:php7-fpm
+ volumes:
+  - ./php-code:/var/www:rw
