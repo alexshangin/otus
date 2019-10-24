@@ -1,17 +1,11 @@
-Подключимся для проверки к FreeIPA - WebUI, создадим пользователя и запросим его group и user ID:
+### Домашнее задание
+#### LDAP
 
-![check_of](https://github.com/kyourselfer/OTUS_LinuxAdmin201804/blob/master/lesson18_ldap_freeipa/ldap_auth.gif)
-
-Для подключения  `sudo ssh -N -L 443:127.0.0.1:443 vagrant@127.0.0.1 -p 2203` (в hosts `127.0.0.1	localhost ipaserver.otus.local`)
-
-
-Домашнее задание
-LDAP
 1. Установить FreeIPA
 2. Написать playbook для конфигурации клиента
 3. *Настроить авторизацию по ssh-ключам
 
-Домашняя работа
+### Домашняя работа
 
 Написана роль для:
 1. Развертывания сервера
