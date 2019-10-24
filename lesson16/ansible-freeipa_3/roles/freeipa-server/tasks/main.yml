@@ -13,10 +13,10 @@
     - ipa-server
     - ipa-server-dns
 
- - name: Modification /etc/hosts
-   copy:
-     src: hosts
-     dest: /etc/
+ - name: create /etc/hosts from template
+   template:
+     src: hosts.j2
+     dest: /etc/hosts
 
  - name: dbus service restart
    systemd:
@@ -24,7 +24,7 @@
      state: restarted
      enabled: yes
 
- - name: IPA-Server install
+ - name: ipa-server initial
    ignore_errors: True
    register: result
    shell: ipa-server-install -U --setup-dns --mkhomedir --hostname={{ server }} --domain={{ domain }} --realm={{ realm }} --ds-password={{ dbpassword }} --admin-password={{ password }} --setup-dns --no-forwarders --no-reverse
