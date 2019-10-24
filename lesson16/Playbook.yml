@@ -1,0 +1,18 @@
+---
+- hosts: ipaserver
+  become: yes
+#  tasks:
+#  - name: set ipaserver hostname
+#    hostname: name=ipaserver.otus.lan
+  roles:
+   - freeipa-server
+   - ipa-user-add
+     
+- hosts: ipaclient
+  become: yes
+#  tasks:
+#  - name: set ipaclient hostname
+#    hostname: name=ipaclient.otus.lan
+  roles:
+   - freeipa-client
+
