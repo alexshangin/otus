@@ -1,0 +1,11 @@
+---
+- name: Playbook to handle users
+  hosts: ipaserver
+  become: true
+
+  tasks:
+  - name: Undelete preserved user pinky
+    ipauser:
+      ipaadmin_password: MyPassword123
+      name: pinky
+      state: undeleted
