@@ -115,8 +115,8 @@ filter
 
 Создаем индекс для логов nginx в Kibana:
 
-![1](https://github.com/alexshangin/otus/tree/master/lesson14/screen/create_index_1.png)
-![2](https://github.com/alexshangin/otus/tree/master/lesson14/screen/create_index_2.png)
+![1](https://github.com/alexshangin/otus/blob/master/lesson14/screen/create_index_1.png)
+![2](https://github.com/alexshangin/otus/blob/master/lesson14/screen/create_index_2.png)
 
 Curl на внешний и внутренний адреса elastic:
 ![3][https://github.com/alexshangin/otus/tree/master/lesson14/screen/curl_elastic.png]
