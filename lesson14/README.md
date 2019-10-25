@@ -112,22 +112,21 @@ filter
 ```
 
 Создаем индекс для логов nginx в Kibana:
-
-![1](https://github.com/alexshangin/otus/blob/master/lesson14/screen/create_index_1.png)
-![2](https://github.com/alexshangin/otus/blob/master/lesson14/screen/create_index_2.png)
+![create_index_1.png](https://github.com/alexshangin/otus/blob/master/lesson14/screen/create_index_1.png)
+![create_index_2.png](https://github.com/alexshangin/otus/blob/master/lesson14/screen/create_index_2.png)
 
 Curl на внешний и внутренний адреса elastic:
-![3][https://github.com/alexshangin/otus/blob/master/lesson14/screen/curl_elastic.png]
-![4][https://github.com/alexshangin/otus/blob/master/lesson14/screen/curl_elastic_2.png]
+![curl_elastic.png](https://github.com/alexshangin/otus/blob/master/lesson14/screen/curl_elastic.png)
+![curl_elastic_2.png](https://github.com/alexshangin/otus/blob/master/lesson14/screen/curl_elastic_2.png)
 
 Netstat c сервера:
-![5][https://github.com/alexshangin/otus/blob/master/lesson14/screen/elastic_9200.png]
-![6][https://github.com/alexshangin/otus/blob/master/lesson14/screen/kibana_5601.png]
-![7][https://github.com/alexshangin/otus/blob/master/lesson14/screen/rsyslog_9600.png]
+![elastic_9200.png](https://github.com/alexshangin/otus/blob/master/lesson14/screen/elastic_9200.png)
+![kibana_5601.png](https://github.com/alexshangin/otus/blob/master/lesson14/screen/kibana_5601.png)
+![rsyslog_9600.png](https://github.com/alexshangin/otus/blob/master/lesson14/screen/rsyslog_9600.png)
 
 Kibana:
-![8][https://github.com/alexshangin/otus/blob/master/lesson14/screen/index_nginx.png]
-![9][https://github.com/alexshangin/otus/blob/master/lesson14/screen/nginx_logs.png]
+![index_nginx.png](https://github.com/alexshangin/otus/blob/master/lesson14/screen/index_nginx.png)
+![nginx_logs.png](https://github.com/alexshangin/otus/blob/master/lesson14/screen/nginx_logs.png)
 
 Nginx audit logs:
-![10][https://github.com/alexshangin/otus/blob/master/lesson14/screen/nginx_audit.png]
+![nginx_audit.png](https://github.com/alexshangin/otus/blob/master/lesson14/screen/nginx_audit.png)
