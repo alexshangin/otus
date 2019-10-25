@@ -1,0 +1,13 @@
+---
+ - name: copy otus.conf
+   copy: src=otus.conf dest=/etc/rsyslog.d/otus.conf
+ - name: copy rsyslog.repo
+   copy: src=rsyslog.repo dest=/etc/yum.repos.d/rsyslog.repo 
+ - name: update rsyslog
+   yum: name={{ item }} state=latest 
+   with_items:
+    - rsyslog
+ - name: copy rsyslog.conf
+   copy: src=rsyslog.conf dest=/etc/rsyslog.conf 
+ - name: Restart rsyslog
+   service: name=rsyslog state=restarted

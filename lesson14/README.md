@@ -23,44 +23,35 @@
 ### Домашнее задание
 #### Настраиваем центральный сервер для сбора логов
 
-  Настраиваем аудит, следящий за изменением конфигов nginx  
+  Сервером логов был выбран rsyslog. Для автоматического развертыания систем по основному заданию и заданию со * написаны роли.
 
+Настраиваем аудит, следящий за изменением конфигов nginx:
 ```bash
 cat /etc/audit/rules.d/audit.rules
 ## nginx configurations
 -w /etc/nginx/ -p wa -k nginx
 ```
+
+Все критичные логи с web должны собираться и локально и удаленно. Добавляем свое правило в otus.conf:
 ```bash
-
-```
-
-- все критичные логи с web должны собираться и локально и удаленно  
-
-```bash
-
 if $syslogseverity-text == "crit" then {
         action(type="omfwd"
-                Target="192.168.1.1"
+                Target="192.168.11.143"
                 Port="514"
                 Protocol="udp")
 		action(type="omfile"
                 File="/var/log/crit.log")
 }
-
-
-
-
 ```
-- все логи с nginx должны уходить на удаленный сервер (локально только критичные)  
 
-В конфиг nginx.
+Все логи с nginx должны уходить на удаленный сервер (локально только критичные). Изменяем nginx.conf:
 ```bash
-access_log syslog:server=192.168.1.1,facility=local7,tag=nginx_acess,severity=info;
-error_log syslog:server=192.168.1.1,facility=local7,tag=nginx_error,severity=info;
+access_log syslog:server=192.168.11.143,facility=local7,tag=nginx_acess,severity=info;
+error_log syslog:server=192.168.11.143,facility=local7,tag=nginx_error,severity=info;
 error_log /var/log/nginx/error.log crit;
 ```
-- логи аудита уходят ТОЛЬКО на удаленную систему  
 
+Логи аудита должны также уходить на удаленную систему:
 ```bash
 # в syslog.conf
 args = LOG_INFO LOG_LOCAL6
@@ -68,55 +59,77 @@ args = LOG_INFO LOG_LOCAL6
 # в rsyslog.conf
 *.info;mail.none;authpriv.none;cron.none;local6.none                /var/log/messages
 
+# в otus.conf
 if $programname == "audispd" then {
         action(type="omfwd"
-                Target="192.168.1.1"
+                Target="192.168.11.143"
                 Port="514"
                 Protocol="udp")
-}
-
-```
-
-2 **развернуть еще машину elk**  
-```bash
->curl 192.168.255.5:9200
-{
-  "name" : "log2",
-  "cluster_name" : "elasticsearch",
-  "cluster_uuid" : "hT-nGL_uT1uCNKyFbc_CnA",
-  "version" : {
-    "number" : "6.3.2",
-    "build_flavor" : "default",
-    "build_type" : "rpm",
-    "build_hash" : "053779d",
-    "build_date" : "2018-07-20T05:20:23.451332Z",
-    "build_snapshot" : false,
-    "lucene_version" : "7.3.1",
-    "minimum_wire_compatibility_version" : "5.6.0",
-    "minimum_index_compatibility_version" : "5.0.0"
-  },
-  "tagline" : "You Know, for Search"
+		action(type="omfile"
+                File="/var/log/audit/audit.log")
 }
 ```
-![kibana](https://i.imgur.com/KKdloke.png)
 
-- и таким образом настроить 2 центральных лог системы elk И какую либо еще  
-
-В первой задаче создан один лог-сервер (rsyslog). Во второй задаче создан elk-сервер. Таким образом всего 2 лог-сервера.
-
-- в elk должны уходить только логи нжинкса  
-
+Развернуть еще машину elk.
+В elk должны уходить только логи nginx:
 ```bash
+# в otus.conf
 template(name="nginxAccessTemplate" type="string" string="%msg%\n")
 
 if $programname == "nginx_access" or $programname == "nginx_error" then {
         action(type="omfwd"
-                        Target="192.168.255.5"
+                        Target="192.168.11.145"
                         Port="9600"
                         Protocol="udp"
                 template="nginxAccessTemplate")
 }
 ```
-- во вторую систему все остальное  
 
-Настройки из пункта 1.  
+Добавим правила для logstash:
+```bash
+# input.conf
+input
+{
+ syslog
+ {
+ type => syslog
+ port => 9600
+ codec => json
+ }
+}
+# output.conf
+output
+{
+ elasticsearch { hosts => ["127.0.0.1:9200"] index => "nginx"}
+}
+# filter.conf
+filter
+{
+ json
+ {
+ source => "message"
+ remove_field => ["priority","severity","facility"]
+ }
+}
+```
+
+Создаем индекс для логов nginx в Kibana:
+![https://github.com/alexshangin/otus/tree/master/lesson14/screen/create_index_1.png]
+![https://github.com/alexshangin/otus/tree/master/lesson14/screen/create_index_2.png]
+
+Curl на внешний и внутренний адреса elastic:
+![https://github.com/alexshangin/otus/tree/master/lesson14/screen/curl_elastic.png]
+![https://github.com/alexshangin/otus/tree/master/lesson14/screen/curl_elastic_2.png]
+
+Netstat c сервера:
+![https://github.com/alexshangin/otus/tree/master/lesson14/screen/elastic_9200.png]
+![https://github.com/alexshangin/otus/tree/master/lesson14/screen/kibana_5601.png]
+![https://github.com/alexshangin/otus/tree/master/lesson14/screen/rsyslog_9600.png]
+
+Kibana:
+![https://github.com/alexshangin/otus/tree/master/lesson14/screen/index_nginx.png]
+![https://github.com/alexshangin/otus/tree/master/lesson14/screen/nginx_logs.png]
+
+Nginx audit logs:
+![https://github.com/alexshangin/otus/tree/master/lesson14/screen/nginx_audit.png]
+

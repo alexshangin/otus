@@ -1,0 +1,13 @@
+---
+ - name: install nginx
+   yum: name={{ item }} state=latest 
+   with_items:
+    - nginx
+
+ - name: copy nginx.conf
+   copy: 
+    src=nginx.conf
+    dest=/etc/nginx/nginx.conf
+
+ - name: restart nginx
+   service: name=nginx state=restarted enabled=yes
