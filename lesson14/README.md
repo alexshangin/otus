@@ -114,22 +114,22 @@ filter
 ```
 
 Создаем индекс для логов nginx в Kibana:
-![https://github.com/alexshangin/otus/tree/master/lesson14/screen/create_index_1.png]
-![https://github.com/alexshangin/otus/tree/master/lesson14/screen/create_index_2.png]
+![1][https://github.com/alexshangin/otus/tree/master/lesson14/screen/create_index_1.png]
+![2][https://github.com/alexshangin/otus/tree/master/lesson14/screen/create_index_2.png]
 
 Curl на внешний и внутренний адреса elastic:
-![https://github.com/alexshangin/otus/tree/master/lesson14/screen/curl_elastic.png]
-![https://github.com/alexshangin/otus/tree/master/lesson14/screen/curl_elastic_2.png]
+![3][https://github.com/alexshangin/otus/tree/master/lesson14/screen/curl_elastic.png]
+![4][https://github.com/alexshangin/otus/tree/master/lesson14/screen/curl_elastic_2.png]
 
 Netstat c сервера:
-![https://github.com/alexshangin/otus/tree/master/lesson14/screen/elastic_9200.png]
-![https://github.com/alexshangin/otus/tree/master/lesson14/screen/kibana_5601.png]
-![https://github.com/alexshangin/otus/tree/master/lesson14/screen/rsyslog_9600.png]
+![5][https://github.com/alexshangin/otus/tree/master/lesson14/screen/elastic_9200.png]
+![6][https://github.com/alexshangin/otus/tree/master/lesson14/screen/kibana_5601.png]
+![7][https://github.com/alexshangin/otus/tree/master/lesson14/screen/rsyslog_9600.png]
 
 Kibana:
-![https://github.com/alexshangin/otus/tree/master/lesson14/screen/index_nginx.png]
-![https://github.com/alexshangin/otus/tree/master/lesson14/screen/nginx_logs.png]
+![8][https://github.com/alexshangin/otus/tree/master/lesson14/screen/index_nginx.png]
+![9][https://github.com/alexshangin/otus/tree/master/lesson14/screen/nginx_logs.png]
 
 Nginx audit logs:
-![https://github.com/alexshangin/otus/tree/master/lesson14/screen/nginx_audit.png]
+![10][https://github.com/alexshangin/otus/tree/master/lesson14/screen/nginx_audit.png]
 

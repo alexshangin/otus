@@ -1,6 +1,0 @@
-[logs]
-log ansible_host=127.0.0.1 ansible_private_key_file=.vagrant/machines/log/virtualbox/private_key
-[webs]
-web ansible_host=127.0.0.1 ansible_private_key_file=.vagrant/machines/web/virtualbox/private_key
-[elks]
-elk ansible_host=127.0.0.1 ansible_private_key_file=.vagrant/machines/elk/virtualbox/private_key

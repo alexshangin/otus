@@ -1,6 +1,0 @@
----
- - name: install epel-release repository
-   yum: name={{ item }} state=latest
-   with_items:
-    - epel-release
-
