@@ -19,8 +19,6 @@
 во вторую систему все остальное
 
 ### Домашняя работа
-
-### Домашнее задание
 #### Настраиваем центральный сервер для сбора логов
 
   Сервером логов был выбран rsyslog. Для автоматического развертыания систем по основному заданию и заданию со * написаны роли.
@@ -119,17 +117,17 @@ filter
 ![2](https://github.com/alexshangin/otus/blob/master/lesson14/screen/create_index_2.png)
 
 Curl на внешний и внутренний адреса elastic:
-![3][https://github.com/alexshangin/otus/tree/master/lesson14/screen/curl_elastic.png]
-![4][https://github.com/alexshangin/otus/tree/master/lesson14/screen/curl_elastic_2.png]
+![3][https://github.com/alexshangin/otus/blob/master/lesson14/screen/curl_elastic.png]
+![4][https://github.com/alexshangin/otus/blob/master/lesson14/screen/curl_elastic_2.png]
 
 Netstat c сервера:
-![5][https://github.com/alexshangin/otus/tree/master/lesson14/screen/elastic_9200.png]
-![6][https://github.com/alexshangin/otus/tree/master/lesson14/screen/kibana_5601.png]
-![7][https://github.com/alexshangin/otus/tree/master/lesson14/screen/rsyslog_9600.png]
+![5][https://github.com/alexshangin/otus/blob/master/lesson14/screen/elastic_9200.png]
+![6][https://github.com/alexshangin/otus/blob/master/lesson14/screen/kibana_5601.png]
+![7][https://github.com/alexshangin/otus/blob/master/lesson14/screen/rsyslog_9600.png]
 
 Kibana:
-![8][https://github.com/alexshangin/otus/tree/master/lesson14/screen/index_nginx.png]
-![9][https://github.com/alexshangin/otus/tree/master/lesson14/screen/nginx_logs.png]
+![8][https://github.com/alexshangin/otus/blob/master/lesson14/screen/index_nginx.png]
+![9][https://github.com/alexshangin/otus/blob/master/lesson14/screen/nginx_logs.png]
 
 Nginx audit logs:
-![10][https://github.com/alexshangin/otus/tree/master/lesson14/screen/nginx_audit.png]
+![10][https://github.com/alexshangin/otus/blob/master/lesson14/screen/nginx_audit.png]
