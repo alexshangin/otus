@@ -14,6 +14,6 @@
 
   Для подключения под доменному имени к админке нужно добавить на хосте в /etc/hosts ip-адрес сервера, в нашем случае 192.168.11.161
 
-  Авторизация на сервере и клиенте по ключам: [ssh_key_enter,png](https://github.com/alexshangin/otus/tree/master/lesson16/ssh_key_enter.png)
+  Авторизация на сервере и клиенте по ключам: ![ssh_key_enter,png](https://github.com/alexshangin/otus/blob/master/lesson16/ssh_key_enter.png)
 
-  Web ipa-server: [web_ipaserver.png](https://github.com/alexshangin/otus/tree/master/lesson16/web_ipaserver.png)
+  Web ipa-server: ![web_ipaserver.png](https://github.com/alexshangin/otus/blob/master/lesson16/web_ipaserver.png)
