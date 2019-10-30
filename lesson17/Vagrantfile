@@ -11,6 +11,7 @@ MACHINES = {
   },
 :inetRouter2 => {
         :box_name => "centos/6",
+        :ip_addr => '192.168.11.171', 
         :net => [
                    {ip: '192.168.253.1', adapter: 2, netmask: "255.255.255.252", virtualbox__intnet: "router-net"},
                 ]
@@ -79,9 +80,15 @@ Vagrant.configure("2") do |config|
 
         box.vm.host_name = boxname.to_s
 
+
         boxconfig[:net].each do |ipconf|
           box.vm.network "private_network", ipconf
         end
+
+	case boxname.to_s
+	when "inetRouter2"
+          box.vm.network "private_network", ip: boxconfig[:ip_addr]
+	end
 
         if boxconfig.key?(:public)
           box.vm.network "public_network", boxconfig[:public]
@@ -89,7 +96,7 @@ Vagrant.configure("2") do |config|
 
         box.vm.provision "shell", inline: <<-SHELL
           mkdir -p ~root/.ssh
-                cp ~vagrant/.ssh/auth* ~root/.ssh
+          cp ~vagrant/.ssh/auth* ~root/.ssh
         SHELL
 
         case boxname.to_s
@@ -104,8 +111,11 @@ Vagrant.configure("2") do |config|
             ip route add 192.168.1.0/24 via 192.168.255.2
             ip route add 192.168.2.0/24 via 192.168.255.2
             ip route add 192.168.253.0/24 via 192.168.255.2
+            sed -i '65s/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config
+            service sshd restart
             SHELL
         when "inetRouter2"
+          #config.vm.network "forwarded_port", guest: 8080, host: 8080
           box.vm.provision "shell", run: "always", inline: <<-SHELL
             iptables -t nat -A POSTROUTING ! -d 192.168.0.0/16 -o eth0 -j MASQUERADE
 	    iptables-save > /etc/firewall.conf
