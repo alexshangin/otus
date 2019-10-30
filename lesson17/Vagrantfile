@@ -11,7 +11,8 @@ MACHINES = {
   },
 :inetRouter2 => {
         :box_name => "centos/6",
-        :ip_addr => '192.168.11.171', 
+        #:public => {:ip => '192.168.11.171', :adapter => 1},
+        :public => { :ip_addr => '192.168.11.171' },
         :net => [
                    {ip: '192.168.253.1', adapter: 2, netmask: "255.255.255.252", virtualbox__intnet: "router-net"},
                 ]
@@ -80,18 +81,14 @@ Vagrant.configure("2") do |config|
 
         box.vm.host_name = boxname.to_s
 
-
         boxconfig[:net].each do |ipconf|
           box.vm.network "private_network", ipconf
         end
 
-	case boxname.to_s
-	when "inetRouter2"
-          box.vm.network "private_network", ip: boxconfig[:ip_addr]
-	end
-
         if boxconfig.key?(:public)
-          box.vm.network "public_network", boxconfig[:public]
+          #box.vm.network "public_network", boxconfig[:public]
+          #config.vm.network "public_network", bridge: "enp0s3"
+          box.vm.network "public_network", ip: boxconfig[:ip_addr]
         end
 
         box.vm.provision "shell", inline: <<-SHELL
