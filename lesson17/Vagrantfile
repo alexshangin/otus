@@ -11,14 +11,11 @@ MACHINES = {
   },
 :inetRouter2 => {
         :box_name => "centos/6",
-        :ip_addr => '192.168.11.171'
-
-        #:public => {:ip => '192.168.11.171', :adapter => 1},
-        #:public => { :ip_addr => '192.168.11.171' },
-        #:net => [
-        #           {ip: '192.168.253.1', adapter: 2, netmask: "255.255.255.252", virtualbox__intnet: "router-net"},
-        #           {ip: '192.168.171.1', adapter: 2, netmask: "255.255.255.252", virtualbox__intnet: "router-net"},
-        #        ]
+        :net => [
+                   {ip: '192.168.253.1', adapter: 2, netmask: "255.255.255.252", virtualbox__intnet: "router-net"},
+		   # Добавляем сеть на хост
+                   {ip: '192.168.11.171', adapter: 3, netmask: "255.255.255.0"},
+                ]
   },
 :centralRouter => {
         :box_name => "centos/7",
@@ -89,9 +86,7 @@ Vagrant.configure("2") do |config|
         end
 
         if boxconfig.key?(:public)
-          #box.vm.network "public_network", boxconfig[:public]
-          #config.vm.network "public_network", bridge: "enp0s3"
-          box.vm.network "public_network", ip: boxconfig[:ip_addr]
+          box.vm.network "public_network", boxconfig[:public]
         end
 
         box.vm.provision "shell", inline: <<-SHELL
@@ -111,7 +106,8 @@ Vagrant.configure("2") do |config|
             ip route add 192.168.1.0/24 via 192.168.255.2
             ip route add 192.168.2.0/24 via 192.168.255.2
             ip route add 192.168.253.0/24 via 192.168.255.2
-            sed -i '65s/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config
+            # включаем доступ по паролю
+            sed -i '66s/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config
             service sshd restart
             SHELL
         when "inetRouter2"
@@ -124,6 +120,8 @@ Vagrant.configure("2") do |config|
             ip route add 192.168.0.0/24 via 192.168.253.2
             ip route add 192.168.1.0/24 via 192.168.253.2
             ip route add 192.168.2.0/24 via 192.168.253.2
+            ip route add 192.168.255.0/24 via 192.168.253.2
+            # редирект порта
             iptables -t nat -A PREROUTING -p tcp --dport 8080 -j DNAT --to-destination 192.168.0.2:80
             iptables -t nat -A POSTROUTING -p tcp -d 192.168.0.2 --dport 80 -j SNAT --to-source 192.168.253.1
             SHELL
@@ -149,10 +147,11 @@ Vagrant.configure("2") do |config|
             SHELL
         when "centralServer"
           box.vm.provision "shell", run: "always", inline: <<-SHELL
+            # ставим nginx и правим конфиг для прослушивания на всех адресах
             yum install -y epel-release
             yum install -y nginx mc traceroute nmap
-            systemctl start nginx
             sed -i 's/listen\ \ \ \ \ \ \ 80\ default\_server\;/listen\ \ \ \ \ \ \ 0\.0\.0\.0\:80\ default\_server\;/g' /etc/nginx/nginx.conf
+            systemctl start nginx
             echo "DEFROUTE=no" >> /etc/sysconfig/network-scripts/ifcfg-eth0 
             echo "GATEWAY=192.168.0.1" >> /etc/sysconfig/network-scripts/ifcfg-eth1
             systemctl restart network
@@ -174,6 +173,7 @@ Vagrant.configure("2") do |config|
             ip route add default via 192.168.252.1 dev eth1 metric 99
             ip route add 192.168.0.0/24 via 192.168.252.1
             ip route add 192.168.1.0/24 via 192.168.252.1
+            ip route add 192.168.253.0/24 via 192.168.252.1
             SHELL
 	when "office1Server"
           box.vm.provision "shell", run: "always", inline: <<-SHELL
@@ -186,6 +186,7 @@ Vagrant.configure("2") do |config|
             ip route add 192.168.0.0/24 via 192.168.2.1
             ip route add 192.168.1.0/24 via 192.168.2.1
             ip route add 192.168.2.0/24 via 192.168.2.1
+            ip route add 192.168.253.0/24 via 192.168.2.1
             SHELL
 	when "office2Router"
           box.vm.provision "shell", run: "always", inline: <<-SHELL
@@ -198,6 +199,7 @@ Vagrant.configure("2") do |config|
             ip route add default via 192.168.251.1 dev eth1 metric 99
             ip route add 192.168.0.0/24 via 192.168.251.1
             ip route add 192.168.2.0/24 via 192.168.251.1
+            ip route add 192.168.253.0/24 via 192.168.251.1
             SHELL
 	when "office2Server"
           box.vm.provision "shell", run: "always", inline: <<-SHELL
@@ -210,6 +212,7 @@ Vagrant.configure("2") do |config|
             ip route add 192.168.0.0/24 via 192.168.1.1
             ip route add 192.168.1.0/24 via 192.168.1.1
             ip route add 192.168.2.0/24 via 192.168.1.1
+            ip route add 192.168.253.0/24 via 192.168.1.1
             SHELL
         end
       end
