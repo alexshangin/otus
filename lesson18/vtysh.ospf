@@ -1,0 +1,8 @@
+my-gw# configure terminal
+my-gw# service integrated-vtysh-config
+my-gw(config)# router ospf
+my-gw(config-router)# network  10.0.11.0/28 area 0.0.0.0
+my-gw(config-router)# router-id  10.0.11.111
+my-gw(config-if)# exit
+my-gw(config)# do write
+my-gw(config)# exit
