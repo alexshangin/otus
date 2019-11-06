@@ -1,0 +1,78 @@
+---
+- hosts: otususer3
+  become: yes
+  tasks:
+  - include_vars: vars/main.yml
+
+  - nxos_interface_ospf:
+      interface: ethernet1/32
+      ospf: 1
+      area: 1
+      bfd: disable
+      cost: default
+
+  - nxos_interface_ospf:
+      interface: loopback0
+      ospf: prod
+      area: 0.0.0.0
+      bfd: enable
+      network: point-to-point
+      state: present
+
+  - name: Ensure group "admin" exists
+    group:
+     name: admin
+     state: present
+
+  - name: Ensure group "users" exists
+    group:
+     name: users
+     state: present
+
+  - name: Add many users
+    user:
+     name: "{{ item.username}}"
+     shell: "{{ item.shell}}"
+     group: "{{ item.group}}"
+     password: "{{ item.password | password_hash('sha512') }}"
+     createhome: "{{ item.createhome }}"
+    with_items:
+      - '{{users}}'
+
+  - name: Update sudoers file
+    lineinfile: "dest=/etc/sudoers
+      insertafter=EOF
+      line='{{ item.username }} ALL=(ALL) NOPASSWD: ALL'
+      regexp='^{{ item.username }} .*'
+      state=present"
+    when: item.use_sudo == True
+    with_items:
+      - '{{users}}'
+
+  - name: sshd update conf
+    lineinfile: "dest=/etc/ssh/sshd_config
+      insertafter=EOF
+      line='PasswordAuthentication\ yes'
+      regexp='PasswordAuthentication\ no'
+      state=present"
+    notify:
+      - reload sshd
+
+  - name: Time access for nonadmin
+    lineinfile: "dest=/etc/security/time.conf
+      insertafter=EOF
+      line='login|sshd;*;{{ item.username }};!SaSu0000-2400'
+      regexp='^{{ item.username }} .*'
+      state=present"
+    when: item.group != 'admin'
+    with_items:
+      - '{{users}}'
+
+  - name: Add pam_time lib
+    shell: find /etc/pam.d/ -type f | xargs sed -i 's/pam_nologin.so/pam_nologin.so\naccount\ required\ pam_time.so/g'
+
+  handlers:
+    - name: reload sshd
+      systemd:
+        name: sshd
+        state: reloaded
