@@ -1,13 +1,13 @@
 ---
 - name: install quagga
-  hosts: [ quagga_routers ]
+  hosts: all
   become: yes
 
   tasks:
-#  - include_vars: vars/main.yml
+    - include_vars: vars/main.yml
 
     - name: routing enable
-      shell: echo "net.ipv4.ip_forward = 1" >> /etc/sysctl.conf && echo "net.ipv4.conf.eth*.rp_filter = 0" >> /etc/sysctl.conf && sysctl -p /etc/sysctl.conf
+      shell: /usr/sbin/sysctl -w net.ipv4.ip_forward=1 && /usr/sbin/sysctl -w net.ipv4.conf.all.rp_filter=0 && /usr/sbin/sysctl -p /etc/sysctl.conf
 
     - name: install quagga
       yum:

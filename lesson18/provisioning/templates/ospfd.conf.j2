@@ -1,9 +1,9 @@
-hostname {{ hostname }}
+hostname {{ quagga.hostnamesrv }}
 password quagga
 enable password quagga
-log file {{ logs }}
+log file {{ quagga.logs }}
 
-interface {{ interface.name }}
+interface {{ quagga.ifname }}
 router ospf
-  ospf router-id {{ router_id }}
-  network {{ interface.network }}/{{ interface.netmask }} area {{ area }}
+  ospf router-id {{ quagga.router_id }}
+  network {{ quagga.ifnetwork }}/{{ quagga.ifnetmask }} area {{ quagga.area }}

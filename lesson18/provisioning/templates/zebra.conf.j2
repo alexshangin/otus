@@ -1,11 +1,11 @@
-hostname {{ hostname }}
+hostname {{ quagga.hostnamesrv }}
 password quagga
 enable password quagga
-log file {{ logs }}
+log file {{ quagga.logs }}
 
 interface lo
-ip address {{ router_id }}/{{ interface.netmask }}
+ip address {{ quagga.router_id }}/{{ quagga.ifnetmask }}
 
-interface {{ interface.name }}
+interface {{ quagga.ifname }}
 
 ip forwarding

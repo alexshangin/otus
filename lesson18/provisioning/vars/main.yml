@@ -1,51 +1,47 @@
 ---
 quagga:
-  - hostname: r1
+  - hostnamesrv: r1
     router_id: 10.0.0.1
     logs: /var/log/quagga/zebra.log
     area: 0.0.0.0
-    interfaces: ethernet1/31
-    interfaces: ethernet2/31
-    interface:
-      - name: eth1
-        network: 10.0.0.0
-        netmask: 31
-      - name: eth2
-        network: 10.10.0.0
-        netmask: 31
+#    interfaces: ethernet1/31
+#    interfaces: ethernet2/31
+    ifname: eth1
+    ifnetwork: 10.0.0.0
+    ifnetmask: 31
+    ifname: eth2
+    network: 10.10.0.0
+    ifnetmask: 31
 
-  - hostname: r2
+  - hostnamesrv: r2
     router_id: 10.0.0.2
     logs: /var/log/quagga/zebra.log
     area: 0.0.0.0
-    interface:
-      - name: eth1
-        network: 10.0.0.0
-        netmask: 31
-      - name: eth2
-        network: 10.20.0.0
-        netmask: 31
-      - name: eth3
-        network: 172.30.0.0
-        netmask: 31
+    ifname: eth1
+    ifnetwork: 10.0.0.0
+    ifnetmask: 31
+    ifname: eth2
+    ifnetwork: 10.20.0.0
+    ifnetmask: 31
+    ifname: eth3
+    ifnetwork: 172.30.0.0
+    ifnetmask: 31
 
-  - hostname: r3
+  - hostnamesrv: r3
     router_id: 10.0.0.2
     logs: /var/log/quagga/zebra.log
     area: 0.0.0.0
-    interface:
-      - name: eth1
-        network: 10.0.0.0
-        netmask: 31
-      - name: eth2
-        network: 10.20.0.0
-        netmask: 31
+    ifname: eth1
+    ifnetwork: 10.0.0.0
+    ifnetmask: 31
+    ifname: eth2
+    ifnetwork: 10.20.0.0
+    ifnetmask: 31
 
-  - hostname: r4
+  - hostnamesrv: r4
     router_id: 172.30.0.2
     logs: /var/log/quagga/zebra.log
     area: 0.0.0.0
-    interface:
-      - name: eth1
-        network: 172.30.0.0
-        netmask: 31
+    ifname: eth1
+    ifnetwork: 172.30.0.0
+    ifnetmask: 31
