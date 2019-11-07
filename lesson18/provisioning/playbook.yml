@@ -1,6 +1,6 @@
 ---
 - name: install quagga
-  hosts: quagga_routers
+  hosts: [ quagga_routers ]
   become: yes
 
   tasks:
