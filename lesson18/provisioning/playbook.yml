@@ -1,78 +1,53 @@
 ---
-- hosts: otususer3
+- name: install quagga
+  hosts: quagga_routers
   become: yes
+
   tasks:
-  - include_vars: vars/main.yml
+#  - include_vars: vars/main.yml
 
-  - nxos_interface_ospf:
-      interface: ethernet1/32
-      ospf: 1
-      area: 1
-      bfd: disable
-      cost: default
+    - name: routing enable
+      shell: echo "net.ipv4.ip_forward = 1" >> /etc/sysctl.conf && echo "net.ipv4.conf.eth*.rp_filter = 0" >> /etc/sysctl.conf && sysctl -p /etc/sysctl.conf
 
-  - nxos_interface_ospf:
-      interface: loopback0
-      ospf: prod
-      area: 0.0.0.0
-      bfd: enable
-      network: point-to-point
-      state: present
+    - name: install quagga
+      yum:
+        name: quagga
+        state: latest
 
-  - name: Ensure group "admin" exists
-    group:
-     name: admin
-     state: present
+    - name: copy zebra template
+      template:
+        src: zebra.conf.j2
+        dest: /etc/quagga/zebra.conf
+      notify:
+        - restart zebra
 
-  - name: Ensure group "users" exists
-    group:
-     name: users
-     state: present
+    - name: copy ospf template
+      template:
+        src: ospfd.conf.j2
+        dest: /etc/quagga/ospfd.conf
+      notify:
+        - restart ospfd
 
-  - name: Add many users
-    user:
-     name: "{{ item.username}}"
-     shell: "{{ item.shell}}"
-     group: "{{ item.group}}"
-     password: "{{ item.password | password_hash('sha512') }}"
-     createhome: "{{ item.createhome }}"
-    with_items:
-      - '{{users}}'
-
-  - name: Update sudoers file
-    lineinfile: "dest=/etc/sudoers
-      insertafter=EOF
-      line='{{ item.username }} ALL=(ALL) NOPASSWD: ALL'
-      regexp='^{{ item.username }} .*'
-      state=present"
-    when: item.use_sudo == True
-    with_items:
-      - '{{users}}'
-
-  - name: sshd update conf
-    lineinfile: "dest=/etc/ssh/sshd_config
-      insertafter=EOF
-      line='PasswordAuthentication\ yes'
-      regexp='PasswordAuthentication\ no'
-      state=present"
-    notify:
-      - reload sshd
-
-  - name: Time access for nonadmin
-    lineinfile: "dest=/etc/security/time.conf
-      insertafter=EOF
-      line='login|sshd;*;{{ item.username }};!SaSu0000-2400'
-      regexp='^{{ item.username }} .*'
-      state=present"
-    when: item.group != 'admin'
-    with_items:
-      - '{{users}}'
-
-  - name: Add pam_time lib
-    shell: find /etc/pam.d/ -type f | xargs sed -i 's/pam_nologin.so/pam_nologin.so\naccount\ required\ pam_time.so/g'
+#  - nxos_interface_ospf:
+#      interface: {{ item.interfaces }}
+#      ospf: 1
+#      area: {{ area }}
+#      bfd: disable
+#      cost: default
+#      state: present
+#    with_items:
+#      - '{{ quagga }}'
 
   handlers:
-    - name: reload sshd
+    - name: restart zebra
       systemd:
-        name: sshd
-        state: reloaded
+        name: zebra
+        state: started
+        enabled: yes
+      listen: restart zebra
+
+    - name: restart ospfd
+      systemd:
+        name: ospfd
+        state: started
+        enabled: yes

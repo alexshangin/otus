@@ -1,0 +1,11 @@
+hostname {{ hostname }}
+password quagga
+enable password quagga
+log file {{ logs }}
+
+interface lo
+ip address {{ router_id }}/{{ interface.netmask }}
+
+interface {{ interface.name }}
+
+ip forwarding

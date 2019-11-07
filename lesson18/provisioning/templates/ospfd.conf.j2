@@ -1,0 +1,9 @@
+hostname {{ hostname }}
+password quagga
+enable password quagga
+log file {{ logs }}
+
+interface {{ interface.name }}
+router ospf
+  ospf router-id {{ router_id }}
+  network {{ interface.network }}/{{ interface.netmask }} area {{ area }}

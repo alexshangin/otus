@@ -1,110 +1,51 @@
 ---
 quagga:
   - hostname: r1
-  - network:
-  - interface:
-  - 
+    router_id: 10.0.0.1
+    logs: /var/log/quagga/zebra.log
+    area: 0.0.0.0
+    interfaces: ethernet1/31
+    interfaces: ethernet2/31
+    interface:
+      - name: eth1
+        network: 10.0.0.0
+        netmask: 31
+      - name: eth2
+        network: 10.10.0.0
+        netmask: 31
 
-==========zebra
-hostname Router2
-password zebra
-enable password zebra
-log file /var/log/quagga/zebra.log 
- 
-interface eth0
-ip address 192.168.0.2./24
- 
-interface eth1
-ip address 192.168.12.1./24
+  - hostname: r2
+    router_id: 10.0.0.2
+    logs: /var/log/quagga/zebra.log
+    area: 0.0.0.0
+    interface:
+      - name: eth1
+        network: 10.0.0.0
+        netmask: 31
+      - name: eth2
+        network: 10.20.0.0
+        netmask: 31
+      - name: eth3
+        network: 172.30.0.0
+        netmask: 31
 
-==========ospf
+  - hostname: r3
+    router_id: 10.0.0.2
+    logs: /var/log/quagga/zebra.log
+    area: 0.0.0.0
+    interface:
+      - name: eth1
+        network: 10.0.0.0
+        netmask: 31
+      - name: eth2
+        network: 10.20.0.0
+        netmask: 31
 
-
-
-============== ospfd.conf 
-hostname gw-245
-password quagga
-enable password quagga
-log file /var/log/quagga/ospfd.log
-
-interface lo
-interface eth2
-#ip ospf mtu-ignore
-
-router ospf
-ospf router-id 192.168.0.245
-network 192.168.0.0/24 area 0.0.0.0
-redistribute connected
-
-============== zebra.conf 
-hostname gw-245
-password quagga
-enable password quagga
-log file /var/log/quagga/quagga.log
-
-interface lo
-
-interface eth2
-description localnet
-gw-245:/etc/quagga # 
-
-==========ospf
-hostname gw-node
-password quagga
-enable password quagga
-log file /var/log/quagga/ospfd.log
-
-interface lo
-#interface vlan3
-#interface vlan4
-#interface vlan251
-
-interface vlan100
-ip ospf network non-broadcast
-
-
-router ospf
-ospf router-id 192.168.0.27
-
-network 192.168.0.0/24 area 0.0.0.0
-network 192.168.3.0/24 area 0.0.0.0
-network 192.168.4.0/24 area 0.0.0.0
-network 192.168.251.0/24 area 0.0.0.0
-network 43.10.1.0/24 area 0.0.0.0
-network 43.10.2.0/24 area 0.0.0.0
-network 43.10.3.0/24 area 0.0.0.0
-network 43.10.4.0/24 area 0.0.0.0
-network 43.10.5.0/24 area 0.0.0.0
-network 43.10.6.0/24 area 0.0.0.0
-network 43.10.7.0/24 area 0.0.0.0
-network 43.10.8.0/24 area 0.0.0.0
-network 43.10.9.0/24 area 0.0.0.0
-network 43.10.10.0/24 area 0.0.0.0
-network 43.10.11.0/24 area 0.0.0.0
-network 43.10.12.0/24 area 0.0.0.0
-network 43.10.13.0/24 area 0.0.0.0
-
-network 43.10.50.0/24 area 0.0.0.0
-network 43.10.51.0/24 area 0.0.0.0
-
-#network 43.10.7.0/24 area 0.0.0.0
-
-area 0.0.0.0 export-list pl53-router
-
-neighbor 192.168.0.21
-
-redistribute connected
-redistribute static
-
-
-====================zebra
-hostname gw-node
-password quagga
-enable password quagga
-log file /var/log/quagga/quagga.log
-
-interface lo
-interface eth1
-interface eth2
-interface eth3
-interface eth4
+  - hostname: r4
+    router_id: 172.30.0.2
+    logs: /var/log/quagga/zebra.log
+    area: 0.0.0.0
+    interface:
+      - name: eth1
+        network: 172.30.0.0
+        netmask: 31
