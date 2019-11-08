@@ -8,7 +8,6 @@
     ifnetwork:
       - 10.0.0.1/31
       - 10.10.0.1/31
-      vcncvn
 
   - hostname: r2
     router_id: 10.0.0.2
