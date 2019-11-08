@@ -1,9 +1,18 @@
-hostname {{ quagga.hostnamesrv }}
+#template config ospfd
+
+hostname {{ hostname }}
 password quagga
 enable password quagga
-log file {{ quagga.logs }}
+log file /var/log/quagga/zebra.log
 
-interface {{ quagga.ifname }}
+#interface {{ quagga.ifname }}
+{% for if in ifname %}
+  interface {{ if }}
+{% endfor %}
+
 router ospf
-  ospf router-id {{ quagga.router_id }}
-  network {{ quagga.ifnetwork }}/{{ quagga.ifnetmask }} area {{ quagga.area }}
+  ospf router-id {{ router_id }}
+#  network {{ quagga.ifnetwork }}/{{ quagga.ifnetmask }} area {{ quagga.area }}
+{% for ip in ifnetwork %}
+  network {{ ip }} area 0.0.0.0
+{% endfor %}
