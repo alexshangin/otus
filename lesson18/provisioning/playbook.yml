@@ -14,19 +14,30 @@
         name: quagga
         state: latest
 
-    - name: copy zebra template
-      template:
-        src: zebra.conf.j2
-        dest: /etc/quagga/zebra.conf
-      notify:
-        - restart zebra
-
     - name: copy ospf template
       template:
         src: ospfd.conf.j2
         dest: /etc/quagga/ospfd.conf
+      with_items: hosts.hostname.include_vars
+#      when: hostname = r1 vars = srvr1
+#      when: hostname = r2 vars = srvr2
+#      when: hostname = r3 vars = srvr3
+#      when: hostname = r4 vars = srvr4
       notify:
         - restart ospfd
+
+    - name: copy zebra template
+      template:
+        src: zebra.conf.j2
+        dest: /etc/quagga/zebra.conf
+      with_items: "{{ hosts.hostname.include_vars }}"
+#      when: hostname = r1 vars = srvr1
+#      when: hostname = r2 vars = srvr2
+#      when: hostname = r3 vars = srvr3
+#      when: hostname = r4 vars = srvr4
+      notify:
+        - restart zebra
+
 
 #  - nxos_interface_ospf:
 #      interface: {{ item.interfaces }}

@@ -1,15 +1,15 @@
 #template config zebra
 
-hostname {{ hostname }}
+hostname {{ hostnamesrv }}
 password quagga
 enable password quagga
 log file /var/log/quagga/zebra.log
 
 interface lo
-ip address {{ router_id }}/{{ router_id_mask }
+ip address {{ router_id }}/{{ router_id_mask }}
 
-#interface {{ quagga.ifname }}
-{% for if in ifname %}
+#interface {{ ifname }}
+{% for if in hostname.ifname %}
   interface {{ if }}
 {% endfor %}
 
