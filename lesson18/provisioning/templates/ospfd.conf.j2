@@ -1,18 +1,17 @@
-<<<<<<< HEAD
-hostname {{ item.hostnamesrv }}
-=======
-hostname {{ hostname }}
->>>>>>> 90990b572a279b726a7e13307570cd71d73b4881
+hostname {{ hostnamesrv }}-ospf
 password quagga
 enable password quagga
-log file /var/log/quagga/zebra.log
-
-{% for if in item.ifname %}
-  interface {{ if }}
+log file /var/log/quagga/ospfd.log
+!
+{% for if in ifname %}
+interface {{ if }}
 {% endfor %}
-
+!
 router ospf
-  ospf router-id {{ item.router_id }}
-{% for ip in item.ifnetwork %}
-  network {{ ip }} area 0.0.0.0
+  ospf router-id {{ router_id }}
+{% for ip in ifnetwork %}
+  network {{ ip }}
 {% endfor %}
+!
+line vty
+!

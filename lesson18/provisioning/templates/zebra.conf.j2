@@ -1,20 +1,13 @@
-<<<<<<< HEAD
-#template config zebra
-
-hostname {{ hostnamesrv }}
-=======
-hostname {{ hostname }}
->>>>>>> 90990b572a279b726a7e13307570cd71d73b4881
+hostname {{ hostnamesrv }}-zebra
 password quagga
 enable password quagga
 log file /var/log/quagga/zebra.log
-
-interface lo
-ip address {{ router_id }}/{{ router_id_mask }}
-
-#interface {{ ifname }}
-{% for if in hostname.ifname %}
-  interface {{ if }}
+!
+{% for if in ifname %}
+interface {{ if }}
 {% endfor %}
-
+!
+interface Loopback0
+ ip address {{ ifnamelo }}
+!
 ip forwarding
