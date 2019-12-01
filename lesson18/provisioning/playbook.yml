@@ -4,25 +4,59 @@
   become: yes
 
   tasks:
-    - include_vars: vars/main.yml
 
-    - name: routing enable
-      shell: /usr/sbin/sysctl -w net.ipv4.ip_forward=1 && /usr/sbin/sysctl -w net.ipv4.conf.all.rp_filter=0 && /usr/sbin/sysctl -p /etc/sysctl.conf
+#    - name: routing enable
+#      shell: echo "net.ipv4.ip_forward = 1" >> /etc/sysctl.conf && echo "net.ipv4.conf.all.rp_filter=0" >> /etc/sysctl.conf && sysctl -p /etc/sysctl.conf
+#        /usr/sbin/sysctl -w net.ipv4.ip_forward=1 && /usr/sbin/sysctl -w net.ipv4.conf.all.rp_filter=0 && /usr/sbin/sysctl -p /etc/sysctl.conf
+
+    - name: Enable forwarding
+      sysctl:
+        name: net.ipv4.ip_forward
+        value: 1
+        sysctl_set: yes
+        state: present
+        reload: yes
+
+    - sysctl:
+        name: net.ipv4.conf.all.forwarding
+        value: 1
+        sysctl_set: yes
+        state: present
+        reload: yes
+
+    - sysctl:
+        name: net.ipv4.conf.all.rp_filter
+        value: 0
+        sysctl_set: yes
+        state: present
+        reload: yes
+
+    - name: base packages install
+      yum:
+        name: "{{ packages }}"
+        state: present
+      vars:
+        packages:
+        - net-tools
+        - libsemanage-python
+        - traceroute
+        - tcpdump
 
     - name: install quagga
       yum:
         name: quagga
         state: latest
 
+#    - name: del route default
+#      shell: ip route del default
+
     - name: copy ospf template
       template:
         src: ospfd.conf.j2
         dest: /etc/quagga/ospfd.conf
-      with_items: hosts.hostname.include_vars
-#      when: hostname = r1 vars = srvr1
-#      when: hostname = r2 vars = srvr2
-#      when: hostname = r3 vars = srvr3
-#      when: hostname = r4 vars = srvr4
+        owner: quagga
+        group: quagga
+        mode: 0644
       notify:
         - restart ospfd
 
@@ -30,24 +64,16 @@
       template:
         src: zebra.conf.j2
         dest: /etc/quagga/zebra.conf
-      with_items: "{{ hosts.hostname.include_vars }}"
-#      when: hostname = r1 vars = srvr1
-#      when: hostname = r2 vars = srvr2
-#      when: hostname = r3 vars = srvr3
-#      when: hostname = r4 vars = srvr4
+        owner: quagga
+        group: quagga
+        mode: 0644
       notify:
         - restart zebra
 
-
-#  - nxos_interface_ospf:
-#      interface: {{ item.interfaces }}
-#      ospf: 1
-#      area: {{ area }}
-#      bfd: disable
-#      cost: default
-#      state: present
-#    with_items:
-#      - '{{ quagga }}'
+    - name: Restart network
+      service:
+        name: network
+        state: restarted
 
   handlers:
     - name: restart zebra
