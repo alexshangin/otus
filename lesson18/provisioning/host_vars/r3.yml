@@ -1,0 +1,10 @@
+hostnamesrv: r3
+router_id: 10.10.0.2
+router_id_mask: 30
+ifname:
+  - eth1
+  - eth2
+ifnetwork:
+  - 10.10.0.0/30 area 0
+  - 10.20.0.0/30 area 0
+ifnamelo: 192.168.0.3/32
