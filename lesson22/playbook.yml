@@ -1,0 +1,7 @@
+---
+- hosts: nginxrole
+  become: yes
+  roles:
+  - epel
+  - nginx
+

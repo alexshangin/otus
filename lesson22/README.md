@@ -11,7 +11,30 @@
 
 ## Домашняя работа
 
-  Написан простейший конфиг сайта с проверкой куки и редиректом в случае их отсутствия.
+  Использована роль для развертывания nginx. Написан простейший конфиг сайта с проверкой наличия куки и редиректом в случае его отсутствия.
 
-  nginx.conf - конфиг для сайта cookies.sweet
-  cookies.html - страница редиректа, на которой добавляется наш куки
+```bash
+├── ansible.cfg
+├── playbook.yml
+├── README.md
+├── roles
+│   ├── epel
+│   │   └── tasks
+│   │       └── main.yml
+│   └── nginx
+│       ├── handlers
+│       │   └── main.yml
+│       ├── tasks
+│       │   └── main.yml
+│       └── templates
+│           ├── index.html.j2
+│           ├── nginx.conf.j2
+│           └── sweet.conf.j2
+├── staging
+│   └── hosts
+└── Vagrantfile
+```
+
+1. nginx.conf.j2 - конфиг nginx
+2. sweet.conf.j2 - конфиг сайта с проверкой и редиректом
+3. index.html.j2 - начальная страница

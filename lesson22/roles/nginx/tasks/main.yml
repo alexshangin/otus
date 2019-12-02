@@ -1,0 +1,31 @@
+---
+ - name: install nginx
+   yum: name={{ item }} state=latest 
+   with_items:
+    - nginx
+
+ - name: create nginx config file from template
+   template:
+    src: ../templates/nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+   notify:
+    - reload nginx
+   tags:
+    - nginx-configuration
+
+ - name: create nginx config file from template
+   template:
+    src: ../templates/sweet.conf.j2
+    dest: /etc/nginx/conf.d/sweet.conf
+   notify:
+    - reload nginx
+   tags:
+    - nginx-configuration
+
+ - name: copy index.html 
+   template:
+    src: ../templates/index.html.j2
+    dest: /usr/share/nginx/html/index.html
+
+ - name: restart nginx
+   service: name=nginx state=restarted enabled=yes

@@ -1,0 +1,21 @@
+server {
+    listen 80;
+#    server_name cookies.sweet;
+    server_name 192.168.11.151;
+
+    root /usr/share/nginx/html;
+    index index.html index.htm;
+
+    location / {
+        if ($http_cookie !~ 'cookie=sweet.cookie') {
+            return 302 /cookies;
+        }
+        try_files $uri $uri/ index.html;
+    }
+
+    location = /cookies {
+        add_header Set-Cookie cookie=sweet.cookie;
+        rewrite ^(.*) http://$server_name redirect;
+    }
+
+}
