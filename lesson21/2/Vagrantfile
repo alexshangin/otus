@@ -2,11 +2,9 @@
 # vim: set ft=ruby :
 
 MACHINES = {
-:vpnserver => {
+  :vpnserver => {
         :box_name => "centos/7",
-        :net => [
-                   {ip: '192.168.100.10', adapter: 2, netmask: "255.255.255.0", virtualbox__intnet: "vpn-net"},
-                ]
+        :ip_addr => '192.168.100.100'
   },
 }
 
@@ -14,49 +12,26 @@ Vagrant.configure("2") do |config|
 
   MACHINES.each do |boxname, boxconfig|
 
-    config.vm.define boxname do |box|
+      config.vm.define boxname do |box|
 
-        box.vm.provider :virtualbox do |vb|
-          vb.customize ["modifyvm", :id, "--memory", "512"]
-        end
+          box.vm.box = boxconfig[:box_name]
+          box.vm.host_name = boxname.to_s
 
-        box.vm.box = boxconfig[:box_name]
+          box.vm.network "private_network", ip: boxconfig[:ip_addr]
+          box.vm.network "forwarded_port", guest: 1207, host: 1207, protocol: "udp"
 
-        box.vm.host_name = boxname.to_s
+          box.vm.provider :virtualbox do |vb|
+            vb.customize ["modifyvm", :id, "--memory", "512"]
+            vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+          end
 
-        boxconfig[:net].each do |ipconf|
-          box.vm.network "private_network", ipconf
-        end
+          box.vm.provision :shell do |s|
+             s.inline = 'mkdir -p ~root/.ssh; cp ~vagrant/.ssh/auth* ~root/.ssh'
+          end
 
-        box.vm.provision "shell", inline: <<-SHELL
-          mkdir -p ~root/.ssh
-                cp ~vagrant/.ssh/auth* ~root/.ssh
-        SHELL
+          config.vm.provision "shell", path: "vpn.sh"
 
-        case boxname.to_s
-        when "vpnserver"
-          box.vm.provision "shell", run: "always", inline: <<-SHELL
-            yum install -y epel-release
-            yum install -y openvpn easy-rsa
-            cd /etc/openvpn/
-            /usr/share/easy-rsa/3.0.6/easyrsa init-pki
-            #generate key4server
-            echo 'rasvpn' | /usr/share/easy-rsa/3.0.6/easyrsa build-ca nopass
-            echo 'rasvpn' | /usr/share/easy-rsa/3.0.6/easyrsa gen-req server nopass
-            echo 'yes' | /usr/share/easy-rsa/3.0.6/easyrsa sign-req server server
-            /usr/share/easy-rsa/3.0.6/easyrsa gen-dh
-            openvpn --genkey --secret ta.key
-            #generate key4client
-            echo 'client' | /usr/share/easy-rsa/3.0.6/easyrsa gen-req client nopass
-            echo 'yes' | /usr/share/easy-rsa/3.0.6/easyrsa sign-req client client
-            echo 'iroute 192.168.33.0 255.255.255.0' > /etc/openvpn/client/client
-            mv /vagrant/server.conf /etc/openvpn/server.conf
-            openvpn --config /etc/openvpn/server.conf &
-            SHELL
-        end
       end
-
   end
-
 end
 
