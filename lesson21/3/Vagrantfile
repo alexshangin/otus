@@ -1,0 +1,36 @@
+# -*- mode: ruby -*-
+# vim: set ft=ruby :
+
+MACHINES = {
+  :vpnserver => {
+        :box_name => "centos/7",
+        :ip_addr => '192.168.100.100'
+  },
+}
+
+Vagrant.configure("2") do |config|
+
+  MACHINES.each do |boxname, boxconfig|
+
+      config.vm.define boxname do |box|
+
+          box.vm.box = boxconfig[:box_name]
+          box.vm.host_name = boxname.to_s
+
+          box.vm.network "private_network", ip: boxconfig[:ip_addr]
+#          box.vm.network "forwarded_port", guest: 1207, host: 1207, protocol: "udp"
+
+          box.vm.provider :virtualbox do |vb|
+            vb.customize ["modifyvm", :id, "--memory", "512"]
+#            vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+          end
+
+          box.vm.provision :shell do |s|
+             s.inline = 'mkdir -p ~root/.ssh; cp ~vagrant/.ssh/auth* ~root/.ssh'
+          end
+
+          config.vm.provision "shell", path: "ocserv.sh"
+
+      end
+  end
+end

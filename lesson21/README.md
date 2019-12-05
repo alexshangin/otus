@@ -62,3 +62,54 @@ vagrant ssh -c 'cat /opt/client.key' > client/client.key
 ![vpn_ip_r.png](https://github.com/alexshangin/otus/blob/master/lesson21/2/screen/vpn_ip_r.png)
 
 3. * Самостоятельно изучить, поднять ocserv и подключиться с хоста к виртуалке
+
+  Написан bash-скрипт провижена для автоматического развертывания ocserv. После запуска виртуалки можно подключиться с пользователем **otus** и паролем **12345678** по адресу 192.168.100.100 . В моем случае использовался консольный клиент.
+
+```bash
+alexsius@acerhome:~$ sudo openconnect -u otus 192.168.100.100
+POST https://192.168.100.100/
+Attempting to connect to server 192.168.100.100:443
+SSL negotiation with 192.168.100.100
+Server certificate verify failed: signer not found
+
+Certificate from VPN server "192.168.100.100" failed verification.
+Reason: signer not found
+Enter 'yes' to accept, 'no' to abort; anything else to view: yes
+Connected to HTTPS on 192.168.100.100
+XML POST enabled
+Please enter your username.
+POST https://192.168.100.100/auth
+Please enter your password.
+Password:
+POST https://192.168.100.100/auth
+Got CONNECT response: HTTP/1.1 200 CONNECTED
+CSTP connected. DPD 90, Keepalive 32400
+Connect Banner:
+| Welcome on ocserv Alex Shangin
+
+Connected tun0 as 192.168.10.190, using SSL
+Established DTLS connection (using GnuTLS). Ciphersuite (DTLS1.2)-(RSA)-(AES-128-GCM).
+```
+
+```bash
+alexsius@acerhome:~$ ping -c 4 192.168.10.190
+PING 192.168.10.190 (192.168.10.190) 56(84) bytes of data.
+64 bytes from 192.168.10.190: icmp_seq=1 ttl=64 time=0.066 ms
+64 bytes from 192.168.10.190: icmp_seq=2 ttl=64 time=0.208 ms
+64 bytes from 192.168.10.190: icmp_seq=3 ttl=64 time=0.191 ms
+64 bytes from 192.168.10.190: icmp_seq=4 ttl=64 time=0.185 ms
+
+--- 192.168.10.190 ping statistics ---
+4 packets transmitted, 4 received, 0% packet loss, time 3059ms
+rtt min/avg/max/mdev = 0.066/0.162/0.208/0.057 ms
+```
+
+```bash
+alexsius@acerhome:~$ ip a
+11: tun0: <POINTOPOINT,MULTICAST,NOARP,UP,LOWER_UP> mtu 1434 qdisc pfifo_fast state UNKNOWN group default qlen 500
+    link/none
+    inet 192.168.10.190/32 scope global tun0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::c281:63a9:f40e:a572/64 scope link flags 800
+       valid_lft forever preferred_lft forever
+```
