@@ -93,19 +93,6 @@ Established DTLS connection (using GnuTLS). Ciphersuite (DTLS1.2)-(RSA)-(AES-128
 ```
 
 ```bash
-alexsius@acerhome:~$ ping -c 4 192.168.10.190
-PING 192.168.10.190 (192.168.10.190) 56(84) bytes of data.
-64 bytes from 192.168.10.190: icmp_seq=1 ttl=64 time=0.066 ms
-64 bytes from 192.168.10.190: icmp_seq=2 ttl=64 time=0.208 ms
-64 bytes from 192.168.10.190: icmp_seq=3 ttl=64 time=0.191 ms
-64 bytes from 192.168.10.190: icmp_seq=4 ttl=64 time=0.185 ms
-
---- 192.168.10.190 ping statistics ---
-4 packets transmitted, 4 received, 0% packet loss, time 3059ms
-rtt min/avg/max/mdev = 0.066/0.162/0.208/0.057 ms
-```
-
-```bash
 alexsius@acerhome:~$ ip a
 11: tun0: <POINTOPOINT,MULTICAST,NOARP,UP,LOWER_UP> mtu 1434 qdisc pfifo_fast state UNKNOWN group default qlen 500
     link/none
