@@ -1,3 +1,4 @@
+#! /usr/bin/env bash
 yum install -y epel-release
 yum install -y ocserv.x86_64 mc vim
 mkdir /etc/ocserv/cert
