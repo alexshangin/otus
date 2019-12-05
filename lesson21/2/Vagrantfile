@@ -18,20 +18,19 @@ Vagrant.configure("2") do |config|
           box.vm.host_name = boxname.to_s
 
           box.vm.network "private_network", ip: boxconfig[:ip_addr]
-          box.vm.network "forwarded_port", guest: 1207, host: 1207, protocol: "udp"
+#          box.vm.network "forwarded_port", guest: 1207, host: 1207, protocol: "udp"
 
           box.vm.provider :virtualbox do |vb|
             vb.customize ["modifyvm", :id, "--memory", "512"]
-            vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+#            vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
           end
 
           box.vm.provision :shell do |s|
              s.inline = 'mkdir -p ~root/.ssh; cp ~vagrant/.ssh/auth* ~root/.ssh'
           end
 
-          config.vm.provision "shell", path: "vpn.sh"
+#          config.vm.provision "shell", path: "vpn.sh"
 
       end
   end
 end
-

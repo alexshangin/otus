@@ -4,7 +4,7 @@ VPN
 - tun
 - tap
 2. Поднять RAS на базе OpenVPN с клиентскими сертификатами, подключиться с локальной машины на виртуалку
-3. *Самостоятельно изучить, поднять ocserv и подключиться с хоста к виртуалке
+3. * Самостоятельно изучить, поднять ocserv и подключиться с хоста к виртуалке
 
 ### Домашняя работа
 1. Между двумя виртуалками поднять vpn в режимах
@@ -51,3 +51,14 @@ iperf Done.
   По итогу видно, что в тонеле tun данных отправлено примерно на 40% больше.
 
 2. Поднять RAS на базе OpenVPN с клиентскими сертификатами, подключиться с локальной машины на виртуалку
+
+  На хосте выполняем команды для копирования сертификатов из вм. После чего, вместе с конфигом, копируем в /etc/OpenVPN и стартуем его.
+```bash
+vagrant ssh -c 'cat /opt/ca.crt' > client/ca.crt
+vagrant ssh -c 'cat /opt/client.crt' > client/client.crt
+vagrant ssh -c 'cat /opt/client.key' > client/client.key
+```
+![vpn_ping.png](https://github.com/alexshangin/otus/blob/master/lesson21/2/screen/vpn_ping.png)
+![vpn_ip_r.png](https://github.com/alexshangin/otus/blob/master/lesson21/2/screen/vpn_ip_r.png)
+
+3. * Самостоятельно изучить, поднять ocserv и подключиться с хоста к виртуалке
