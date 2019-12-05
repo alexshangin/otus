@@ -28,8 +28,8 @@ Connecting to host 10.10.10.1, port 5201
 [  4]   0.00-40.01  sec  1006 MBytes   211 Mbits/sec                  receiver
 iperf Done.
 ```
-```bash
 **-tun**
+```bash
 [root@vpnclient ~]# iperf3 -c 10.10.10.1 -t 40 -i 5
 Connecting to host 10.10.10.1, port 5201
 [  4] local 10.10.10.2 port 54526 connected to 10.10.10.1 port 5201
