@@ -38,3 +38,5 @@
 1. nginx.conf.j2 - конфиг nginx
 2. sweet.conf.j2 - конфиг сайта с проверкой и редиректом
 3. index.html.j2 - начальная страница
+
+![nginx_cookie.png](https://github.com/alexshangin/otus/blob/master/lesson22/screen/nginx_cookie.png)
