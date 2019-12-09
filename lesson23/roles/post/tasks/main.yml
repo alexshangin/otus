@@ -1,0 +1,53 @@
+---
+  - name: create vmail group
+    group:
+      name: vmail
+
+  - name: create user vmail
+    user:
+      name: vmail
+      group: vmail
+      home: /home/vmail
+      shell: /sbin/nologin
+
+  - name: install mail
+    yum: name={{ item }} state=present
+    with_items:
+      - postfix
+      - dovecot
+      - mc
+
+  - name: copy postfix config
+    template:
+      src: "{{ item }}"
+      dest: /etc/postfix/{{ item }}
+      owner: root
+      group: root
+      mode: 0644
+    with_items:
+      - main.cf
+      - master.cf
+    notify:
+      - reload postfix
+    tags: postfix
+
+  - name: add dovecot user
+    script: adduser.sh "{{ item.username }}" "{{ item.password }}"
+    with_items: '{{users}}'
+
+  - name: copy dovecot config
+    template:
+      src: dovecot.conf
+      dest: /etc/dovecot/dovecot.conf
+      owner: root
+      group: root
+      mode: 0644
+    notify:
+      - reload dovecot
+    tags: dovecot
+
+  - name: restart postserver
+    service: name={{ item }} state=restarted enabled=yes
+    with_items:
+      - postfix
+      - dovecot

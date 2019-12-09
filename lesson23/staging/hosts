@@ -1,0 +1,2 @@
+[post]
+postserver ansible_host=127.0.0.1 ansible_private_key_file=.vagrant/machines/postserver/virtualbox/private_key

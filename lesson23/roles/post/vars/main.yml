@@ -1,0 +1,10 @@
+---
+users:
+  - username: fox@otus.lan
+    password: malder
+
+  - username: dana@otus.lan
+    password: scaley
+
+  - username: alex@otus.lan
+    password: shangin

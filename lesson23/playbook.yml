@@ -1,0 +1,6 @@
+---
+- hosts: postserver
+  become: yes
+  roles:
+  - epel
+  - post
