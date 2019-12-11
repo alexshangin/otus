@@ -3,16 +3,18 @@
   hosts: all
   become: true
   tasks:
+    - name: install epel-release repository
+      yum: name={{ item }} state=latest
+      with_items:
+       - epel-release
     - name: install network libs
       yum: name={{ item }} state=present
       with_items:
           - NetworkManager-glib
-          - libnm-qt-devel.x86_64
           - nm-connection-editor
           - libsemanage-python
           - policycoreutils-python
           - mc
-        state: present
 
 - name: Enable ip forwarding
   hosts: routers
@@ -34,13 +36,13 @@
   tasks:
     - name: configure team0
       shell: |
-        nmcli con add type team con-name team-team0 ifname team0 mode active-active
-        nmcli con mod team-team0 ipv4.addresses 192.168.255.1/24
-        nmcli con mod team-team0 ipv4.method manual
-        nmcli con modify team-team0 +ipv4.routes "10.10.10.0/24 192.168.255.2"
-        nmcli con add type team-slave con-name team0-eth1 ifname eth1 master team0
-        nmcli con add type team-slave con-name team0-eth2 ifname eth2 master team0
-        nmcli con up team-team0
+        nmcli con add type team con-name myteam ifname team0 config '{"runner": {"name": "lacp"}, "link_watch": {"name": "ethtool"}}' ip4 192.168.255.1/24
+        nmcli con mod team0 +ipv4.routes "10.10.10.0/24 192.168.255.2"
+        nmcli con add type team-slave con-name myteam-port1 ifname eth1 master team0
+        nmcli con add type team-slave con-name myteam-port2 ifname eth2 master team0
+        nmcli con up myteam-port1
+        nmcli con up myteam-port2
+        nmcli con up team0
     - name: set iptables masquerade on inetRouter
       command: iptables -t nat -I POSTROUTING ! -d 10.10.10.0/24 -o eth0 -j MASQUERADE
 
@@ -52,13 +54,15 @@
     - name: configure team0
       shell: |
         nmcli device modify eth0 ipv4.never-default yes
-        nmcli con add type team con-name team-team0 ifname team0 mode active-active
-        nmcli con mod team-team0 ipv4.addresses 192.168.255.2/24
-        nmcli con mod team-team0 ipv4.gateway 192.168.255.1
-        nmcli con mod team-team0 ipv4.method manual
-        nmcli con add type team-slave con-name team0-eth1 ifname eth1 master team0
-        nmcli con add type team-slave con-name team0-eth2 ifname eth2 master team0
-        nmcli con up team-team0
+        nmcli con add type team con-name team0 ifname team0 mode lacp
+        nmcli con mod team0 ipv4.addresses 192.168.255.2/24
+        nmcli con mod team0 ipv4.gateway 192.168.255.1
+        nmcli con mod team0 ipv4.method manual
+        nmcli con add type team-slave con-name team0-1 ifname eth1 master team0
+        nmcli con add type team-slave con-name team0-2 ifname eth2 master team0
+        nmcli con up team0-1
+        nmcli con up team0-2
+        nmcli con up team0
         nmcli con add type vlan ifname VLAN100 dev eth3 id 100 ip4 10.10.10.10/24
         nmcli con add type vlan ifname VLAN101 dev eth3 id 101 ip4 10.10.10.11/24
 

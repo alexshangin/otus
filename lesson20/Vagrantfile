@@ -46,25 +46,28 @@ MACHINES = {
 Vagrant.configure("2") do |config|
 
   MACHINES.each do |boxname, boxconfig|
-    config.vm.define boxname do |box|
-        box.vm.box = boxconfig[:box_name]
-        box.vm.host_name = boxname.to_s
 
-	 config.vm.box_check_update = false
+      config.vm.define boxname do |box|
 
-        boxconfig[:net].each do |ipconf|
-          box.vm.network "private_network", ipconf
-        end
+          box.vm.box = boxconfig[:box_name]
+          box.vm.host_name = boxname.to_s
 
-        box.vm.provision :shell do |s|
-          s.inline = 'mkdir -p ~root/.ssh; cp ~vagrant/.ssh/auth* ~root/.ssh'
-        end
+          boxconfig[:net].each do |ipconf|
+            box.vm.network "private_network", ipconf
+          end
 
+          box.vm.provider :virtualbox do |vb|
+            vb.customize ["modifyvm", :id, "--memory", "512"]
+          end
+
+          box.vm.provision :shell do |s|
+             s.inline = 'mkdir -p ~root/.ssh; cp ~vagrant/.ssh/auth* ~root/.ssh'
+          end
+      end
   end
   config.vm.provision "ansible" do |ansible|
-    ansible.verbose = "vvv"
-    ansible.playbook = "playbook.yml"
-    ansible.become = "true"
+  ansible.verbose = "vvv"
+  ansible.playbook = "playbook.yml"
+  ansible.become = "true"
   end
-
 end
