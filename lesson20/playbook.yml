@@ -36,13 +36,15 @@
   tasks:
     - name: configure team0
       shell: |
-        nmcli con add type team con-name myteam ifname team0 config '{"runner": {"name": "lacp"}, "link_watch": {"name": "ethtool"}}' ip4 192.168.255.1/24
+        nmcli con add type team con-name team0 ifname team0
+        nmcli con mod team0 team.config '{"device": "team0", "runner": {"name": "lacp", "active": true, "fast_rate": true, "tx_hash": ["eth", "ipv4", "ipv6"]}, "link_watch": {"name": "ethtool"}, "ports": {"eth1": {}, "eth2": {}}}'
+        nmcli con mod team0 ipv4.addresses 192.168.255.1/24
         nmcli con mod team0 +ipv4.routes "10.10.10.0/24 192.168.255.2"
-        nmcli con add type team-slave con-name myteam-port1 ifname eth1 master team0
-        nmcli con add type team-slave con-name myteam-port2 ifname eth2 master team0
-        nmcli con up myteam-port1
-        nmcli con up myteam-port2
-        nmcli con up myteam
+        nmcli con add type team-slave con-name team0-eth1 ifname eth1 master team0
+        nmcli con add type team-slave con-name team0-eth2 ifname eth2 master team0
+        nmcli con up team0-eth1
+        nmcli con up team0-eth2
+        nmcli con up team0
     - name: set iptables masquerade on inetRouter
       command: iptables -t nat -I POSTROUTING ! -d 10.10.10.0/24 -o eth0 -j MASQUERADE
     - name: set iptables masquerade on inetRouter
@@ -55,12 +57,12 @@
     - name: configure team0
       shell: |
         nmcli device modify eth0 ipv4.never-default yes
-        nmcli con add type team con-name myteam ifname team0 config '{"runner": {"name": "lacp"}, "link_watch": {"name": "ethtool"}}' ip4 192.168.255.2/24 gw4 192.168.255.1
-        nmcli con add type team-slave con-name myteam-port1 ifname eth1 master team0
-        nmcli con add type team-slave con-name myteam-port2 ifname eth2 master team0
-        nmcli con up myteam-port1
-        nmcli con up myteam-port2
-        nmcli con up myteam
+        nmcli con add type team con-name team0 ifname team0 mode lacp ip4 192.168.255.2/24 gw4 192.168.255.1
+        nmcli con add type team-slave con-name team0-eth1 ifname eth1 master team0
+        nmcli con add type team-slave con-name team0-eth2 ifname eth2 master team0
+        nmcli con up team0-eth1
+        nmcli con up team0-eth2
+        nmcli con up team0
         nmcli con add type vlan ifname VLAN100 dev eth3 id 100 ip4 10.10.10.10/24
         nmcli con add type vlan ifname VLAN101 dev eth3 id 101 ip4 10.10.10.11/24
 
