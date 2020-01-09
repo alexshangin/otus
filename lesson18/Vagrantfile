@@ -5,29 +5,22 @@ MACHINES = {
 :r1 => {
         :box_name => "centos/7",
         :net => [
-                   {ip: '10.0.0.1', adapter: 2, netmask: "255.255.255.252", virtualbox__intnet: "r1-r2"},
-                   {ip: '10.10.0.1', adapter: 3, netmask: "255.255.255.252", virtualbox__intnet: "r1-r3"},
+                   {ip: '172.16.12.10', adapter: 2, netmask: "255.255.255.252", virtualbox__intnet: "r1-r2"},
+                   {ip: '172.16.16.10', adapter: 3, netmask: "255.255.255.252", virtualbox__intnet: "r1-r3"},
                 ]
   },
 :r2 => {
         :box_name => "centos/7",
         :net => [
-                   {ip: '10.0.0.2', adapter: 2, netmask: "255.255.255.252", virtualbox__intnet: "r1-r2"},
-                   {ip: '10.20.0.2', adapter: 3, netmask: "255.255.255.252", virtualbox__intnet: "r2-r3"},
-                   {ip: '172.30.0.1', adapter: 4, netmask: "255.255.255.252", virtualbox__intnet: "r2-r4"},
+                   {ip: '172.16.12.9', adapter: 2, netmask: "255.255.255.252", virtualbox__intnet: "r1-r2"},
+                   {ip: '172.16.20.10', adapter: 3, netmask: "255.255.255.252", virtualbox__intnet: "r2-r3"},
                 ]
   },
 :r3 => {
         :box_name => "centos/7",
         :net => [
-                   {ip: '10.10.0.2', adapter: 2, netmask: "255.255.255.252", virtualbox__intnet: "r1-r3"},
-                   {ip: '10.20.0.1', adapter: 3, netmask: "255.255.255.252", virtualbox__intnet: "r2-r3"},
-                ]
-  },
-:r4 => {
-        :box_name => "centos/7",
-        :net => [
-                   {ip: '172.30.0.2', adapter: 2, netmask: "255.255.255.252", virtualbox__intnet: "r2-r4"},
+                   {ip: '172.16.16.9', adapter: 2, netmask: "255.255.255.252", virtualbox__intnet: "r1-r3"},
+                   {ip: '172.16.20.9', adapter: 3, netmask: "255.255.255.252", virtualbox__intnet: "r2-r3"},
                 ]
   },
 }

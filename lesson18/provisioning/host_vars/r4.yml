@@ -1,8 +1,0 @@
-hostnamesrv: r4
-router_id: 172.30.0.2
-router_id_mask: 30
-ifname:
-  - eth1
-ifnetwork:
-  - 172.30.0.0/30 area 1
-ifnamelo: 192.168.0.4/32

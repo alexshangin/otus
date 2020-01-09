@@ -8,9 +8,9 @@ interface {{ if }}
 {% endfor %}
 !
 router ospf
-  ospf router-id {{ router_id }}
+ospf router-id {{ router_id }}
 {% for ip in ifnetwork %}
-  network {{ ip }}
+network {{ ip }}
 {% endfor %}
 !
 line vty

@@ -5,10 +5,6 @@
 
   tasks:
 
-#    - name: routing enable
-#      shell: echo "net.ipv4.ip_forward = 1" >> /etc/sysctl.conf && echo "net.ipv4.conf.all.rp_filter=0" >> /etc/sysctl.conf && sysctl -p /etc/sysctl.conf
-#        /usr/sbin/sysctl -w net.ipv4.ip_forward=1 && /usr/sbin/sysctl -w net.ipv4.conf.all.rp_filter=0 && /usr/sbin/sysctl -p /etc/sysctl.conf
-
     - name: Enable forwarding
       sysctl:
         name: net.ipv4.ip_forward
@@ -41,6 +37,8 @@
         - libsemanage-python
         - traceroute
         - tcpdump
+        - mc
+        - vim
 
     - name: install quagga
       yum:

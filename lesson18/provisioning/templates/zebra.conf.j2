@@ -7,7 +7,9 @@ log file /var/log/quagga/zebra.log
 interface {{ if }}
 {% endfor %}
 !
-interface Loopback0
- ip address {{ ifnamelo }}
+interface lo
+!
+ip address {{ router_id }}/{{ router_id_mask }}
 !
 ip forwarding
+!
