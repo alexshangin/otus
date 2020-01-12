@@ -1,0 +1,10 @@
+---
+- hosts: master
+  become: True
+  roles:
+    - role: master
+
+- hosts: slave
+  become: True
+  roles:
+    - role: slave

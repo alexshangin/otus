@@ -1,0 +1,72 @@
+---
+- name: Add Percona repository
+  yum:
+    name: https://repo.percona.com/yum/percona-release-latest.noarch.rpm
+    state: present
+
+- name: Install percona and tools database server
+  yum:
+    name:
+      - Percona-Server-server-57
+      - percona-toolkit
+      - percona-xtrabackup
+      - MySQL-python
+    state: present
+
+- name: Copy percona configs
+  copy:
+    src: "{{ item }}"
+    dest: /etc/my.cnf.d/
+  with_fileglob: "*.cnf"
+
+- name: Stop MySQL
+  service:
+    name: mysqld
+    state: stopped
+
+- name: Set environment variables
+  command: systemctl set-environment MYSQLD_OPTS="--skip-grant-tables"
+
+- name: Start MySQL
+  service:
+    name: mysqld
+    state: started
+
+- name: Sql query
+  command:  mysql -u root --execute="UPDATE mysql.user SET authentication_string = PASSWORD('{{ mysql_root_password }}') WHERE User = 'root' AND Host = 'localhost';"
+
+- name: Sql query flush
+  command:  mysql -u root --execute="FLUSH PRIVILEGES"
+
+- name: Stop MySQL
+  service:
+    name: mysqld
+    state: stopped
+
+- name: Unset environment variables
+  command: systemctl unset-environment MYSQLD_OPTS
+
+- name: Start MySQL
+  service:
+    name: mysqld
+    state: started
+    enabled: yes
+
+- name: Copy .my.cnf file into the root home folder
+  template:
+    src: root.my.cnf.j2
+    dest: /root/.my.cnf
+    owner: root
+    group: root
+    mode: 0600
+
+- name: Set root password
+  command: mysql --connect-expired-password --batch --execute="{{ item }}"
+  with_items:
+    - ALTER USER 'root'@'localhost' IDENTIFIED BY '{{ mysql_root_password }}';
+
+- name: Change to slave
+  shell: mysql -uroot -p'{{ mysql_root_password }}' -e 'CHANGE MASTER TO MASTER_HOST="192.168.11.150", MASTER_PORT = 3306, MASTER_USER="{{ replication_user }}", MASTER_PASSWORD="{{ replication_password }}", MASTER_AUTO_POSITION=1;'
+
+- name: Start slave
+  shell: mysql -uroot -p'{{ mysql_root_password }}' -e 'START SLAVE;'
