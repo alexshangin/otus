@@ -22,20 +22,20 @@
 
 #### клиент1 - видит обе зоны, но в зоне dns.lab только web1
 ```bash
-[vagrant@web1 ~]$ host www.newdns.lab
+[vagrant@client1 ~]$ host www.newdns.lab
 www.newdns.lab has address 192.168.50.16
 www.newdns.lab has address 192.168.50.15
-[vagrant@web1 ~]$ host web1.dns.lab
+[vagrant@client1 ~]$ host web1.dns.lab
 web1.dns.lab has address 192.168.50.15
-[vagrant@web1 ~]$ host web2.dns.lab
+[vagrant@client1 ~]$ host web2.dns.lab
 Host web2.dns.lab not found: 3(NXDOMAIN)
 ```
 #### клиент2 - видит только dns.lab
 ```bash
-[vagrant@web2 ~]$ host www.newdns.lab
+[vagrant@client2 ~]$ host www.newdns.lab
 Host www.newdns.lab not found: 3(NXDOMAIN)
-[vagrant@web2 ~]$ host web1.dns.lab
+[vagrant@client2 ~]$ host web1.dns.lab
 web1.dns.lab has address 192.168.50.15
-[vagrant@web2 ~]$ host web2.dns.lab
+[vagrant@client2 ~]$ host web2.dns.lab
 web2.dns.lab has address 192.168.50.16
 ```
