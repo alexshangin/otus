@@ -7,69 +7,51 @@
     with_items:
       - bind
       - bind-utils
-      - ntp
+      - mc
       - policycoreutils-python
-
+  - name: Set timezone
+    timezone:
+      name: Europe/Moscow
   - name: copy transferkey to all servers and the client
     copy: src=named.zonetransfer.key dest=/etc/named.zonetransfer.key owner=named group=named mode=0644
 
 - hosts: ns01
   become: yes
   tasks:
-#  - name: create an equivalence mapping selinux
-#    shell: semanage fcontext -a -e /var/named /etc/named && restorecon -R -v /etc/named && setsebool -P named_write_master_zones 1
-#  - name: turn on the named_write_master_zones boolean
-#    shell:
   - name: copy named.conf
     copy: src=master-named.conf dest=/etc/named.conf owner=root group=named mode=0640
   - name: copy zones
     copy: src={{ item }} dest=/etc/named/ owner=root group=named mode=0660
     with_fileglob:
       - named.*
-
   - name: copy resolv.conf to the servers
     copy: src=servers-resolv.conf dest=/etc/resolv.conf owner=root group=root mode=0644
-
   - name: set /etc/named permissions
-    file:
-      path: /etc/named
-      owner: root
-      group: named
-      mode: 0670
-
-  - name: Change context for config files
-    sefcontext:
-      target: '/etc/named(/.*)?'
-      setype: named_conf_t
-      state: present
-
-
-  - name: Allow to change master zone file
+    file: path=/etc/named owner=root group=named mode=0670
+  - name: allow to change master zone file
     shell: setsebool -P named_write_master_zones 1
-
-  - name: Make named permissive for SELinux
+  - name: make named permissive for SELinux
     shell: semanage permissive -a named_t
-
+  - name: apply new SELinux file context to filesystem
+    shell: restorecon -irv /etc/named/
   - name: ensure named is running and enabled
     service: name=named state=restarted enabled=yes
-
-
-#  - name: Apply new SELinux file context to filesystem
-#    command: restorecon -irv /etc/named/
 
 - hosts: ns02
   become: yes
   tasks:
-#  - name: create an equivalence mapping selinux
-#    shell: semanage fcontext -a -e /var/named /etc/named && restorecon -R -v /etc/named && setsebool -P named_write_master_zones 1
-#  - name: turn on the named_write_master_zones boolean
-#    shell:
   - name: copy named.conf
     copy: src=slave-named.conf dest=/etc/named.conf owner=root group=named mode=0640
   - name: copy resolv.conf to the servers
     copy: src=servers-resolv.conf dest=/etc/resolv.conf owner=root group=root mode=0644
   - name: set /etc/named permissions
     file: path=/etc/named owner=root group=named mode=0670
+  - name: allow to change master zone file
+    shell: setsebool -P named_write_master_zones 1
+  - name: make named permissive for SELinux
+    shell: semanage permissive -a named_t
+  - name: apply new SELinux file context to filesystem
+    shell: restorecon -irv /etc/named/
   - name: ensure named is running and enabled
     service: name=named state=restarted enabled=yes
 
