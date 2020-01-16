@@ -5,9 +5,11 @@
    - freeipa-server
    - ipa-user-add
    - nfs-server
+   - firewall
 
 - hosts: ipaclient
   become: yes
   roles:
    - freeipa-client
    - nfs-client
+   - firewall

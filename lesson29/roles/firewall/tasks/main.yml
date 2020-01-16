@@ -1,0 +1,35 @@
+---
+ - name: Enable and start firewalld
+   systemd:
+     name: firewalld
+     enabled: yes
+     state: started
+
+ - name: Install - Configure firewalld
+   firewalld:
+     service: "{{ item }}"
+     permanent: yes
+     state: enabled
+     zone: public
+   with_items:
+     - ssh
+     - freeipa-ldap
+     - freeipa-ldaps
+     - nfs
+     - dns
+     - rpc-bind
+     - mountd
+
+- name: add ports
+  firewalld:
+    port: "{{ item }}"
+    permanent: yes
+    state: enabled
+  with_items:
+    - 2049/tcp
+    - 2049/udp
+
+ - name: restart firewall
+   service:
+     name: firewalld
+     state: restarted
