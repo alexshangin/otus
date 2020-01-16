@@ -1,0 +1,61 @@
+---
+ - name: install nfs-server
+   yum: name={{ item }} state=latest
+   with_items:
+    - nfs-utils
+
+ - name: create /etc/hosts from template
+   template:
+     src: exports.j2
+     dest: /etc/exports
+
+ - name: create nfs share dir
+   file:
+     path: /nfs
+     state: directory
+     mode: 0644
+
+ - name: create nfs share dir
+   file:
+     path: /nfs/upload
+     state: directory
+     mode: 0666
+
+ - name: Enable and start firewalld
+   systemd:
+     name: firewalld
+     enabled: yes
+     state: started
+
+# - name: add services to firewall to public zone
+#   firewalld:
+#     service: "{{ item }}"
+#     permanent: yes
+#     state: enabled
+#     zone: public
+#   with_items:
+#     - nfs
+#     - rpc-bind
+#     - mountd
+
+ - name: Install - Configure firewalld
+   firewalld:
+     service: "{{ item }}"
+     permanent: yes
+     state: enabled
+   with_items:
+     - freeipa-ldap
+     - freeipa-ldaps
+     - nfs
+     - dns
+
+ - name: restart firewall
+   service:
+     name: firewalld
+     state: restarted
+
+ - name: Start nfs
+   service:
+     name: nfs-server
+     state: started
+     enabled: yes

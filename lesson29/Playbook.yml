@@ -1,0 +1,13 @@
+---
+- hosts: ipaserver
+  become: yes
+  roles:
+   - freeipa-server
+   - ipa-user-add
+   - nfs-server
+
+- hosts: ipaclient
+  become: yes
+  roles:
+   - freeipa-client
+   - nfs-client

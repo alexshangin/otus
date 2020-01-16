@@ -1,0 +1,32 @@
+---
+- name: nfs
+  yum: name={{ item }} state=latest
+  with_items:
+    - nfs-utils
+
+- name: Start nfs
+  service:
+    name: nfs-client
+    state: started
+    enabled: yes
+
+ - name: create nfs share dir
+   file:
+     path: /nfs
+     state: directory
+     mode: 0644
+
+ - name: create nfs share dir
+   file:
+     path: /nfs/upload
+     state: directory
+     mode: 0666
+
+- name: add ro share
+  command: echo "192.168.11.150:/nfs /nfs nfs4 default,sec=krb5 0 0" >> /etc/fstab
+
+- name: add rw share with krb5 secure
+  command: echo "192.168.11.150:/nfs/upload /nfs/upload nfs4 rw,sec=krb5 0 0" >> /etc/fstab
+
+- name: mount
+  command: mount -a
