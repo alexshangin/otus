@@ -1,18 +1,6 @@
-# resources:
-# http://www.ameyalokare.com/docker/2017/09/20/nginx-flask-postgres-docker-compose.html
-# https://github.com/juggernaut/nginx-flask-postgres-docker-compose-example
-# https://serverfault.com/questions/783806/docker-how-to-django-uwsgi-gunicorn-nginx/787402
-# https://github.com/andrecp/django-tutorial-docker-nginx-postgres
-# https://github.com/realpython/dockerizing-django
-# http://ruddra.com/2016/08/14/docker-django-nginx-postgres/index.html
-# https://stackoverflow.com/questions/32180589/docker-how-to-expose-a-socket-over-a-port-for-a-django-application
-
-
 version: '2'
 
 services:
-
-  # database containers, one for each db
   database1:
     image: postgres:10
     volumes:
@@ -31,7 +19,6 @@ services:
     networks:
       - database2_network
 
-  # web container, with django + gunicorn
   djangoapp:
     build: .
     environment:
@@ -48,20 +35,78 @@ services:
       - database1
       - database2
 
-  # reverse proxy container (nginx)
   nginx:
     image: nginx:1.13
     ports:
-      - 8000:80
+      - 80:80
+      - 8080:8080
+      - 8888:8888
+      - 9999:9999
     volumes:
       - ./config/nginx:/etc/nginx
-      - ./config/nginx/conf.d:/etc/nginx/conf.d
+    #  - ./config/nginx/conf.d:/etc/nginx/conf.d
       - static:/opt/services/djangoapp/static
       - media:/opt/services/djangoapp/media
+      - ./html:/var/www/html
+    #  - ./app:/src/app
+    #volumes_from:
+    #  - wordpress
+    #  - node
     networks:
       - nginx_network
+      - wp_network
+      - node_network
     depends_on:
       - djangoapp
+      - wordpress
+    links:
+      - wordpress
+
+  mysql:
+    image: mariadb
+    ports:
+      - 3306:3306
+    volumes:
+      - ./mysql:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: mysql_root_pass
+      MYSQL_DATABASE: db_name
+      MYSQL_USER: user_name
+      MYSQL_PASSWORD: user_pass
+    networks:
+      - wp_network
+    restart: always
+
+  wordpress:
+    image: wordpress:php7.3-fpm-alpine
+    volumes:
+      - ./html:/var/www/html
+    networks:
+      - wp_network
+    depends_on:
+      - mysql
+    #ports:
+    #  - 9000
+    environment:
+      WORDPRESS_DB_HOST: mysql
+      MYSQL_ROOT_PASSWORD: mysql_root_pass
+      WORDPRESS_DB_NAME: db_name
+      WORDPRESS_DB_USER: user_name
+      WORDPRESS_DB_PASSWORD: user_pass
+      WORDPRESS_TABLE_PREFIX: wp_
+    links:
+      - mysql
+    restart: always
+
+  node:
+    image: node:latest
+    volumes:
+      - ./app:/src/app
+    ports:
+      - 3000
+    command: npm start
+    networks:
+      - node_network
 
 networks:
   database1_network:
@@ -70,9 +115,14 @@ networks:
     driver: bridge
   nginx_network:
     driver: bridge
+  wp_network:
+    driver: bridge
+  node_network:
+    driver: bridge
 
 volumes:
   database1_volume:
   database2_volume:
   static:
   media:
+  www:
