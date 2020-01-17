@@ -30,3 +30,20 @@ http://drach.pro/blog/linux/item/141-wordpress-docker-ubuntu
 https://www.digitalocean.com/community/tutorials/how-to-install-wordpress-with-docker-compose
 
 https://tutos.readthedocs.io/en/latest/source/ndg.html
+
+
+
+!!! wp
+https://hub.docker.com/_/wordpress
+$ docker run --name some-wordpress -p 8080:80 -d wordpress
+
+!!! nodejs
+https://hub.docker.com/_/node
+https://github.com/nodejs/docker-node/blob/master/README.md#how-to-use-this-image
+https://hub.docker.com/r/nodeshift/centos7-s2i-nodejs
+
+!!!django
+https://hub.docker.com/_/django
+!!!
+https://hub.docker.com/r/camandel/django-wiki
+docker run -d -P --name=django-wiki camandel/django-wiki
