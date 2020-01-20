@@ -1,4 +1,4 @@
-version: '3'
+version: '2'
 
 services:
   django:
@@ -45,7 +45,7 @@ services:
     networks:
       - node_network
 
-   wordpress:
+  wordpress:
     image: wordpress:4.7.1-php7.0-fpm
     ports:
         - '9000:9000'
@@ -73,7 +73,7 @@ services:
     restart: always
     networks:
       - node_network
-      
+
 networks:
-  otus_network:
+  node_network:
     driver: bridge
