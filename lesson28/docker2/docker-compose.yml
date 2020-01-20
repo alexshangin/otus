@@ -6,25 +6,31 @@ services:
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - ./python:/code
-    ports:
-      - 8082:8000
+    #ports:
+    #  - 8082:8000
     networks:
       - node_network
 
   nodejs:
-    build: ./nodejs
+    image: "node:13"
+    #user: "node"
+    working_dir: /home/node/app
+    environment:
+      - NODE_ENV=development
     volumes:
-      - ./app:/src/app
-    ports:
-      - 8081:8081
-    command: npm start
+      - ./nodejs:/home/node/app
+    #expose:
+    #  - "8081"
+    command: "npm install cross-env"
+    command: "npm start"
     networks:
       - node_network
 
+
   php:
     build: ./php
-    ports:
-      - 8080:9000
+    #ports:
+    #  - 8080:9000
     networks:
       - node_network
 
@@ -37,7 +43,7 @@ services:
       - 8082:8082
     volumes:
       - ./config/nginx:/etc/nginx
-      - ./php/wp:/var/www/html
+      #- ./php/wp:/var/www/html
     depends_on:
       - django
       - nodejs
@@ -47,8 +53,10 @@ services:
 
   wordpress:
     image: wordpress:4.7.1-php7.0-fpm
+    #ports:
+    #    - '9000:9000'
     ports:
-        - '9000:9000'
+      - 9000
     volumes:
         - ./php/wp:/var/www/html
     environment:
