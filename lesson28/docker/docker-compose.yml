@@ -1,0 +1,45 @@
+version: '2'
+
+services:
+  wp:
+    image: wordpress
+    ports:
+      - 8080:80
+    networks:
+      - otus_network
+    restart: always
+
+  wiki:
+    image: camandel/django-wiki
+    ports:
+      - 8081:8000
+    networks:
+      - otus_network
+    restart: always
+
+  nginx:
+    image: nginx
+    ports:
+      - 80:80
+      - 8080:8080
+      - 8081:8081
+      - 8082:8082
+    volumes:
+      - ./config/nginx:/etc/nginx
+      #- ./html:/var/www/html
+    depends_on:
+      - wp
+      - wiki
+    networks:
+      - otus_network
+
+  angular:
+    image: angular/ngcontainer
+    ports:
+      - 8082:80
+    networks:
+      - otus_network
+
+networks:
+  otus_network:
+    driver: bridge

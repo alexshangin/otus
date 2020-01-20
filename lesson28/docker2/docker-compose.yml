@@ -1,0 +1,79 @@
+version: '3'
+
+services:
+  django:
+    build: ./python
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./python:/code
+    ports:
+      - 8082:8000
+    networks:
+      - node_network
+
+  nodejs:
+    build: ./nodejs
+    volumes:
+      - ./app:/src/app
+    ports:
+      - 8081:8081
+    command: npm start
+    networks:
+      - node_network
+
+  php:
+    build: ./php
+    ports:
+      - 8080:9000
+    networks:
+      - node_network
+
+  nginx:
+    image: nginx
+    ports:
+      - 80:80
+      - 8080:8080
+      - 8081:8081
+      - 8082:8082
+    volumes:
+      - ./config/nginx:/etc/nginx
+      - ./php/wp:/var/www/html
+    depends_on:
+      - django
+      - nodejs
+      - php
+    networks:
+      - node_network
+
+   wordpress:
+    image: wordpress:4.7.1-php7.0-fpm
+    ports:
+        - '9000:9000'
+    volumes:
+        - ./php/wp:/var/www/html
+    environment:
+        - WORDPRESS_DB_NAME=wpdb
+        - WORDPRESS_TABLE_PREFIX=wp_
+        - WORDPRESS_DB_HOST=mysql
+        - WORDPRESS_DB_PASSWORD=aqwe123
+    links:
+        - mysql
+    restart: always
+    networks:
+      - node_network
+
+  mysql:
+    image: mariadb
+    ports:
+        - '3306:3306'
+    volumes:
+        - ./db-data:/var/lib/mysql
+    environment:
+        - MYSQL_ROOT_PASSWORD=aqwe123
+    restart: always
+    networks:
+      - node_network
+      
+networks:
+  otus_network:
+    driver: bridge

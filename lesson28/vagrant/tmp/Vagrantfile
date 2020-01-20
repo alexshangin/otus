@@ -6,7 +6,7 @@ MACHINES = {
 
     }
 
-	
+
 
 Vagrant.configure("2") do |config|
 
@@ -36,9 +36,10 @@ Vagrant.configure("2") do |config|
               yum install -y php php-devel php-fpm php-cli php-mysql php-gd php-ldap php-odbc php-pdo php-pecl-memcache php-pear php-xml php-xmlrpc php-mbstring php-snmp php-soap
               cp /vagrant/www.conf /etc/php-fpm.d/www.conf
               cp /vagrant/nginx.conf /etc/nginx/nginx.conf
-              wget https://ru.wordpress.org/wordpress-4.7.5-ru_RU.tar.gz
-              tar -xf wordpress-4.7.5-ru_RU.tar.gz
+              wget https://ru.wordpress.org/latest-ru_RU.tar.gz
+              tar -xf latest-ru_RU.tar.gz
               cp -r wordpress /var/www/html/
+              wget -qO- https://rpm.nodesource.com/setup_11.x | bash -
               curl -sL https://rpm.nodesource.com/setup_11.x | bash -
               yum install -y nodejs
               mkdir -p /var/www/html/sysmon
@@ -58,7 +59,7 @@ Vagrant.configure("2") do |config|
               deactivate
               cp /vagrant/uwsgi.service /etc/systemd/system/uwsgi.service
               systemctl start uwsgi.service
-              systemctl start php-fpm              
+              systemctl start php-fpm
               systemctl restart nginx
     SHELL
 
