@@ -1,5 +1,6 @@
 version: '2'
 services:
+
   mysql-server-1:
     env_file:
       - mysql-server.env
@@ -7,6 +8,7 @@ services:
     command: ["mysqld","--server_id=1","--binlog_checksum=NONE","--gtid_mode=ON","--enforce_gtid_consistency=ON","--log_bin","--log_slave_updates=ON","--master_info_repository=TABLE","--relay_log_info_repository=TABLE","--transaction_write_set_extraction=XXHASH64","--user=mysql","--skip-host-cache","--skip-name-resolve", "--default_authentication_plugin=mysql_native_password"]
     ports:
       - "3301:3306"
+
   mysql-server-2:
     env_file:
       - mysql-server.env
@@ -14,6 +16,7 @@ services:
     command: ["mysqld","--server_id=2","--binlog_checksum=NONE","--gtid_mode=ON","--enforce_gtid_consistency=ON","--log_bin","--log_slave_updates=ON","--master_info_repository=TABLE","--relay_log_info_repository=TABLE","--transaction_write_set_extraction=XXHASH64","--user=mysql","--skip-host-cache","--skip-name-resolve", "--default_authentication_plugin=mysql_native_password"]
     ports:
       - "3302:3306"
+
   mysql-server-3:
     env_file:
       - mysql-server.env
@@ -21,7 +24,9 @@ services:
     command: ["mysqld","--server_id=3","--binlog_checksum=NONE","--gtid_mode=ON","--enforce_gtid_consistency=ON","--log_bin","--log_slave_updates=ON","--master_info_repository=TABLE","--relay_log_info_repository=TABLE","--transaction_write_set_extraction=XXHASH64","--user=mysql","--skip-host-cache","--skip-name-resolve", "--default_authentication_plugin=mysql_native_password"]
     ports:
       - "3303:3306"
+
   mysql-shell:
+    #build: ./mysql-shell-batch
     env_file:
       - mysql-shell.env
     image: neumayer/mysql-shell-batch
@@ -31,6 +36,7 @@ services:
       - mysql-server-1
       - mysql-server-2
       - mysql-server-3
+
   mysql-router:
     env_file:
       - mysql-router.env
@@ -43,7 +49,9 @@ services:
       - mysql-server-3
       - mysql-shell
     restart: on-failure
+
   dbwebapp:
+    #build: ./dbwebapp
     env_file:
       - dbwebapp.env
     image: neumayer/dbwebapp
