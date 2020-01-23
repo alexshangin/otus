@@ -1,0 +1,10 @@
+[gluster]
+192.168.7.151
+192.168.7.152
+192.168.7.153
+192.168.7.154
+
+[gluster:vars]
+ansible_ssh_user=vagrant
+ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key
+

@@ -1,0 +1,31 @@
+---
+- hosts: gluster
+  become: yes
+  roles:
+    - geerlingguy.repo-epel
+
+  tasks:
+    - name: Install cluster shell
+      package:
+        name: clustershell.noarch 
+        state: present
+        
+    - name: Update ssh config
+      blockinfile:
+        path: /home/vagrant/.ssh/config
+        owner: vagrant
+        mode: 0600
+        block: |
+            Host *
+              StrictHostKeyChecking no
+        state: present
+        create: true
+
+    - name: Create cluster nodes file
+      lineinfile:
+        dest:  /home/vagrant/nodes
+        regexp: '.*{{ hostvars[item].ansible_facts.hostname }}$'
+        line: "{{ hostvars[item].ansible_facts.hostname }}"
+        state: present
+        create: true
+      loop: "{{ ansible_play_batch }}"
