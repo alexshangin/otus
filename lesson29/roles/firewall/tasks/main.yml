@@ -20,14 +20,14 @@
      - rpc-bind
      - mountd
 
-- name: add ports
-  firewalld:
-    port: "{{ item }}"
-    permanent: yes
-    state: enabled
-  with_items:
-    - 2049/tcp
-    - 2049/udp
+ - name: add ports
+   firewalld:
+     port: "{{ item }}"
+     permanent: yes
+     state: enabled
+   with_items:
+     - 2049/tcp
+     - 2049/udp
 
  - name: restart firewall
    service:
