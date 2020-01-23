@@ -7,4 +7,4 @@ RUN go build -o dbwebapp
 FROM scratch
 COPY --from=0 /go/src/github.com/neumayer/dbwebapp/dbwebapp /
 EXPOSE 8080
-ENTRYPOINT ["/dbwebapp"]
+ENTRYPOINT [DBUSER=dbwebapp DBPASS=dbwebapp DBNAME=dbwebappdb DBHOST=mysql-router DBPORT=6446 "./dbwebapp"]

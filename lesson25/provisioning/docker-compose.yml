@@ -31,7 +31,7 @@ services:
       - mysql-shell.env
     image: neumayer/mysql-shell-batch
     volumes:
-        - ./scripts/:/scripts/
+      - ./scripts/:/scripts/
     depends_on:
       - mysql-server-1
       - mysql-server-2
@@ -40,7 +40,7 @@ services:
   mysql-router:
     env_file:
       - mysql-router.env
-    image: mysql/mysql-router:8.0
+    image: mysql/mysql-router
     ports:
       - "6446:6446"
     depends_on:
@@ -50,12 +50,13 @@ services:
       - mysql-shell
     restart: on-failure
 
-  dbwebapp:
-    #build: ./dbwebapp
-    env_file:
-      - dbwebapp.env
-    image: neumayer/dbwebapp
-    ports:
-      - "8080:8080"
-    depends_on:
-      - mysql-router
+#  dbwebapp:
+#    image: neumayer/dbwebapp
+#    #build: ./dbwebapp
+#    env_file:
+#      - ./dbwebapp.env
+#    #image: neumayer/dbwebapp
+#    ports:
+#      - "8080:8080"
+#    depends_on:
+#      - mysql-router
