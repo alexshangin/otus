@@ -13,3 +13,14 @@ vagrant up должен поднимать 2 виртуалки: сервер и
 
 https://www.arus.ru/index.php/biblioteka/shpory/item/10569-nfs-server-v-domene-freeipa-2
 https://www.arus.ru/index.php/biblioteka/shpory/item/10558-razgranichenie-prav-dostupa-na-fajlovom-servere-samba
+
+
+https://codingbee.net/rhce/nfs-use-kerberos-to-control-nfs-access-on-centos-7
+https://github.com/Sher-Chowdhury/CentOS7-kerberos-nfs-demo/tree/master/scripts
+
+https://infrastructure.fedoraproject.org/cgit/ansible.git/tree/roles/nfs/client
+
+
+
+https://github.com/splashx/ansible-krb5-server
+https://www.lisenet.com/2016/kerberised-nfs-server-on-rhel-7/
