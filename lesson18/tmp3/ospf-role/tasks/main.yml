@@ -1,0 +1,44 @@
+---
+   - include_tasks: sysctl.yml
+   
+   - name: Install quagga
+     yum:
+       name: quagga
+       state: latest
+       
+   - include_tasks: copy_files.yml
+
+   - name: change file ownership ospfd.conf
+     file:
+        path: /etc/quagga/ospfd.conf
+        owner: quagga
+        group: quagga
+   - name: change file ownership zebra.conf
+     file:
+        path: /etc/quagga/zebra.conf
+        owner: quagga
+        group: quagga
+   
+   
+   - name: Start and Enable zebra 
+     service:
+       name: zebra
+       state: started
+       enabled: True
+   
+   - name: Change policy and state of SELinux
+     selinux:
+       state: disabled
+   
+   - name: Start and Enable ospfd 
+     service:
+       name: ospfd
+       state: started
+       enabled: True
+
+   - name: Restart network
+     service:
+       name: network
+       state: restarted
+
+   

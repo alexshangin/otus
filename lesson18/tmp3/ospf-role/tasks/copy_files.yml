@@ -1,0 +1,33 @@
+---   
+   - name: Copy config files on R1
+     block:
+       - name: Your copy task
+         copy: src={{ item.src }} dest={{ item.dest }}
+         with_items:
+              - { src: 'ospfd_R1.conf', dest: '/etc/quagga/ospfd.conf' }
+              - { src: 'zebra-R1.conf', dest: '/etc/quagga/zebra.conf' }
+              - { src: 'ifcfg-vlan10-R1', dest: '/etc/sysconfig/network-scripts/ifcfg-vlan10' }
+              - { src: 'ifcfg-vlan30-R1', dest: '/etc/sysconfig/network-scripts/ifcfg-vlan30' }
+     when: ansible_hostname == "R1"              
+   
+   - name: Copy config files on R2
+     block:
+       - name: Your copy task
+         copy: src={{ item.src }} dest={{ item.dest }}
+         with_items:
+              - { src: 'ospfd_R2.conf', dest: '/etc/quagga/ospfd.conf' }
+              - { src: 'zebra-R2.conf', dest: '/etc/quagga/zebra.conf' }
+              - { src: 'ifcfg-vlan10-R2', dest: '/etc/sysconfig/network-scripts/ifcfg-vlan10' }
+              - { src: 'ifcfg-vlan20-R2', dest: '/etc/sysconfig/network-scripts/ifcfg-vlan20' }
+     when: ansible_hostname == "R2" 
+  
+   - name: Copy config files on R3
+     block:
+       - name: Your copy task
+         copy: src={{ item.src }} dest={{ item.dest }}
+         with_items:
+              - { src: 'ospfd_R3.conf', dest: '/etc/quagga/ospfd.conf' }
+              - { src: 'zebra-R3.conf', dest: '/etc/quagga/zebra.conf' }
+              - { src: 'ifcfg-vlan30-R3', dest: '/etc/sysconfig/network-scripts/ifcfg-vlan30' }
+              - { src: 'ifcfg-vlan20-R3', dest: '/etc/sysconfig/network-scripts/ifcfg-vlan20' }
+     when: ansible_hostname == "R3"
