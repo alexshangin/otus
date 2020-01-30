@@ -2,14 +2,14 @@
 # vim: set ft=ruby :
 
 MACHINES = {
-  :ipaserver => {
+  :master => {
         :box_name => "centos/7",
-        :ip_addr => '192.168.11.161'
+        :ip_addr => '192.168.100.11'
   },
-  :ipaclient => {
+  :slave => {
         :box_name => "centos/7",
-        :ip_addr => '192.168.11.162'
-  }
+        :ip_addr => '192.168.100.12'
+  },
 }
 
 Vagrant.configure("2") do |config|
@@ -21,19 +21,28 @@ Vagrant.configure("2") do |config|
           box.vm.box = boxconfig[:box_name]
           box.vm.host_name = boxname.to_s
 
+          #box.vm.network "forwarded_port", guest: 3260, host: 3260+offset
+
           box.vm.network "private_network", ip: boxconfig[:ip_addr]
 
           box.vm.provider :virtualbox do |vb|
-            vb.customize ["modifyvm", :id, "--memory", "512"]
+            vb.customize ["modifyvm", :id, "--memory", "2048"]
           end
 
-          config.vm.provision "ansible" do |ansible|
-	      ansible.verbose = "vvv"
-	      ansible.playbook = "Playbook.yml"
-	      ansible.become = "true"
-	  end
+          box.vm.provision :shell do |s|
+             s.inline = 'mkdir -p ~root/.ssh; cp ~vagrant/.ssh/auth* ~root/.ssh'
+          end
 
+#	  box.vm.provision "shell", path: "create_repo.sh"
 
       end
+
+      config.vm.provision "ansible" do |ansible|
+      ansible.verbose = "vvv"
+      ansible.playbook = "playbook.yml"
+      ansible.become = "true"
+      end
+
   end
 end
+

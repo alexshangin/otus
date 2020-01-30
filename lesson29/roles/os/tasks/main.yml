@@ -1,5 +1,4 @@
 ---
-# tasks file for os
 - name: Install EPEL
   yum: name=epel-release state=present
   
