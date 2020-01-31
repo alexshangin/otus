@@ -13,6 +13,8 @@ https://galeracluster.com/library/galera-documentation.pdf
 https://otus.ru/nest/post/527/
 https://habr.com/ru/post/332518/
 
+http://planetmariadb.org/
+
 
 !!! git
 https://github.com/neumayer/docker-images/blob/master/mysql-shell-batch/Dockerfile
