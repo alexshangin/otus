@@ -1,24 +1,21 @@
 ---
-- name: Asymmetric routing (part 2)
+- name: Add asymmetry routing
   hosts: routers
   become: yes
   tasks:
-   - name: copy ospfd.conf with "cost 1000"
+   - name: Add weight +1000 on R1
      block:
        - name: Your copy task
          copy: src={{ item.src }} dest={{ item.dest }}
          with_items:
               - { src: 'ospfd_R1_cost.conf', dest: '/etc/quagga/ospfd.conf' }
-         
        - name: change file ownership ospfd.conf
          file:
             path: /etc/quagga/ospfd.conf
             owner: quagga
             group: quagga
-      
        - name: Restart service ospfd
          service:
             name: ospfd
             state: restarted
-
      when: ansible_hostname == "R1"

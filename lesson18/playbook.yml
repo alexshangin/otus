@@ -1,6 +1,6 @@
 ---
 - name: Install OSPF
-  hosts: routers
+  hosts: all
   become: yes
 
   roles:
