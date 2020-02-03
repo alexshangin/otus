@@ -63,13 +63,3 @@ services:
 #networks:
 #  otus_network:
 #    driver: bridge
-#  dbwebapp:
-#    image: neumayer/dbwebapp
-#    #build: ./dbwebapp
-#    env_file:
-#      - ./dbwebapp.env
-#    #image: neumayer/dbwebapp
-#    ports:
-#      - "8080:8080"
-#    depends_on:
-#      - mysql-router
