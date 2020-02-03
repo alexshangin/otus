@@ -1,0 +1,72 @@
+---
+- hosts: all
+  become: yes
+  gather_facts: no
+  tasks:
+
+# Starting nodes
+- hosts: "{{ var_host | default('node') }}"
+  become: yes
+  gather_facts: no
+  tasks:
+    - name: Start the MySQL service
+      service: name=mysqld state=restarted enabled=yes
+
+    - name: Acquire temporary root pass
+      shell: awk '$0 ~ "temporary password" {print $13}' /var/log/mysqld.log
+      register: mysql_temp_password
+
+    - name: debug out
+      debug: msg="{{ mysql_temp_password.stdout }}"
+
+    - name: Copy .my.cnf file with root password credentials
+      template:
+          src: ".my.cnf.j2"
+          dest: "/root/.my.cnf"
+          owner: root
+          group: root
+          mode: 0600
+      when: mysql_temp_password is defined
+
+    - name: Test temporary root password expired
+      shell: "mysql -NBe 'SELECT NOW();'"
+      register: mysql_temp_password_result
+      when: mysql_temp_password is defined
+      ignore_errors: yes
+
+    - name: Update mysql root password
+      shell: mysql -u root --password="{{ mysql_temp_password.stdout }}" -NBe 'ALTER USER "root"@"localhost" IDENTIFIED WITH mysql_native_password BY "{{ mysql_root_password }}";' --connect-expired-password
+      when: mysql_temp_password is defined
+
+    - name: Create users and grant privileges
+      shell: mysql -u root --password="{{ mysql_root_password }}" -NBe "{{ item }}"
+      with_items:
+         - "CREATE USER {{ mysql_admin_username }} IDENTIFIED WITH mysql_native_password BY '{{ mysql_admin_password }}';"
+         - "GRANT ALL PRIVILEGES ON *.* TO '{{ mysql_admin_username }}' WITH GRANT OPTION;"
+
+    - name: Prepare host to InnoDB Cluster
+      shell: echo -e "{{ mysql_admin_password }}\nY\nY\nY\n" | mysqlsh -e "dba.configureLocalInstance('{{ mysql_admin_username }}@{{ inventory_hostname }}:3306');" --passwords-from-stdin
+
+# Creating cluster
+- hosts: mysql-shell
+  gather_facts: no
+  become: yes
+  tasks:
+   - name: Creating cluster.
+     shell: echo -e "{{ mysql_admin_password }}\n" | mysqlsh --uri {{ mysql_admin_username }}@node1 -e "dba.createCluster('{{ cluster_name }}');" --passwords-from-stdin
+
+   - name: "Adding node2"
+     shell: echo -e "{{ mysql_admin_password }}\nN\n{{ mysql_admin_password }}\n\n\n\nC\n" | mysqlsh --uri {{ mysql_admin_username }}@node1 --js -e "dba.getCluster().addInstance('admin@node2');" --passwords-from-stdin
+
+   - name: "Adding node3"
+     shell: echo -e "{{ mysql_admin_password }}\nN\n{{ mysql_admin_password }}\n\n\n\nC\n" | mysqlsh --uri {{ mysql_admin_username }}@node1 --js -e "dba.getCluster().addInstance('admin@node3');" --passwords-from-stdin
+
+# Starting mysql-router
+- hosts: mysql-router
+  gather_facts: no
+  become: yes
+  tasks:
+   - name: Bootstrap router
+     shell: echo -e "{{ mysql_admin_password }}\n" | mysqlrouter --bootstrap {{ mysql_admin_username }}@node1 --user=mysqlrouter
+   - name: Enabling and starting router
+     service: name=mysqlrouter state=restarted enabled=yes

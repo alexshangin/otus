@@ -1,0 +1,9 @@
+https://github.com/mbfx/otus-linux-pacemaker-vbox
+https://github.com/dmitry-lyutenko/innodb-cluster
+https://github.com/haf/vagrant-bacula
+https://github.com/erlong15/vagrant-ansible-haproxy-keepalived
+https://clusterlabs.org/
+
+https://lefred.be/content/mysql-innodb-cluster-is-the-router-a-single-point-of-failure/
+https://lefred.be/content/mysql-router-ha-with-pacemaker/
+https://lefred.be/content/mysql-router-ha-with-keepalived/
