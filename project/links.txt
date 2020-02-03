@@ -7,3 +7,12 @@ https://clusterlabs.org/
 https://lefred.be/content/mysql-innodb-cluster-is-the-router-a-single-point-of-failure/
 https://lefred.be/content/mysql-router-ha-with-pacemaker/
 https://lefred.be/content/mysql-router-ha-with-keepalived/
+https://lefred.be/content/how-to-backup-your-innodb-cluster/
+
+https://www.famera.cz/blog/ansible/ansible_cluster_with_shared_storage.html
+https://www.famera.cz/blog/ansible/creating_ha_clusters_with_storage_v2.html
+
+https://blog.pythian.com/neo4j-cluster-using-vagrant-ansible-virtualbox/
+
+http://wiki.lustre.org/Create_a_Virtual_HPC_Storage_Cluster_with_Vagrant#Creating_a_Vagrant_Project
+https://github.com/kobe6661/vagrant_mysql_drbd_pacemaker
