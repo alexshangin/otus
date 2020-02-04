@@ -7,6 +7,7 @@ https://clusterlabs.org/
 https://lefred.be/content/mysql-innodb-cluster-is-the-router-a-single-point-of-failure/
 https://lefred.be/content/mysql-router-ha-with-pacemaker/
 https://lefred.be/content/mysql-router-ha-with-keepalived/
+<<<<<<< HEAD
 https://lefred.be/content/how-to-backup-your-innodb-cluster/
 
 https://www.famera.cz/blog/ansible/ansible_cluster_with_shared_storage.html
@@ -16,3 +17,13 @@ https://blog.pythian.com/neo4j-cluster-using-vagrant-ansible-virtualbox/
 
 http://wiki.lustre.org/Create_a_Virtual_HPC_Storage_Cluster_with_Vagrant#Creating_a_Vagrant_Project
 https://github.com/kobe6661/vagrant_mysql_drbd_pacemaker
+=======
+
+
+https://habr.com/ru/post/322036/
+https://github.com/ne-mishev/ha_wordpress
+https://gsviec.com/blog/cau-hinh-load-balancing-cho-wordpress
+https://github.com/gsviec/haproxy-wordpress
+https://github.com/netbears/percona-cluster-wordpress_with_HAProxy/blob/master/docker-compose/docker-compose.yml
+https://github.com/bertvv/ansible-role-wordpress
+>>>>>>> abfea30e0cb19d88dc9e4a0fb17a4f90ea83340a
