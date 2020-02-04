@@ -35,7 +35,6 @@ services:
     build: ./mysql-shell-batch
     env_file:
       - mysql-shell.env
-    #image: neumayer/mysql-shell-batch
     volumes:
       - ./scripts/:/scripts/
     depends_on:
