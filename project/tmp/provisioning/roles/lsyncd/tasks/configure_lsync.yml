@@ -1,0 +1,78 @@
+---
+# initial synchronize for site configs and site data
+- name: check epel
+  yum: name=epel-release state=present
+  tags: lsyncd
+
+- name: install lsync
+  yum: name=lsyncd state=present
+  tags: lsyncd
+
+# ssh keys
+- name: create ssh-key for site user
+  user: name="{{ site_user }}" generate_ssh_key=yes ssh_key_bits=2048 ssh_key_file=/home/{{ site_user }}/.ssh/id_rsa
+
+- name: fetch all public ssh keys
+  shell: cat ~/.ssh/id_rsa.pub
+  become: yes
+  become_user: "{{ site_user }}"
+  register: ssh_keys
+  tags:
+   - ssh
+   - skip_ansible_lint
+
+- name: check keys
+  debug: msg="{{ ssh_keys.stdout }}"
+  tags:
+   - ssh
+
+- name: deploy keys on all servers
+  authorized_key: user="{{ site_user }}" key="{{ item[0] }}"
+  delegate_to: "{{ item[1] }}"
+  with_nested:
+   - "{{ ssh_keys.stdout }}"
+   - "{{groups['webservers']}}"
+  tags:
+   - ssh
+
+- name: check host in ssh known_hosts on backend
+  shell: ssh-keyscan -H -T 10 {{ hostvars[host]['ansible_ssh_host'][1] }} >> /etc/ssh/ssh_known_hosts
+  when: inventory_hostname == "web1.tld"
+  tags:
+   - ssh
+   - skip_ansible_lint
+
+- name: check host in ssh known_hosts on balancer
+  shell: ssh-keyscan -H -T 10 {{ hostvars[host]['ansible_ssh_host'][0] }} >> /etc/ssh/ssh_known_hosts
+  when: inventory_hostname == "web2.tld"
+  tags:
+   - ssh
+   - skip_ansible_lint
+
+- name: restart service lsyncd
+  service: name=lsyncd-{{ inventory_hostname }} state=restarted enabled=yes
+  
+# configure inotify watches options
+- name: update sysctl.conf for max_user_watches
+  sysctl:
+   name: fs.inotify.max_user_watches
+   value: 1500000
+   reload: yes
+
+- name: update sysctl.conf for max_queued_events
+  sysctl:
+   name: fs.inotify.max_queued_events
+   value: 65536
+   reload: yes
+
+- include: configs_lsyncd.yml
+  vars:
+   target: "{{ hostvars[host]['ansible_ssh_host'][1] }}"
+   lsync_started: true
+  when: inventory_hostname == "web1"
+
+- include: configs_lsyncd.yml
+  vars:
+   target: "{{ hostvars[host]['ansible_ssh_host'][0] }}"
+   lsync_started: true
+  when: inventory_hostname == "web2"

@@ -1,0 +1,97 @@
+---
+ - name: copy elasticsearch.repo
+   copy: src=elasticsearch.repo dest=/etc/yum.repos.d/elasticsearch.repo
+
+ - name: install elasticsearch
+   yum:
+    name:
+     - jre
+     - elasticsearch
+     - kibana
+#     - logstash
+    state: present
+
+ - name: Make override dir for service elasticsearch
+   file:
+    path: /etc/systemd/system/elasticsearch.service.d
+    state: directory
+
+ - name: Enable autorestart of services
+   copy:
+    src: override.conf
+    dest: /etc/systemd/system/elasticsearch.service.d/override.conf
+
+ - name: Make override dir for service kibana
+   file:
+    path: /etc/systemd/system/kibana.service.d
+    state: directory
+
+ - name: Enable autorestart of services
+   copy:
+    src: override.conf
+    dest: /etc/systemd/system/kibana.service.d/override.conf
+
+ - name: copy elasticsearch.yml
+   template: src=elasticsearch.yml.j2 dest=/etc/elasticsearch/elasticsearch.yml
+
+ - name: copy kibana.yml
+   template: src=kibana.yml.j2 dest=/etc/kibana/kibana.yml
+
+ - name: Make logstash config dir
+   file:
+    path: /etc/logstash/
+    state: directory
+    mode: 0755
+
+ - name: copy logstash.yml
+   copy: src=jvm.options dest=/etc/logstash/jvm.options
+
+ - name: Install elasticsearch-plugin ingest-geoip
+   ignore_errors: yes
+   elasticsearch_plugin:
+    name: ingest-geoip
+    state: present
+    force: yes
+
+ - name: Install elasticsearch-plugin ingest-user-agent
+   ignore_errors: yes
+   elasticsearch_plugin:
+    name: ingest-user-agent
+    state: present
+    force: yes
+
+ - name: restart elasticsearch
+   service: name=elasticsearch state=restarted enabled=yes
+
+ - name: restart kibana
+   service: name=kibana state=restarted enabled=yes
+
+# - name: restart logstash
+#   service: name=logstash state=restarted enabled=yes
+
+ - name: Install Firewalld
+   yum: name=firewalld state=present
+
+ - name: Firewalld service state
+   systemd: name=firewalld state=started enabled=yes
+
+ - name: firewalld open Elasticsearch
+   firewalld:
+    service: elasticsearch
+    permanent: true
+    immediate: true
+    state: enabled
+
+# - name: firewalld open kibana
+#   firewalld:
+#    service: kibana
+#    permanent: true
+#    immediate: true
+#    state: enabled
+
+# - name: firewalld open logstash
+#   firewalld:
+#    port: 9600/udp
+#    permanent: true
+#    immediate: true
+#    state: enabled

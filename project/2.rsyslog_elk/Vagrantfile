@@ -1,0 +1,43 @@
+# -*- mode: ruby -*-
+# vim: set ft=ruby :
+
+MACHINES = {
+  :log => {
+        :box_name => "centos/7",
+        :ip_addr => '192.168.11.143'
+  },
+  :web => {
+        :box_name => "centos/7",
+        :ip_addr => '192.168.11.144'
+  },
+  :elk => {
+        :box_name => "centos/7",
+        :ip_addr => '192.168.11.145'
+  },
+}
+
+Vagrant.configure("2") do |config|
+
+  MACHINES.each do |boxname, boxconfig|
+
+      config.vm.define boxname do |box|
+
+          box.vm.box = boxconfig[:box_name]
+          box.vm.host_name = boxname.to_s
+
+          box.vm.network "private_network", ip: boxconfig[:ip_addr]
+
+          box.vm.provider :virtualbox do |vb|
+            vb.customize ["modifyvm", :id, "--memory", "1536"]
+          end
+
+          config.vm.provision "ansible" do |ansible|
+	      ansible.verbose = "vvv"
+	      ansible.playbook = "playbook.yml"
+	      ansible.become = "true"
+	  end
+
+
+      end
+  end
+end

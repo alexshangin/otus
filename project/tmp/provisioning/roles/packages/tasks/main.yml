@@ -1,0 +1,10 @@
+---
+- name: Install packages
+  yum:
+   name: ['epel-release']
+   state: present
+
+- name: Install packages
+  yum:
+   name: ['htop', 'ncdu', 'iotop', 'iftop', 'bind-utils', 'traceroute', 'mc', 'nano', 'tmux', 'bash-completion', 'bash-completion-extras', 'yum-utils', 'deltarpm', 'lsof', 'gdb', 'curl', 'wget', 'git', 'net-tools', 'iperf', 'nmap', 'setools-console', 'policycoreutils-python', 'psmisc']
+   state: present

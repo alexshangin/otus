@@ -1,0 +1,19 @@
+---
+- name: Copying keepalived.conf
+  template: src=keepalived.conf.j2 dest=/etc/keepalived/keepalived.conf
+  notify: restart keepalived
+
+- name: Updating net.ipv4.ip_nonlocal_bind parameter
+  sysctl:
+   name: net.ipv4.ip_nonlocal_bind
+   value: 1
+   state: present
+
+- name: Updating net.ipv4.ip_forward parameter
+  sysctl:
+   name: net.ipv4.ip_forward
+   value: 1
+   state: present
+
+- name: Enable keepalived to be started at boot
+  service: name=keepalived enabled=yes state=started

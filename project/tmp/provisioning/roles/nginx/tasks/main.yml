@@ -1,0 +1,36 @@
+---
+#Installing nginx web server server from YUM
+- name: copy nginx.repo
+  copy: src=nginx.repo dest=/etc/yum.repos.d/nginx.repo
+
+- name: Create the GPG key for NGINX
+  copy: src=RPM-GPG-KEY-NGINX dest=/etc/pki/rpm-gpg
+
+- name: Installing nginx web server
+  yum: name=nginx state=present update_cache=true
+  notify: start nginx
+
+- name: Make override dir for service nginx
+  file:
+   path: /etc/systemd/system/nginx.service.d
+   state: directory
+
+- name: Enable autorestart of services
+  copy:
+   src: override.conf
+   dest: /etc/systemd/system/nginx.service.d/override.conf
+
+- include: web.yml
+  when: "'webservers' in group_names"
+
+- include: kibana.yml
+  when: "'logger' in group_names"
+
+- name: Adding permissive access
+  selinux_permissive:
+   name: httpd_t
+   permissive: true
+
+- name: Enable nginx to be started at boot
+  service: name=nginx enabled=yes state=started
+

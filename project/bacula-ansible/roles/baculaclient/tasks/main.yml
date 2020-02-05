@@ -1,0 +1,20 @@
+---
+  - name: Install bacula-fd
+    yum: name={{item}} state=present
+    with_items:
+      - bacula-client
+      - bacula-console
+
+  - service: name=bacula-fd state=stopped
+
+  - name: Add bacula-fd config from template
+    template:
+      src: ../templates/bacula-fd.conf.j2
+      dest: /etc/bacula/bacula-fd.conf
+
+  - name: Add bconsole config from template
+    template:
+      src: ../templates/bconsole.conf.j2
+      dest: /etc/bacula/bconsole.conf
+
+  - service: name=bacula-fd state=started

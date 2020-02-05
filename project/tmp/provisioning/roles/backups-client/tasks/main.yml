@@ -1,0 +1,8 @@
+---
+# DB
+- include: db.yml
+  when: "'percona-cluster' in group_names"
+
+# Files
+- include: files.yml
+  when: "'webservers' in group_names"

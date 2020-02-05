@@ -1,0 +1,45 @@
+---
+    - name: Install Packages
+      yum: name={{ item }} state=latest
+      with_items:
+        - bacula-director
+        - bacula-storage
+        - bacula-console
+        - mariadb-server
+        - MySQL-python
+
+    - name: Start and Enable mysql
+      service: name=mariadb state=started enabled=yes
+
+    - name: Create Database for bacula
+      mysql_db: name={{ dbname }} state=present
+
+    - name: Create user for bacula
+      mysql_user: name={{ dbuser }} password={{ dbpassword }} priv="bacula.*:ALL" host=localhost state=present
+
+    - name: Create Bacula MySQL table
+      command: /usr/libexec/bacula/make_bacula_tables mysql -u bacula --password={{ dbpassword }}
+
+    - name: Add bacula dir config
+      template:
+        src: ../templates/bacula-dir.conf.j2
+        dest: /etc/bacula/bacula-dir.conf
+
+    - name: Add bacula storage config
+      template:
+        src: ../templates/bacula-sd.conf.j2
+        dest: /etc/bacula/bacula-sd.conf
+
+    - name: Add bacula console config
+      template:
+        src: ../templates/bconsole.conf.j2
+        dest: /etc/bacula/bconsole.conf
+
+    - name: Start and Enable bacula
+      service: name={{ item }} state=started enabled=yes
+      with_items:
+        - bacula-dir
+        - bacula-sd
+
+    - name: DB Command Change
+      command: alternatives --set libbaccats.so /usr/lib64/libbaccats-mysql.so

@@ -1,0 +1,81 @@
+---
+# playbook.yml file.
+- hosts: all
+  become: yes
+  roles:
+   - selinux_vagrant
+   - sysctl
+   - packages
+   - chrony
+   - liquidprompt
+
+- hosts: log1.tld
+  become: yes
+  roles:
+   - elasticsearch
+   - elasticsearch-curator
+   - backups-server
+   - nginx
+
+- hosts: percona-cluster
+  vars_files:
+   - group_vars/filebeat_mysql.yml
+  become: yes
+  roles:
+   - XtraDB-Cluster
+   - filebeat
+  vars:
+   xtradb_bind_interface: eth1
+
+- hosts: cluster3.tld
+  become: yes
+  roles:
+   - backups-client
+
+- hosts: webservers
+  vars_files:
+   - group_vars/glusterfs.yml
+   - group_vars/proxysql.yml
+   - group_vars/filebeat.yml
+  become: yes
+  roles:
+   - glusterfs
+   - wordpress
+   - nginx
+   - php-fpm
+   - proxysql
+   - filebeat
+
+- hosts: web2.tld
+  become: yes
+  roles:
+   - backups-client
+
+- hosts: lblservers
+  become: yes
+  roles:
+   - haproxy
+
+- hosts: keepalived_master
+  become: yes
+  roles:
+   - keepalived
+  vars:
+   interface: eth1
+   virtual_router_id: 1
+   virtual_ipaddress: 10.0.5.81
+   #virtual_ipaddress: 192.168.0.254
+   priority: 101
+   secret_passwd: ZcnG9lGUoZeM3nFT
+
+- hosts: keepalived_backup
+  become: yes
+  roles:
+   - keepalived
+  vars:
+   interface: eth1
+   virtual_router_id: 1
+   virtual_ipaddress: 10.0.5.81
+   #virtual_ipaddress: 192.168.0.254
+   priority: 100
+   secret_passwd: ZcnG9lGUoZeM3nFT

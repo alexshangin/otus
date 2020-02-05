@@ -1,0 +1,82 @@
+---
+- name: Override glusterfs_daemon for Ubuntu 14.04.
+  set_fact:
+    glusterfs_daemon: glusterfs-server
+  when:
+    - ansible_distribution == 'Ubuntu'
+    - ansible_distribution_version == "14.04"
+
+# Setup/install tasks.
+- include: setup-RedHat.yml
+  when: ansible_os_family == 'RedHat'
+
+- include: setup-{{ ansible_distribution }}.yml
+  when: ansible_os_family == 'Debian'
+
+- name: Ensure GlusterFS is started and enabled at boot.
+  service: "name={{ glusterfs_daemon }} state=started enabled=yes"
+- name: Copy hosts
+  template: src=hosts.j2 dest=/etc/hosts
+
+- name: Ensure Gluster brick and mount directories exist.
+  file: "path={{ item }} state=directory mode=0775"
+  with_items:
+   - "{{ gluster_brick_dir }}"
+   - "{{ gluster_mount_dir }}"
+   - "{{ gluster_php_mount_dir }}"
+   - "{{ gluster_php_brick_dir }}"
+
+- name: Configure Gluster volume.
+  gluster_volume:
+   state: present
+   name: "{{ gluster_brick_name }}"
+   brick: "{{ gluster_brick_dir }}"
+   replicas: 3
+   cluster: "{{ groups['webservers'] | map('extract', hostvars, ['ansible_ssh_host']) | join(',') }}"
+   host: "{{ hostvars[inventory_hostname]['ansible_ssh_host'] }}"
+   force: yes
+  run_once: true
+
+- name: tune gluster volume https://github.com/ansible/ansible/issues/29296
+  shell: gluster volume set {{ gluster_brick_name }} network.ping-timeout 5 performance.cache-size 256MB
+  run_once: true
+  tags:
+  - skip_ansible_lint
+
+- name: Ensure Gluster volume is mounted.
+  mount:
+   name: "{{ gluster_mount_dir }}"
+   src: "{{ hostvars[inventory_hostname]['ansible_ssh_host'] }}:/{{ gluster_brick_name }}"
+   fstype: glusterfs
+   opts: "defaults,_netdev"
+   state: mounted
+
+- name: Configure php-Gluster volume.
+  gluster_volume:
+   state: present
+   name: "{{ gluster_php_brick_name }}"
+   brick: "{{ gluster_php_brick_dir }}"
+   replicas: 3
+   cluster: "{{ groups['webservers'] | map('extract', hostvars, ['ansible_ssh_host']) | join(',') }}"
+   host: "{{ hostvars[inventory_hostname]['ansible_ssh_host'] }}"
+   force: yes
+  run_once: true
+
+- name: tune gluster volume https://github.com/ansible/ansible/issues/29296
+  shell: gluster volume set {{ gluster_php_brick_name }} network.ping-timeout 5 performance.cache-size 256MB
+  run_once: true
+  tags:
+  - skip_ansible_lint
+
+- name: Ensure Gluster php-volume is mounted.
+  mount:
+   name: "{{ gluster_php_mount_dir }}"
+   src: "{{ hostvars[inventory_hostname]['ansible_ssh_host'] }}:/{{ gluster_php_brick_name }}"
+   fstype: glusterfs
+   opts: "defaults,_netdev"
+   state: mounted
+
+- name: Restore secontext for bricks
+  command: restorecon -RF /srv/gluster/
+  tags:
+  - skip_ansible_lint
