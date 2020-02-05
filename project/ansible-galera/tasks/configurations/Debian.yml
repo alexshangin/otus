@@ -1,0 +1,44 @@
+---
+# file: roles/galera/tasks/configurations/Debian.yml
+- name: Set root password for localhost (Debian family)
+  mysql_user:
+    name=root
+    password={{ mariadb_root_password }}
+    host=localhost
+    state=present
+  when: inventory_hostname == master
+
+- name: Creating the final /root/.my.cnf file (Debian family)
+  template:
+    src=root/my.cnf.debian.j2
+    dest=/root/.my.cnf
+    mode=0640
+
+- name: Set debian-sys-maint password for localhost (Debian family)
+  mysql_user:
+    name=debian-sys-maint
+    password={{ mariadb_maintenance_password }}
+    host=localhost
+    state=present
+  when: inventory_hostname == master
+
+- name: Configuring Galera cluster (1/3) (Debian family)
+  template:
+    src=etc/mysql/my.cnf.j2
+    dest=/etc/mysql/my.cnf
+
+- name: Configuring Galera cluster (2/3) (Debian family)
+  template:
+    src=etc/mysql/conf.d/galera.cnf.j2
+    dest=/etc/mysql/conf.d/galera.cnf
+
+- name: Configuring Galera cluster (3/3) (Debian family)
+  template:
+    src=etc/mysql/debian.cnf.j2
+    dest=/etc/mysql/debian.cnf
+    mode=0600
+
+- name: Deleting mariadb.cnf config file (Debian family)
+  file:
+    path=/etc/mysql/conf.d/mariadb.cnf
+    state=absent

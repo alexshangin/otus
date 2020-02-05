@@ -1,0 +1,20 @@
+---
+# file: roles/galera/tasks/install.yml
+- shell:
+    rpm -aq | grep -i mariadb-libs-5.5.*x86_64 || true
+  register: pkg
+  when: ansible_os_family == 'RedHat'
+
+- name: Removing old mariadb-libs package (RedHat family)
+  package:
+    name="{{ pkg.stdout }}"
+    state=absent
+  when: ansible_os_family == 'RedHat' and
+        pkg.stdout != ''
+
+- name: Installing MariaDB Galera packages
+  package:
+    name={{ item }}
+    state=latest
+  with_items:
+    - "{{ galera_packages }}"

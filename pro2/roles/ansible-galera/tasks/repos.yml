@@ -1,0 +1,10 @@
+---
+# file: roles/galera/tasks/repos.yml
+- include: repos/Debian.yml
+  when: ansible_distribution == 'Debian'
+
+- include: repos/CentOS.yml
+  when: ansible_distribution == 'CentOS'
+
+- include: repos/RedHat.yml
+  when: ansible_distribution == 'RedHat'

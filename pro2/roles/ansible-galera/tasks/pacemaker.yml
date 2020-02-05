@@ -1,0 +1,43 @@
+---
+# file: roles/galera/tasks/pacemaker.yml
+- name: Creating clustercheck SQL user (ready for Pacemaker)
+  mysql_user:
+    name={{ galera_clustercheck_user }}
+    password={{ galera_clustercheck_password }}
+    priv=*.*:USAGE
+    state=present
+  when: inventory_hostname == master
+
+- name: Creating /etc/(sysconfig|default)/clustercheck file (ready for Pacemaker)
+  template:
+    src=etc/sysconfig/clustercheck.j2
+    dest="{{ sysconfig_dir }}/clustercheck"
+
+- name: Creating /usr/bin/clustercheck file (ready for Pacemaker)
+  copy:
+    src=usr/bin/clustercheck
+    dest=/usr/bin/clustercheck
+    mode=0755
+
+- name: Creating /etc/xinet.d/galera-stream file (ready for Pacemaker)
+  template:
+    src=etc/xinetd.d/galera-stream.j2
+    dest=/etc/xinetd.d/galera-stream
+    mode=0600
+
+- name: Enabling and starting xinetd service (ready for Pacemaker)
+  service:
+    name=xinetd
+    state=started
+    enabled=yes
+
+- name: Stopping MariaDB service (ready for Pacemaker)
+  service:
+    name={{ mariadb_svc_name }}
+    state=stopped
+
+- name: Deleting wsrep_cluster_address option (ready for Pacemaker)
+  lineinfile:
+    dest=/etc/{{ mariadb_config }}
+    state=absent
+    regexp='^wsrep_cluster_address='

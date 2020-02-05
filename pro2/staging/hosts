@@ -1,0 +1,5 @@
+[nodes]
+ctrl01  ansible_ssh_host=10.0.26.221 vm_name=ctrl01 ansible_ssh_private_key_file=.vagrant/machines/ctrl01/virtualbox/private_key ansible_ssh_user=vagrant
+ctrl02  ansible_ssh_host=10.0.26.222 vm_name=ctrl02 ansible_ssh_private_key_file=.vagrant/machines/ctrl02/virtualbox/private_key ansible_ssh_user=vagrant
+ctrl03  ansible_ssh_host=10.0.26.223 vm_name=ctrl03 ansible_ssh_private_key_file=.vagrant/machines/ctrl03/virtualbox/private_key ansible_ssh_user=vagrant
+

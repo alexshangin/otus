@@ -1,0 +1,6 @@
+---
+# file: roles/galera/handlers/main.yml
+- name: Restart MariaDB
+  service:
+    name={{ mariadb_svc_name }}
+    state=restarted

@@ -1,0 +1,29 @@
+---
+# file: roles/galera/tasks/repos/RedHat.yml
+- name: Install MariaDB Galera repository (RedHat)
+  copy:
+    src=etc/yum.repos.d/MariaDB-rhel.repo
+    dest=/etc/yum.repos.d/
+    mode=0644
+- rpm_key:
+    key=https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
+    state=present
+
+- name: Install yum-utils package (RedHat)
+  package:
+    name=yum-utils
+    state=latest
+    update_cache=yes
+
+- name: Enable extras repository (RedHat)
+  command:
+    yum-config-manager --enable rhel-7-server-extras-rpms
+
+- name: Install Percona repository (RedHat)
+  rpm_key:
+    key=https://www.percona.com/downloads/RPM-GPG-KEY-percona
+    state=present
+- package:
+    name={{ item }}
+    state=present
+  with_items: "{{ percona_package }}"

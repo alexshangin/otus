@@ -1,0 +1,38 @@
+---
+# file: roles/galera/tasks/config.yml
+- name: Enabling MariaDB service
+  service:
+    name={{ mariadb_svc_name }}
+    enabled=yes
+
+- name: Starting MariaDB service
+  service:
+    name={{ mariadb_svc_name }}
+    state=started
+  when: inventory_hostname == ctrl01
+
+- include: configurations/Debian.yml
+  when: ansible_os_family == 'Debian'
+
+- include: configurations/RedHat.yml
+  when: ansible_os_family == 'RedHat'
+
+- name: Removing wap-wsp* services from /etc/services
+  lineinfile:
+    dest=/etc/services
+    state=absent
+    regexp="^wap-wsp         {{ galera_xinet_port}}"
+
+- name: Adding mysqlchk /etc/services
+  lineinfile:
+    dest=/etc/services
+    state=present
+    regexp="^mysqlchk"
+    insertafter="sun-as-jpda     9191/udp"
+    line="mysqlchk        {{ galera_xinet_port }}/tcp                {{ '#' }} Galera Clustercheck"
+
+- name: Adding galera-status script in /usr/bin/
+  copy:
+    src=usr/bin/galera-status
+    dest=/usr/bin/galera-status
+    mode=0755

@@ -1,0 +1,27 @@
+---
+# file: roles/galera/tasks/configurations/RedHat.yml
+- include: ../selinux.yml
+  when: galera_selinux is defined and
+        galera_selinux == true
+  tags:
+    - galera
+    - galera-selinux
+
+- name: Set root password for localhost (RedHat family)
+  mysql_user:
+    name=root
+    password={{ mariadb_root_password }}
+    host=localhost
+    state=present
+  when: inventory_hostname == master
+
+- name: Creating the /root/.my.cnf file (RedHat family)
+  template:
+    src=root/my.cnf.centos.j2
+    dest=/root/.my.cnf
+    mode=0640
+
+- name: Configuring Galera cluster (RedHat family)
+  template:
+    src=etc/my.cnf.d/galera.cnf.j2
+    dest=/etc/my.cnf.d/galera.cnf

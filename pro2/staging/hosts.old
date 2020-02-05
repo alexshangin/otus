@@ -1,0 +1,5 @@
+[nodes]
+node-1  ansible_ssh_host=10.0.26.211 vm_name=node-1 ansible_private_key_file=.vagrant/machines/node-1/virtualbox/private_key
+node-2  ansible_ssh_host=10.0.26.212 vm_name=node-2 ansible_private_key_file=.vagrant/machines/node-2/virtualbox/private_key
+node-3  ansible_ssh_host=10.0.26.213 vm_name=node-3 ansible_private_key_file=.vagrant/machines/node-3/virtualbox/private_key
+

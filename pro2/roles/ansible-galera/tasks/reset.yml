@@ -1,0 +1,35 @@
+---
+# file: roles/galera/tasks/reset.yml
+- name: Stopping/killing MariaDB service
+  shell: pkill -9 -u mysql || true
+
+- name: Purging MariaDB data directory
+  file:
+    path={{ mariadb_datadir }}
+    state=absent
+
+- name: Rebuilding MariaDB data
+  command:
+    /usr/bin/mysql_install_db
+
+- name: Restoring permissions on MariaDB data directory
+  file:
+    path={{ mariadb_datadir }}
+    owner=mysql
+    group=mysql
+    recurse=yes
+
+- name: Relabeling MariaDB data directory
+  command:
+    /usr/sbin/restorecon -R {{ mariadb_datadir }}
+  when: ansible_os_family == 'RedHat'
+
+- name: Deleting MariaDB config file
+  file:
+    path=/etc/{{ mariadb_config }}
+    state=absent
+
+- name: Deleting /root/.my.cnf file
+  file:
+    path=/root/.my.cnf
+    state=absent

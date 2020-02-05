@@ -1,0 +1,30 @@
+---
+galaxy_info:
+  author: Gaetan Trellu (goldyfruit)
+  description: Deploy a Galera 3 cluster with MariaDB 10.1, supports SELinux, firewalld, Pacemaker
+  company: InCloudUs
+
+  issue_tracker_url: https://github.com/uoi-io/ansible-galera/issues
+
+  license: Apache
+
+  min_ansible_version: 2.0
+
+  github_branch: master
+
+  platforms:
+  - name: EL
+    versions:
+    - 7
+  - name: Debian
+    versions:
+    - jessie
+
+  galaxy_tags:
+    - cloud
+    - clustering
+    - database
+    - database:sql
+    - web
+
+dependencies: []
