@@ -27,3 +27,4 @@ https://github.com/gsviec/haproxy-wordpress
 https://github.com/netbears/percona-cluster-wordpress_with_HAProxy/blob/master/docker-compose/docker-compose.yml
 https://github.com/bertvv/ansible-role-wordpress
 >>>>>>> abfea30e0cb19d88dc9e4a0fb17a4f90ea83340a
+https://galaxy.ansible.com/uoi-io/galera
