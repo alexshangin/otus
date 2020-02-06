@@ -1,0 +1,10 @@
+---
+- name: Create SSH key
+  become_user: postgres
+  command: ssh-keygen -q -t rsa -f ~/.ssh/id_rsa -C "" -N ""
+  args:
+    creates: ~/.ssh/id_rsa
+
+- name: Copy SSH key
+  become_user: postgres
+  command: sshpass -p {{ barman_password }} ssh-copy-id -i ~/.ssh/id_rsa.pub -o StrictHostKeyChecking=no {{ barman_user }}@{{barman_hostname}}

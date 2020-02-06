@@ -27,3 +27,9 @@
   become: yes
   roles: 
     - barman
+
+- name: create ssh
+  hosts: master
+  become: yes
+  roles: 
+    - ssh-key
