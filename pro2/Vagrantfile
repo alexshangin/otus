@@ -2,16 +2,20 @@ Vagrant.configure(2) do |config|
 
   C = 3
   (1..C).each do |i|
-    config.vm.define "ctrl0#{i}" do |node|
-      node.vm.box = "centos/7"
-      node.vm.synced_folder ".", "/vagrant", disabled: true
-      node.vm.hostname = "ctrl0#{i}"
-      node.vm.network "private_network", ip:"10.0.26.22#{i}"
-      node.vm.provider "virtualbox" do |vb|
+    config.vm.define "ctrl0#{i}" do |nodesql|
+      nodesql.vm.box = "centos/7"
+      nodesql.vm.synced_folder ".", "/vagrant", disabled: true
+      nodesql.vm.hostname = "ctrl0#{i}"
+      nodesql.vm.network "private_network", ip:"10.0.26.3#{i}"
+      nodesql.vm.provider "virtualbox" do |vb|
         vb.memory = "512"
         vb.name = "ctrl0#{i}"
       end
-      #node.vm.provision "shell", path: "shell/iptables.sh"
+      nodesql.vm.provision :shell do |s|
+        s.inline = 'mkdir -p ~root/.ssh; cp ~vagrant/.ssh/auth* ~root/.ssh'
+      end
+
+
     end
   end
 

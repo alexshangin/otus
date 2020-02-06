@@ -6,13 +6,46 @@
   become_user: root
   roles:
     - common
+    - os
+
+- hosts: nfsservers
+  user: root
+  become: true
+  become_user: root
+  roles:
+    - nfs-server
+#    - wordpress
+
+#- hosts: proxysqls
+#  vars_files:
+#    - group_vars/proxysql.yml
+#  user: root
+#  become: true
+#  become_user: root
+#  roles:
+#    - proxysql
+
+- hosts: dbs
+  user: root
+  become: true
+  become_user: root
+  roles:
+    - XtraDB-Cluster
+  vars:
+   xtradb_bind_interface: eth1
 
 - hosts: webservers
+  vars_files:
+    - group_vars/proxysql.yml
   user: root
   become: true
   become_user: root
   roles:
     - nginx
+    - php-fpm
+    - nfs-client
+    - proxysql
+    - wordpress
 
 - hosts: lblservers
   user: root
@@ -46,3 +79,4 @@
     virtual_ipaddress: 10.0.26.81
     priority: 100
     secret_passwd: ZcnG9lGUoZeM3nFT
+

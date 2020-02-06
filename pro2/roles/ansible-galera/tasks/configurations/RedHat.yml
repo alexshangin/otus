@@ -13,7 +13,8 @@
     password={{ mariadb_root_password }}
     host=localhost
     state=present
-  when: inventory_hostname == master
+  #when: inventory_hostname == ctrl01
+  when: ansible_host == 'ctrl01'
 
 - name: Creating the /root/.my.cnf file (RedHat family)
   template:

@@ -1,0 +1,5 @@
+---
+# Variables for the HAproxy configuration
+port: '3306'
+username: 'stat'
+password: 'statpass'

@@ -6,7 +6,8 @@
     password={{ galera_clustercheck_password }}
     priv=*.*:USAGE
     state=present
-  when: inventory_hostname == master
+  #when: inventory_hostname == master
+  when: ansible_host == 'ctrl01'
 
 - name: Creating /etc/(sysconfig|default)/clustercheck file (ready for Pacemaker)
   template:

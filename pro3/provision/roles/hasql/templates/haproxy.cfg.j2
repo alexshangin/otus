@@ -1,0 +1,32 @@
+# this config requires haproxy-1.4.20
+
+global
+        log 127.0.0.1   local0
+        log 127.0.0.1   local1 notice
+        maxconn 4096
+        uid 99
+        gid 99
+        daemon
+        #debug
+        #quiet
+
+defaults
+        log     global
+        mode    http
+        option  tcplog
+        option  dontlognull
+        retries 3
+        redispatch
+        maxconn 2000
+        contimeout      5000
+        clitimeout      50000
+        srvtimeout      50000
+
+listen mysql-cluster 0.0.0.0:3306
+    mode tcp
+    balance roundrobin
+    option mysql-check user root
+
+    server db1.lan 10.0.26.31:3306 check
+    server db2.lan 10.0.26.32:3306 check
+    server db3.lan 10.0.26.33:3306 check

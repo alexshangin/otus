@@ -19,11 +19,13 @@ wsrep_provider_options="{{ galera_provider_options | default('pc.ignore_quorum=t
 
 # Galera Cluster Configuration
 wsrep_cluster_name="{{ galera_cluster_name | default('uoi-sql-cluster') }}"
-{% if inventory_hostname == master %}
+
+{% if ansible_hostname == 'ctrl01' %}
 wsrep_cluster_address="gcomm://"
 {% else %}
 wsrep_cluster_address="gcomm://{{ ",".join(galera_cluster_nodes) }}"
 {% endif %}
+
 wsrep_retry_autocommit={{ galera_retry_autocommit | default('10') }}
 wsrep_slave_threads={{ galera_slave_threads | default('8') }}
 

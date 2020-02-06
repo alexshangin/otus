@@ -1,0 +1,78 @@
+Vagrant.configure(2) do |config|
+
+  N = 2
+  (1..N).each do |i|
+    config.vm.define "haproxy#{i}.lan" do |node|
+      node.vm.box = "centos/7"
+      node.vm.synced_folder ".", "/vagrant", disabled: true
+      node.vm.hostname = "haproxy#{i}.lan"
+      node.vm.network "private_network", ip:"10.0.26.2#{i}"
+      node.vm.provider "virtualbox" do |vb|
+        vb.memory = "256"
+        vb.name = "haproxy#{i}.lan"
+      end
+      node.vm.provision "shell", path: "shell/iptables.sh"
+    end
+  end
+
+  (1..N).each do |i|
+    config.vm.define "web#{i}.lan" do |app|
+      app.vm.network "private_network", ip:"10.0.26.1#{i}"
+      app.vm.hostname = "app#{i}.lan"
+      app.vm.box = "centos/7"
+      app.vm.synced_folder ".", "/vagrant", disabled: true
+      app.vm.box_check_update = false
+      app.vm.provider "virtualbox" do |vb|
+        vb.memory = "256"
+        vb.name = "web#{i}.lan"
+      end
+      app.vm.provision "shell", path: "shell/iptables.sh"
+    end
+  end
+
+    config.vm.define "nfs.lan" do |srv|
+      srv.vm.network "private_network", ip:"10.0.26.41"
+      srv.vm.hostname = "nfs.lan"
+      srv.vm.box = "centos/7"
+      srv.vm.synced_folder ".", "/vagrant", disabled: true
+      srv.vm.box_check_update = false
+      srv.vm.provider "virtualbox" do |vb|
+        vb.memory = "256"
+        vb.name = "nfs.lan"
+        D = 4
+        (1..D).each do |hd|
+          puts "harddrive #{hd}"
+          v.customize ['createhd', '--filename', "./disk#{hd}.vdi",'--variant', 'Fixed', '--size', 1 * 1024]
+          v.customize ['storageattach', :id,  '--storagectl', 'IDE', '--device', hd+1, '--type', 'hdd', '--medium', "./disk#{hd}.vdi"]
+	  needsController = true
+        end
+	end
+      end
+      srv.vm.provision "shell", path: "shell/nfs.sh"
+    end
+
+    config.vm.define "prosql.lan" do |srv|
+      srv.vm.network "private_network", ip:"10.0.26.51"
+      srv.vm.hostname = "proxysql.lan"
+      srv.vm.box = "centos/7"
+      srv.vm.synced_folder ".", "/vagrant", disabled: true
+      srv.vm.box_check_update = false
+      srv.vm.provider "virtualbox" do |vb|
+        vb.memory = "256"
+        vb.name = "proxysql.lan"
+      end
+    end
+
+  S = 3
+  (1..S).each do |i|
+    config.vm.define "db#{i}.lan" do |sql|
+      sql.vm.box = "centos/7"
+      sql.vm.synced_folder ".", "/vagrant", disabled: true
+      sql.vm.hostname = "db#{i}.lan"
+      sql.vm.network "private_network", ip:"10.0.26.3#{i}"
+      sql.vm.provider "virtualbox" do |vb|
+        vb.memory = "256"
+        vb.name = "db#{i}.lan"
+      end
+    end
+  end

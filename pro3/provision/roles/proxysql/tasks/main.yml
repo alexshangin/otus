@@ -1,0 +1,45 @@
+---
+- name: Setup firewall
+  include_tasks: firewall.yml
+
+- name: Setup selinux
+  include_tasks: selinux.yml
+
+#- name: install systemd unit
+#  include: systemd.yml
+
+- name: Gather general variables
+  include_vars: main.yml
+
+- name: Gather OS specific variables
+  include_vars: "{{ lookup('first_found', params) }}"
+  vars:
+    params:
+      files:
+        - "{{ ansible_os_family }}-{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml"
+        - "{{ ansible_os_family }}-{{ ansible_distribution }}.yml"
+        - "{{ ansible_os_family }}.yml"
+      paths:
+        - vars
+
+- include_tasks: facts.yml
+
+- include_tasks: proxysql-official-repo.yml
+
+- include_tasks: install.yml
+
+- include_tasks: logrotate.yml
+
+- include_tasks: fix_galera_checker.yml
+
+- include_tasks: config.yml
+
+- name: Restore context
+  command: restorecon -RF /var/lib/proxysql
+  tags:
+  - skip_ansible_lint
+
+- name: Restore context
+  command: restorecon -RF /var/run/proxysql.sock
+  tags:
+  - skip_ansible_lint
