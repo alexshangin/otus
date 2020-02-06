@@ -1,0 +1,56 @@
+---
+- name: Install pg repo
+  yum:
+    name: https://download.postgresql.org/pub/repos/yum/11/redhat/rhel-7-x86_64/pgdg-centos11-11-2.noarch.rpm
+    state: present
+
+- name: Install packages
+  yum: name={{ item }} state=present
+  with_items:
+    - postgresql11
+    - barman
+    - barman-cli
+
+- name: Create password barman-user
+  user:
+    name: barman
+    password: "{{ 'otus2019' | password_hash('sha512') }}"
+
+- name: Create .pgpass
+  template:
+    src: .pgpass.j2
+    dest: /var/lib/barman/.pgpass
+    mode: 0600
+    owner: barman
+    group: barman
+
+- name: Create barman.conf
+  template:
+    src: barman.conf.j2
+    dest: /etc/barman.conf
+    mode: 0644
+
+- name: Create pg.conf
+  template:
+    src: pg.conf.j2
+    dest: /etc/barman.d/master.conf
+    mode: 0644
+
+- name: Create slot
+  ignore_errors: yes
+  shell: barman receive-wal --create-slot {{ master_hostname }}
+
+- name:  Start barman cron
+  ignore_errors: yes
+  shell: barman cron
+
+- name:  Start barman switch-wal
+  ignore_errors: yes
+  shell: barman switch-wal --force --archive {{ master_hostname }}
+
+- name: Create wals directory
+  file:
+    path: "{{ backup_dir }}"
+    state: directory
+    owner: barman
+    group: barman

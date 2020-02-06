@@ -1,0 +1,194 @@
+[vagrant@backup ~]$ sudo su
+[root@backup vagrant]# barman switch-xlog --force --archive master
+The WAL file 000000010000000000000003 has been closed on server 'master'
+Waiting for the WAL file 000000010000000000000003 from server 'master' (max: 30 seconds)
+Processing xlog segments from streaming for master
+	000000010000000000000003
+[root@backup vagrant]# barman check master
+Server master:
+	PostgreSQL: OK
+	is_superuser: OK
+	PostgreSQL streaming: OK
+	wal_level: OK
+	replication slot: OK
+	directories: OK
+	retention policy settings: OK
+	backup maximum age: OK (no last_backup_maximum_age provided)
+	compression settings: OK
+	failed backups: OK (there are 0 failed backups)
+	minimum redundancy requirements: OK (have 0 backups, expected at least 0)
+	pg_basebackup: OK
+	pg_basebackup compatible: OK
+	pg_basebackup supports tablespaces mapping: OK
+	systemid coherence: OK (no system Id stored on disk)
+	pg_receivexlog: OK
+	pg_receivexlog compatible: OK
+	receive-wal running: OK
+	archive_mode: OK
+	archive_command: OK
+	archiver errors: OK
+[root@backup vagrant]# barman backup master
+Starting backup using postgres method for server master in /var/lib/barman/master/base/20200114T140524
+Backup start at LSN: 0/4000060 (000000010000000000000004, 00000060)
+Starting backup copy via pg_basebackup for 20200114T140524
+Connection to 127.0.0.1 closed by remote host.
+Connection to 127.0.0.1 closed.
+[root@cnt dz27]# vagrant ssh backup
+Last login: Wed Jan 15 07:08:32 2020 from 10.0.2.2
+[vagrant@backup ~]$ sudo su
+[root@backup vagrant]# barman switch-wal --archive master
+The WAL file 000000010000000000000003 has been closed on server 'master'
+Waiting for the WAL file 000000010000000000000003 from server 'master' (max: 30 seconds)
+Processing xlog segments from streaming for master
+	000000010000000000000003
+[root@backup vagrant]# barman check master
+Server master:
+	PostgreSQL: OK
+	is_superuser: OK
+	PostgreSQL streaming: OK
+	wal_level: OK
+	replication slot: OK
+	directories: OK
+	retention policy settings: OK
+	backup maximum age: OK (no last_backup_maximum_age provided)
+	compression settings: OK
+	failed backups: OK (there are 0 failed backups)
+	minimum redundancy requirements: OK (have 0 backups, expected at least 0)
+	pg_basebackup: OK
+	pg_basebackup compatible: OK
+	pg_basebackup supports tablespaces mapping: OK
+	systemid coherence: OK (no system Id stored on disk)
+	pg_receivexlog: OK
+	pg_receivexlog compatible: OK
+	receive-wal running: OK
+	archive_mode: OK
+	archive_command: OK
+	continuous archiving: OK
+	archiver errors: OK
+[root@backup vagrant]# barman status master
+Server master:
+	Description: PostgreSQL Backup
+	Active: True
+	Disabled: False
+	PostgreSQL version: 11.6
+	Cluster state: in production
+	pgespresso extension: Not available
+	Current data size: 22.8 MiB
+	PostgreSQL Data directory: /var/lib/pgsql/11/data
+	Current WAL segment: 000000010000000000000004
+	PostgreSQL 'archive_command' setting: barman-wal-archive backup master %p
+	Last archived WAL: 000000010000000000000003, at Wed Jan 15 07:13:40 2020
+	Failures of WAL archiver: 12 (000000010000000000000001 at Wed Jan 15 07:07:40 2020)
+	Server WAL archiving rate: 21.97/hour
+	Passive node: False
+	Retention policies: not enforced
+	No. of available backups: 0
+	First available backup: None
+	Last available backup: None
+	Minimum redundancy requirements: satisfied (0/0)
+[root@backup vagrant]# barman backup master
+Starting backup using postgres method for server master in /var/lib/barman/master/base/20200115T071445
+Backup start at LSN: 0/4000060 (000000010000000000000004, 00000060)
+Starting backup copy via pg_basebackup for 20200115T071445
+Copy done (time: 4 seconds)
+Finalising the backup.
+This is the first backup for server master
+WAL segments preceding the current backup have been found:
+	000000010000000000000001 from server master has been removed
+	000000010000000000000002 from server master has been removed
+	000000010000000000000002.00000028.backup from server master has been removed
+	000000010000000000000003 from server master has been removed
+Backup size: 22.7 MiB
+Backup end at LSN: 0/6000060 (000000010000000000000006, 00000060)
+Backup completed (start time: 2020-01-15 07:14:45.713467, elapsed time: 4 seconds)
+Processing xlog segments from streaming for master
+	000000010000000000000004
+	000000010000000000000005
+Processing xlog segments from file archival for master
+	000000010000000000000004
+	000000010000000000000005
+	000000010000000000000005.00000028.backup
+WARNING: IMPORTANT: this backup is classified as WAITING_FOR_WALS, meaning that Barman has not received yet all the required WAL files for the backup consistency.
+This is a common behaviour in concurrent backup scenarios, and Barman automatically set the backup as DONE once all the required WAL files have been archived.
+Hint: execute the backup command with '--wait'
+[root@backup vagrant]# barman check master
+Server master:
+	PostgreSQL: OK
+	is_superuser: OK
+	PostgreSQL streaming: OK
+	wal_level: OK
+	replication slot: OK
+	directories: OK
+	retention policy settings: OK
+	backup maximum age: OK (no last_backup_maximum_age provided)
+	compression settings: OK
+	failed backups: OK (there are 0 failed backups)
+	minimum redundancy requirements: OK (have 0 backups, expected at least 0)
+	pg_basebackup: OK
+	pg_basebackup compatible: OK
+	pg_basebackup supports tablespaces mapping: OK
+	systemid coherence: OK
+	pg_receivexlog: OK
+	pg_receivexlog compatible: OK
+	receive-wal running: OK
+	archive_mode: OK
+	archive_command: OK
+	continuous archiving: OK
+	archiver errors: OK
+[root@backup vagrant]# barman status master
+Server master:
+	Description: PostgreSQL Backup
+	Active: True
+	Disabled: False
+	PostgreSQL version: 11.6
+	Cluster state: in production
+	pgespresso extension: Not available
+	Current data size: 22.8 MiB
+	PostgreSQL Data directory: /var/lib/pgsql/11/data
+	Current WAL segment: 000000010000000000000007
+	PostgreSQL 'archive_command' setting: barman-wal-archive backup master %p
+	Last archived WAL: 000000010000000000000006, at Wed Jan 15 07:14:51 2020
+	Failures of WAL archiver: 12 (000000010000000000000001 at Wed Jan 15 07:07:40 2020)
+	Server WAL archiving rate: 38.90/hour
+	Passive node: False
+	Retention policies: not enforced
+	No. of available backups: 0
+	First available backup: 20200115T071445
+	Last available backup: 20200115T071445
+	Minimum redundancy requirements: satisfied (0/0)
+[root@backup vagrant]# barman list-backup master
+master 20200115T071445 - Wed Jan 15 07:14:49 2020 - Size: 22.7 MiB - WAL Size: 0 B
+[root@backup vagrant]# barman replication-status master
+Status of streaming clients for server 'master':
+  Current LSN on master: 0/7000A20
+  Number of streaming clients: 2
+
+  1. Async standby
+     Application name: walreceiver
+     Sync stage      : 5/5 Hot standby (max)
+     Communication   : TCP/IP
+     IP Address      : 192.168.1.20 / Port: 38714 / Host: -
+     User name       : streaming_user
+     Current state   : streaming (async)
+     Replication slot: standby_slot
+     WAL sender PID  : 7932
+     Started at      : 2020-01-15 07:05:13.722754+00:00
+     Sent LSN   : 0/7000A20 (diff: 0 B)
+     Write LSN  : 0/7000A20 (diff: 0 B)
+     Flush LSN  : 0/7000A20 (diff: 0 B)
+     Replay LSN : 0/7000A20 (diff: 0 B)
+
+  2. Async WAL streamer
+     Application name: barman_receive_wal
+     Sync stage      : 3/3 Remote write
+     Communication   : TCP/IP
+     IP Address      : 192.168.1.30 / Port: 40670 / Host: -
+     User name       : barman_streaming_user
+     Current state   : streaming (async)
+     Replication slot: barman
+     WAL sender PID  : 7971
+     Started at      : 2020-01-15 07:09:02.587096+00:00
+     Sent LSN   : 0/7000A20 (diff: 0 B)
+     Write LSN  : 0/7000A20 (diff: 0 B)
+     Flush LSN  : 0/7000000 (diff: -2.5 KiB)
+[root@backup vagrant]# 
