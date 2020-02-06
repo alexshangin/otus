@@ -1,25 +1,27 @@
 [webservers]
-web1.lan  ansible_ssh_host=10.0.26.11 vm_name=web1.lan ansible_ssh_user=vagrant ansible_ssh_private_key_file=../.vagrant/machines/web1.lan/virtualbox/private_key
-web2.lan  ansible_ssh_host=10.0.26.12 vm_name=web2.lan ansible_ssh_user=vagrant ansible_ssh_private_key_file=../.vagrant/machines/web2.lan/virtualbox/private_key
+web1  ansible_ssh_host=10.0.26.11 vm_name=web1 ansible_ssh_user=vagrant ansible_ssh_private_key_file=../.vagrant/machines/web1/virtualbox/private_key
+web2  ansible_ssh_host=10.0.26.12 vm_name=web2 ansible_ssh_user=vagrant ansible_ssh_private_key_file=../.vagrant/machines/web2/virtualbox/private_key
 
 [lblservers]
-lbl1.lan  ansible_ssh_host=10.0.26.21 vm_name=haproxy1.lan ansible_ssh_user=vagrant ansible_ssh_private_key_file=../.vagrant/machines/haproxy1.lan/virtualbox/private_key
-lbl2.lan  ansible_ssh_host=10.0.26.22 vm_name=haproxy2.lan ansible_ssh_user=vagrant ansible_ssh_private_key_file=../.vagrant/machines/haproxy2.lan/virtualbox/private_key
+lbl1  ansible_ssh_host=10.0.26.21 vm_name=haproxy1 ansible_ssh_user=vagrant ansible_ssh_private_key_file=../.vagrant/machines/haproxy1/virtualbox/private_key
+lbl2  ansible_ssh_host=10.0.26.22 vm_name=haproxy2 ansible_ssh_user=vagrant ansible_ssh_private_key_file=../.vagrant/machines/haproxy2/virtualbox/private_key
 
 [keepalived_master]
-lbl1.lan  ansible_ssh_host=10.0.26.21 vm_name=haproxy1.lan ansible_ssh_user=vagrant ansible_ssh_private_key_file=../.vagrant/machines/haproxy1.lan/virtualbox/private_key
+lbl1  ansible_ssh_host=10.0.26.21 vm_name=haproxy1 ansible_ssh_user=vagrant ansible_ssh_private_key_file=../.vagrant/machines/haproxy1/virtualbox/private_key
 
 [keepalived_backup]
-lbl2.lan  ansible_ssh_host=10.0.26.22 vm_name=haproxy2.lan ansible_ssh_user=vagrant ansible_ssh_private_key_file=../.vagrant/machines/haproxy2.lan/virtualbox/private_key
+lbl2  ansible_ssh_host=10.0.26.22 vm_name=haproxy2 ansible_ssh_user=vagrant ansible_ssh_private_key_file=../.vagrant/machines/haproxy2/virtualbox/private_key
 
 [nfsservers]
-nfs.lan  ansible_ssh_host=10.0.26.41 vm_name=nfs.lan ansible_ssh_user=vagrant ansible_ssh_private_key_file=../.vagrant/machines/nfs.lan/virtualbox/private_key
+nfs  ansible_ssh_host=10.0.26.41 vm_name=nfs ansible_ssh_user=vagrant ansible_ssh_private_key_file=../.vagrant/machines/nfs/virtualbox/private_key
+
+[backups]
+backup ansible_ssh_host=10.0.26.42 vm_name=backup ansible_ssh_user=vagrant ansible_ssh_private_key_file=../.vagrant/machines/backup/virtualbox/private_key
 
 [proxysqls]
-proxysql.lan  ansible_ssh_host=10.0.26.51 vm_name=proxysql.lan ansible_ssh_user=vagrant ansible_ssh_private_key_file=../.vagrant/machines/proxysql.lan/virtualbox/private_key
+proxysql  ansible_ssh_host=10.0.26.51 vm_name=proxysql ansible_ssh_user=vagrant ansible_ssh_private_key_file=../.vagrant/machines/proxysql/virtualbox/private_key
 
 [dbs]
-db1.lan  ansible_ssh_host=10.0.26.31 vm_name=db1.lan ansible_ssh_user=vagrant ansible_ssh_private_key_file=../.vagrant/machines/db1.lan/virtualbox/private_key
-db2.lan  ansible_ssh_host=10.0.26.32 vm_name=db2.lan ansible_ssh_user=vagrant ansible_ssh_private_key_file=../.vagrant/machines/db2.lan/virtualbox/private_key
-db3.lan  ansible_ssh_host=10.0.26.33 vm_name=db3.lan ansible_ssh_user=vagrant ansible_ssh_private_key_file=../.vagrant/machines/db3.lan/virtualbox/private_key
-
+db1  ansible_ssh_host=10.0.26.31 vm_name=db1 ansible_ssh_user=vagrant ansible_ssh_private_key_file=../.vagrant/machines/db1/virtualbox/private_key
+db2  ansible_ssh_host=10.0.26.32 vm_name=db2 ansible_ssh_user=vagrant ansible_ssh_private_key_file=../.vagrant/machines/db2/virtualbox/private_key
+db3  ansible_ssh_host=10.0.26.33 vm_name=db3 ansible_ssh_user=vagrant ansible_ssh_private_key_file=../.vagrant/machines/db3/virtualbox/private_key

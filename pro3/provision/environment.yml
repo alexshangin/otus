@@ -16,6 +16,13 @@
     - nfs-server
 #    - wordpress
 
+- hosts: backups
+  user: root
+  become: true
+  become_user: root
+  roles:
+    - nfs-client
+
 #- hosts: proxysqls
 #  vars_files:
 #    - group_vars/proxysql.yml
@@ -79,4 +86,3 @@
     virtual_ipaddress: 10.0.26.81
     priority: 100
     secret_passwd: ZcnG9lGUoZeM3nFT
-
