@@ -34,16 +34,18 @@ MACHINES = {
         :box_name => "centos/7",
         :ip_addr => '10.0.26.42',
         :disks => {
-          :sata1 => {
-            :dfile => './sata1.vdi',
+          :sata5 => {
+            :dfile => './sata5.vdi',
             :size => 1024,
             :port => 1
           },
-          :sata2 => {
-            :dfile => './sata2.vdi',
+          :sata6 => {
+            :dfile => './sata6.vdi',
             :size => 1024,
             :port => 2
-          },
+          }
+        }
+  },
   :haproxy1 => {
 	:host_name => 'haproxy1.lan',
         :box_name => "centos/7",
