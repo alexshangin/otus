@@ -73,10 +73,27 @@ Server master:
 	archive_command: OK
 	archiver errors: OK
 
-[root@barman /]# barman backup master
-Starting backup using postgres method for server master in /var/lib/barman/master/base/20200206T003156
-Backup start at LSN: 0/6000060 (000000010000000000000006, 00000060)
-Starting backup copy via pg_basebackup for 20200206T003156
+  [root@barman vagrant]# barman backup master
+  Starting backup using postgres method for server master in /var/lib/barman/master/base/20200207T012143
+  Backup start at LSN: 0/4000060 (000000010000000000000004, 00000060)
+  Starting backup copy via pg_basebackup for 20200207T012143
+  Copy done (time: 3 seconds)
+  Finalising the backup.
+  This is the first backup for server master
+  WAL segments preceding the current backup have been found:
+  	000000010000000000000003 from server master has been removed
+  	000000010000000000000001 from server master has been removed
+  	000000010000000000000002 from server master has been removed
+  	000000010000000000000002.00000028.backup from server master has been removed
+  Backup size: 29.9 MiB
+  Backup end at LSN: 0/6000000 (000000010000000000000005, 00000000)
+  Backup completed (start time: 2020-02-07 01:21:43.780712, elapsed time: 3 seconds)
+  Processing xlog segments from streaming for master
+  	000000010000000000000004
+  Processing xlog segments from file archival for master
+  	000000010000000000000004
+  	000000010000000000000005
+  	000000010000000000000005.00000028.backup
 
 [root@barman vagrant]# barman switch-wal --archive master
 The WAL file 000000010000000000000004 has been closed on server 'master'
