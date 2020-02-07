@@ -5,7 +5,7 @@
 
 - name: Firewalld service state
   systemd: name=firewalld state=restarted enabled=yes
-  
+
 #- name: Firewalld add proxysql zone
 #  firewalld:
 #   zone: proxysql
@@ -36,12 +36,12 @@
 #   state: enabled
 #   permanent: true
 
-- name: firewalld open admin ports
-  firewalld:
-   port: "{{ proxysql_login_admin_port }}/tcp"
-   zone: gluster
-   permanent: true
-   state: enabled
+#- name: firewalld open admin ports
+#  firewalld:
+#   port: "{{ proxysql_login_admin_port }}/tcp"
+#   zone: gluster
+#   permanent: true
+#   state: enabled
 
-- name: Firewalld service state
-  systemd: name=firewalld state=reloaded enabled=yes
+#- name: Firewalld service state
+#  systemd: name=firewalld state=reloaded enabled=yes

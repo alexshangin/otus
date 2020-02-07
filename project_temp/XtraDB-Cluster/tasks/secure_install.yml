@@ -1,0 +1,102 @@
+---
+- name: Start the MySQL service
+  service: name=mysqld state=restarted enabled=yes
+
+- name: Acquire temporary root pass
+  shell: awk '$0 ~ "temporary password" {print $13}' /var/log/mysqld.log
+  register: mysql_temp_password
+
+- name: debug out
+  debug: msg="{{ mysql_temp_password.stdout }}"
+
+- name: Copy .my.cnf file with root password credentials
+  template:
+      src: ".my.cnf.j2"
+      dest: "/root/.my.cnf"
+      owner: root
+      group: root
+      mode: 0600
+  when: mysql_temp_password is defined
+
+- name: Test temporary root password expired
+  shell: "mysql -NBe 'SELECT NOW();'"
+  register: mysql_temp_password_result
+  when: mysql_temp_password is defined
+  ignore_errors: yes
+
+- name: Update mysql root password
+  shell: sudo mysql -u root --password="{{ mysql_temp_password.stdout }}" -NBe 'ALTER USER "root"@"localhost" IDENTIFIED WITH mysql_native_password BY "{{ xtradb_root_password }}";' --connect-expired-password
+  when: mysql_temp_password is defined
+
+- name: Create users and grant privileges
+  shell: mysql -u root --password="{{ xtradb_root_password }}" -NBe "{{ item }}"
+  with_items:
+     - "CREATE USER {{ xtradb_root_user }} IDENTIFIED WITH mysql_native_password BY '{{ xtradb_root_password }}';"
+     - "GRANT ALL PRIVILEGES ON *.* TO '{{ xtradb_root_user }}' WITH GRANT OPTION;"
+
+
+
+
+#- name: Get temporary root password
+#  shell: grep 'temporary password' /var/log/mysqld.log | awk '{print $NF}' | tail -n 1 >> ~/.my.cnf
+#  register: "_xtradb_root_temp_password"
+#  when:
+#    - not _xtradb_password_changed.stat.exists
+#  args:
+#    creates: "{{ xtradb_password_changed }}"
+
+#- name: Set the MySQL root password
+  #shell: 'mysqladmin -u root --password="{{ _xtradb_root_temp_password.stdout }}" password "{{ xtradb_root_password }}"'
+#  shell: 'mysqladmin -u root password "{{ xtradb_root_password }}"'
+#  when:
+#    - not _xtradb_password_changed.stat.exists
+#  args:
+#    creates: "{{ xtradb_password_changed }}"
+
+#- name: Marking as password is changed
+#  file:
+#    path: "{{ xtradb_password_changed }}"
+#    state: "touch"
+#    owner: root
+#    group: root
+#    mode: '0400'
+
+#- name: Delete anonymous connections
+#  mysql_user:
+#    login_user: "{{ xtradb_root_user }}"
+#    login_password: "{{ xtradb_root_password }}"
+#    name: ""
+#    host_all: yes
+#    state: absent
+
+- name: "Secure the MySQL root user for localhost"
+  mysql_user:
+    login_user: "{{ xtradb_root_user }}"
+    login_password: "{{ xtradb_root_password }}"
+    name: "{{ xtradb_root_user }}"
+    host: "{{ item }}"
+    password: "{{ xtradb_root_password }}"
+  with_items:
+    - "10.0.26.%"
+    - "127.0.0.1"
+    - "localhost"
+    #- "{{ xtradb_bind_address }}"
+
+
+#- name: Remove the MySQL test database
+#  mysql_db:
+#    db: test
+#    login_user: "{{ xtradb_root_user }}"
+#    login_password: "{{ xtradb_root_password }}"
+#    state: absent
+
+
+#- name: Marking as secured
+#  file:
+#    path: "{{ xtradb_secured }}"
+#    state: "touch"
+#    owner: root
+#    group: root
+#    mode: '0400'
+
+...

@@ -26,7 +26,8 @@
   become: true
   become_user: root
   roles:
-    - XtraDB-Cluster
+    - percona
+#    - XtraDB-Cluster
   vars:
    xtradb_bind_interface: eth1
 
@@ -37,11 +38,11 @@
   become: true
   become_user: root
   roles:
-    - nginx
-    - php-fpm
     - nfs-client
-    - proxysql
+    - nginx
     - wordpress
+    - php-fpm
+    - proxysql
 
 - hosts: lblservers
   user: root
