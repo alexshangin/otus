@@ -1,35 +1,35 @@
 - name: Install base
   hosts: all
   become: True
-  roles: 
+  roles:
     - os
 
 - name: Install PostgreSQL
   hosts: master:slave
   become: True
-  roles: 
+  roles:
     - postgre
 
 - name: Config master
   hosts: master
   become: true
-  roles: 
+  roles:
     - master
 
 - name: Config slave
   hosts: slave
   become: True
-  roles: 
+  roles:
     - slave
 
 - name: Config Barman
   hosts: barman
   become: yes
-  roles: 
+  roles:
     - barman
 
 - name: create ssh
-  hosts: master
+  hosts: master:barman
   become: yes
-  roles: 
+  roles:
     - ssh-key

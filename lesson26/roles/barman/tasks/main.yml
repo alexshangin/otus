@@ -11,11 +11,6 @@
     - barman
     - barman-cli
 
-- name: Create password barman-user
-  user:
-    name: barman
-    password: "{{ 'otus2019' | password_hash('sha512') }}"
-
 - name: Create .pgpass
   template:
     src: .pgpass.j2
