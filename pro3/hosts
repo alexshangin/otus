@@ -1,0 +1,27 @@
+[webservers]
+web1  ansible_ssh_host=10.0.26.11 ansible_hostname=web1.lan ansible_ssh_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/web1/virtualbox/private_key
+web2  ansible_ssh_host=10.0.26.12 ansible_hostname=web2.lan ansible_ssh_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/web2/virtualbox/private_key
+
+[lblservers]
+lbl1  ansible_ssh_host=10.0.26.21 ansible_hostname=haproxy1.lan ansible_ssh_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/haproxy1/virtualbox/private_key
+lbl2  ansible_ssh_host=10.0.26.22 ansible_hostname=haproxy2.lan ansible_ssh_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/haproxy2/virtualbox/private_key
+
+[keepalived_master]
+lbl1  ansible_ssh_host=10.0.26.21 ansible_hostname=haproxy1.lan ansible_ssh_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/haproxy1/virtualbox/private_key
+
+[keepalived_backup]
+lbl2  ansible_ssh_host=10.0.26.22 ansible_hostname=haproxy2.lan ansible_ssh_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/haproxy2/virtualbox/private_key
+
+[nfsservers]
+nfs  ansible_ssh_host=10.0.26.41 ansible_hostname=nfs.lan ansible_ssh_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/nfs/virtualbox/private_key
+
+[backups]
+backup ansible_ssh_host=10.0.26.42 ansible_hostname=backup.lan ansible_ssh_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/backup/virtualbox/private_key
+
+[proxysqls]
+proxysql  ansible_ssh_host=10.0.26.51 ansible_hostname=proxysql.lan ansible_ssh_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/proxysql/virtualbox/private_key
+
+[dbs]
+db1  ansible_ssh_host=10.0.26.31 ansible_hostname=db1.lan ansible_ssh_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/db1/virtualbox/private_key
+db2  ansible_ssh_host=10.0.26.32 ansible_hostname=db2.lan ansible_ssh_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/db2/virtualbox/private_key
+db3  ansible_ssh_host=10.0.26.33 ansible_hostname=db3.lan ansible_ssh_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/db3/virtualbox/private_key

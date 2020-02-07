@@ -1,7 +1,7 @@
 ---
 - name: Install EPEL
   yum: name=epel-release state=present
-  
+
 - name: Install Handy Tools
   yum: name={{ item }} state=present
   with_items:
@@ -18,6 +18,14 @@
     - nmap
     - psmisc
     - net-tools
+    - zip
+    - unzip
+    - bzip2
+    - wget
+    - libselinux-python
+    - policycoreutils-python
+    - git
+    - curl
 
 - name: Manage Services
   service: name={{ item.name }} state={{ item.state }}
@@ -34,4 +42,3 @@
   template:
     src: hosts.j2
     dest: /etc/hosts
-

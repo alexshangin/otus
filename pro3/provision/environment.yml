@@ -5,7 +5,6 @@
   become: true
   become_user: root
   roles:
-    - common
     - os
 
 - hosts: nfsservers
@@ -14,7 +13,6 @@
   become_user: root
   roles:
     - nfs-server
-#    - wordpress
 
 - hosts: backups
   user: root
@@ -22,15 +20,6 @@
   become_user: root
   roles:
     - nfs-client
-
-#- hosts: proxysqls
-#  vars_files:
-#    - group_vars/proxysql.yml
-#  user: root
-#  become: true
-#  become_user: root
-#  roles:
-#    - proxysql
 
 - hosts: dbs
   user: root
