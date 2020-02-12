@@ -1,0 +1,22 @@
+# .bashrc
+
+# User specific aliases and functions
+
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+
+
+export PGHOST={{ ansible_eth1.ipv4.address }}
+export CONSUL_HTTP_ADDR=192.168.27.1:8500
+export PATRONI_CONSUL_HOST=192.168.27.1:8500
+export PGUSER=postgres
+export PGPASSWORD='Passw0rd'
+export PGPORT=5432
+export PGDATABASE=postgres
+
+
+# Source global definitions
+if [ -f /etc/bashrc ]; then
+	. /etc/bashrc
+fi

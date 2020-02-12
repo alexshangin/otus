@@ -1,0 +1,14 @@
+- name: setup consul
+  hosts: consul
+  become: True
+  roles:
+    - consul
+
+- name: setup patroni
+  hosts: 
+    - pg01
+    - pg02
+    - pg03
+  become: True
+  roles:
+    - patroni

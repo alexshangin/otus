@@ -1,4 +1,0 @@
-
-- include: postgres.yml
-- include: haproxy.yml
-- include: keepalived.yml
