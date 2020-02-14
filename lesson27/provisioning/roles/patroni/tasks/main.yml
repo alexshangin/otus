@@ -4,6 +4,9 @@
     name: epel-release
     state: present
 
+- name: enforced
+  shell: setenforce 0
+
 - name: install patroni requiered packages
   yum:
     name: "{{ item }}"
@@ -72,7 +75,7 @@
   tags:
     - dirs
 
-- name: cpy patroni config file
+- name: copy patroni config file
   template:
     src: patroni.yml.j2
     dest: /etc/patroni/patroni.yml
@@ -83,6 +86,16 @@
     state: restarted
     daemon_reload: True
     enabled: true
+
+
+#- name: init db
+#  shell: /usr/pgsql-11/bin/postgresql-11-setup initdb
+
+- name: start postgresql11
+  systemd:
+    name: postgresql-11
+    state: started
+
 
 - name: place bashrc file
   template:

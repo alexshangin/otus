@@ -1,4 +1,7 @@
 ---
+- name: enforced
+  shell: setenforce 0
+
 - name: install unzip
   yum: name=unzip state=present
 
